@@ -2,23 +2,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
 
 import axios from 'axios';
-
-type CreatePostResponse =
-  | {
-      error: string;
-      success: null;
-    }
-  | {
-      success: string;
-      error: null;
-    };
+import { PostPostsResponse } from '@/app/api/posts/route';
 
 export const createdPost = createAsyncThunk(
   'posts/createdPost',
   async (body: CreatePostFormValues, { rejectWithValue }) => {
     console.log('zapochna se');
     try {
-      const response = await axios.post<CreatePostResponse>(
+      const response = await axios.post<PostPostsResponse>(
         'http://localhost:3000/api/post',
         body
       );

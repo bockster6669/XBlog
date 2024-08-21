@@ -46,7 +46,6 @@ export async function GET(request: NextRequest) {
 
   try {
     const totalPosts = await db.post.count();
-    console.log({ totalPosts });
     const posts = await db.post.findMany({
       skip,
       take,
@@ -71,4 +70,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-// export type GetPostsResponse = Awaited<ReturnType<typeof GET>> extends NextResponse<infer T> ? T : never;
+
+export type GetPostsResponse = Awaited<ReturnType<typeof GET>> extends NextResponse<infer T> ? T : never;
+export type PostPostsResponse = Awaited<ReturnType<typeof POST>> extends NextResponse<infer T> ? T : never;

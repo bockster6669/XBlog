@@ -20,7 +20,10 @@ export default function Navbar() {
               <Link href='/create-post'>Create Post</Link>
             </li>
             <li>
-              <Link href='about'>About</Link>
+              <Link href='/about'>About</Link>
+            </li>
+            <li>
+              <Link href='/list-posts'>All Posts</Link>
             </li>
           </ul>
         </div>

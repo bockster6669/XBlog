@@ -22,23 +22,24 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import axios from 'axios';
 import { Category, Post, User } from '@prisma/client';
+import { GetPostsResponse } from '@/app/api/posts/route';
 
 type PostWithAutorAndCategory = Post & {
   category: Category;
   author: User;
 };
 
-type PostsResponse = {
-  posts: PostWithAutorAndCategory[];
-  totalPosts: number;
-};
+function isSuccessResponse(
+  data: GetPostsResponse
+): data is Exclude<GetPostsResponse, { error: string }> {
+  return (data as { posts?: unknown }).posts !== undefined;
+}
 
 const ListPosts: React.FC = () => {
   const [posts, setPosts] = useState<PostWithAutorAndCategory[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
-  console.log(posts);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -47,19 +48,23 @@ const ListPosts: React.FC = () => {
       const skip = (currentPage - 1) * postPerPage;
 
       try {
-        const response = await axios.get<PostsResponse>(
+        const response = await axios.get<GetPostsResponse>(
           `/api/posts?skip=${skip}&take=${postPerPage}`
         );
         const data = response.data;
 
-        if ('error' in data) {
-          console.error(data.error);
-        } else {
+        if (isSuccessResponse(data)) {
           setPosts(data.posts);
           setTotalPages(Math.ceil(data.totalPosts / postPerPage));
         }
       } catch (error) {
-        console.log('Network or server error:', error);
+        if (axios.isAxiosError<{ error: string }>(error)) {
+          console.log(error.response?.data.error || 'Something went wrong');
+        } else if (error instanceof Error) {
+          console.log(error.message);
+        } else {
+          console.log(JSON.stringify(error));
+        }
       } finally {
         setLoading(false);
       }
