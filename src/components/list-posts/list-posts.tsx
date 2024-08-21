@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Pagination,
   PaginationContent,
@@ -18,37 +18,51 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/pagination';
+import { Skeleton } from '@/components/ui/skeleton';
+import axios from 'axios';
+import { Category, Post, User } from '@prisma/client';
 
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  author: {
-    username: string;
-  };
-  category: {
-    name: string;
-  };
-}
+type PostWithAutorAndCategory = Post & {
+  category: Category;
+  author: User;
+};
+
+type PostsResponse = {
+  posts: PostWithAutorAndCategory[];
+  totalPosts: number;
+};
 
 const ListPosts: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PostWithAutorAndCategory[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  console.log(posts);
 
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       const postPerPage = 2;
       const skip = (currentPage - 1) * postPerPage;
-      const response = await fetch(`/api/posts?skip=${skip}&take=${postPerPage}`);
-      const data = await response.json();
-      setPosts(data.posts);
-      setTotalPages(data.totalPages);
-      setLoading(false);
+
+      try {
+        const response = await axios.get<PostsResponse>(
+          `/api/posts?skip=${skip}&take=${postPerPage}`
+        );
+        const data = response.data;
+
+        if ('error' in data) {
+          console.error(data.error);
+        } else {
+          setPosts(data.posts);
+          setTotalPages(Math.ceil(data.totalPosts / postPerPage));
+        }
+      } catch (error) {
+        console.log('Network or server error:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchPosts();
@@ -70,14 +84,12 @@ const ListPosts: React.FC = () => {
     <div className="w-full max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Blog Posts</h1>
       {loading ? (
-        // Skeleton Loader for loading state
         <div>
           <Skeleton className="h-8 w-full mb-2" />
           <Skeleton className="h-8 w-full mb-2" />
           <Skeleton className="h-8 w-full mb-2" />
         </div>
       ) : (
-        // Table for displaying posts
         <Table>
           <TableCaption>A list of blog posts.</TableCaption>
           <TableHeader>
@@ -89,19 +101,19 @@ const ListPosts: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {posts.map((post) => (
-              <TableRow key={post.id}>
-                <TableCell className="font-medium">{post.title}</TableCell>
-                <TableCell>{post.author.username}</TableCell>
-                <TableCell>{post.category.name}</TableCell>
-                <TableCell>{post.content}</TableCell>
-              </TableRow>
-            ))}
+            {posts.length > 1 &&
+              posts.map((post) => (
+                <TableRow key={post.id}>
+                  <TableCell className="font-medium">{post.title}</TableCell>
+                  <TableCell>{post.author.username}</TableCell>
+                  <TableCell>{post.category.name}</TableCell>
+                  <TableCell>{post.content}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       )}
       <div className="mt-4">
-        {/* Pagination Controls */}
         <Pagination>
           <PaginationContent>
             <PaginationItem>
