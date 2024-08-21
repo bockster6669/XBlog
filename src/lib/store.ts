@@ -1,10 +1,10 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
-import { postsReducer } from './features/posts/posts.slice';
+import { postsReducer } from './features/categorys/categorys.slice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-        posts: postsReducer
+      posts: postsReducer,
     },
   });
 };

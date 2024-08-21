@@ -5,26 +5,25 @@ import axios from 'axios';
 
 type CreatePostResponse =
   | {
-      error: string;
-      success: null;
+      category: {
+        id: number;
+        name: string;
+      }[];
     }
   | {
-      success: string;
-      error: null;
+      error: string;
     };
 
-export const createdPost = createAsyncThunk(
+export const getCategorys = createAsyncThunk(
   'posts/createdPost',
-  async (body: CreatePostFormValues, { rejectWithValue }) => {
-    console.log('zapochna se');
+  async () => {
     try {
-      const response = await axios.post<CreatePostResponse>(
-        'http://localhost:3000/api/post',
-        body
+      const response = await axios.get<CreatePostResponse>(
+        'http://localhost:3000/api/categorys'
       );
       return response.data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       if (axios.isAxiosError<{ error: string }>(error)) {
         throw new Error(error.response?.data.error || 'Something went wrong');
       } else if (error instanceof Error) {

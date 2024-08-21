@@ -7,10 +7,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
   const validFields = CreatePostSchema.safeParse(body);
 
   if (!validFields.success)
-    return NextResponse.json(
-      { error: 'Not valid fields', success: null },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Not valid fields' }, { status: 400 });
 
   const { content, title, category: categoryName } = validFields.data;
 
@@ -29,18 +26,14 @@ export async function POST(request: NextRequest, response: NextResponse) {
           connect: { id: category.id },
         },
         author: {
-          connect: { id: 1 },
+          connect: { id: 2 },
         },
       },
     });
-    return NextResponse.json(
-      { success: 'Post created', error: null },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: 'Post created' }, { status: 200 });
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
-      { error: 'Error accured', success: null },
+      { error: 'Error accured while creating a post' },
       { status: 400 }
     );
   }

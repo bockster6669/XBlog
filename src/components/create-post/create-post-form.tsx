@@ -31,21 +31,18 @@ import {
   CreatePostFormValues,
   CreatePostSchema,
 } from '../../../resolvers/create-post-form.resolver';
-import { createdPost } from '@/lib/features/posts/posts.actions';
-import {
-  serverActionCreatePost,
-  serverActionGetCategorys,
-} from '@/lib/actions/post.actions';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Category } from '@prisma/client';
 import { useEffect, useState, useTransition } from 'react';
 import { Input } from '@/components/ui/input';
+import { getCategorys } from '@/lib/features/categorys/categorys.actions';
+import { createdPost } from '@/lib/features/posts/posts.actions';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
   const postStatus = useAppSelector((state) => state.posts.status);
+  const postError = useAppSelector((state) => state.posts.error);
   const [categoryList, setCategoryList] = useState<Category[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<CreatePostFormValues>({
     defaultValues: {
@@ -60,16 +57,12 @@ export default function CreatePostForm() {
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
-    try {
-      const result = await dispatch(createdPost(formData)).unwrap();
-    } catch (error) {
-      setError((error as object ).toString())
-    }
+    dispatch(createdPost(formData));
   };
 
   useEffect(() => {
     const getCategoryList = async () => {
-      const response = await serverActionGetCategorys();
+      const response = await dispatch(getCategorys());
       setCategoryList(response);
     };
     getCategoryList();
@@ -172,9 +165,9 @@ export default function CreatePostForm() {
             Success
           </div>
         )}
-        {error && (
+        {postStatus === 'rejected' && (
           <div className=" bg-destructive/15 text-destructive rounded-lg px-3 py-1">
-            {error}
+            {postError}
           </div>
         )}
         <Button
