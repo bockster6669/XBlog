@@ -23,6 +23,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import axios from 'axios';
 import { Category, Post, User } from '@prisma/client';
 import { GetPostsResponse } from '@/app/api/posts/route';
+import { getErrorMessage } from '@/lib/utils';
+import { useToast } from '../ui/use-toast';
 
 type PostWithAutorAndCategory = Post & {
   category: Category;
@@ -40,6 +42,15 @@ const ListPosts: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  const showErrorToast = (errorMessage: string) => {
+    toast({
+      variant: 'destructive',
+      title: 'Uh oh! Something went wrong.',
+      description: errorMessage,
+    });
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -58,13 +69,9 @@ const ListPosts: React.FC = () => {
           setTotalPages(Math.ceil(data.totalPosts / postPerPage));
         }
       } catch (error) {
-        if (axios.isAxiosError<{ error: string }>(error)) {
-          console.log(error.response?.data.error || 'Something went wrong');
-        } else if (error instanceof Error) {
-          console.log(error.message);
-        } else {
-          console.log(JSON.stringify(error));
-        }
+        const message = getErrorMessage(error);
+        console.log('errro message = ', message)
+        showErrorToast(message)
       } finally {
         setLoading(false);
       }

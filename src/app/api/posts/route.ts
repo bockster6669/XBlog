@@ -43,7 +43,10 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const skip = Number(searchParams.get('skip')) || 0;
   const take = Number(searchParams.get('take')) || 10;
-
+  return NextResponse.json(
+    { error: 'Failed to retrieve posts' },
+    { status: 500 }
+  );
   try {
     const totalPosts = await db.post.count();
     const posts = await db.post.findMany({
