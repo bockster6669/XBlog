@@ -43,15 +43,7 @@ const ListPosts: React.FC = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-
-  const showErrorToast = (errorMessage: string) => {
-    toast({
-      variant: 'destructive',
-      title: 'Uh oh! Something went wrong.',
-      description: errorMessage,
-    });
-  };
-
+  
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
@@ -70,8 +62,11 @@ const ListPosts: React.FC = () => {
         }
       } catch (error) {
         const message = getErrorMessage(error);
-        console.log('errro message = ', message)
-        showErrorToast(message)
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: message,
+        });
       } finally {
         setLoading(false);
       }

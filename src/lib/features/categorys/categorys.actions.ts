@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
 
 import axios from 'axios';
+import { getErrorMessage } from '@/lib/utils';
 
 type CreatePostResponse =
   | {
@@ -23,14 +24,8 @@ export const getCategorys = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      console.log(error);
-      if (axios.isAxiosError<{ error: string }>(error)) {
-        throw new Error(error.response?.data.error || 'Something went wrong');
-      } else if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error(JSON.stringify(error));
-      }
+      const message = getErrorMessage(error);
+      throw message;
     }
   }
 );

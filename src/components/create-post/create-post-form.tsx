@@ -33,7 +33,7 @@ import {
 } from '../../../resolvers/create-post-form.resolver';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Category } from '@prisma/client';
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { getCategorys } from '@/lib/features/categorys/categorys.actions';
 import { createdPost } from '@/lib/features/posts/posts.actions';
@@ -63,7 +63,7 @@ export default function CreatePostForm() {
   useEffect(() => {
     const getCategoryList = async () => {
       const response = await dispatch(getCategorys());
-      setCategoryList(response);
+      setCategoryList(response.payload);
     };
     getCategoryList();
   }, []);
