@@ -30,11 +30,14 @@ We welcome contributions of all kinds! First of all, join our discord server. Th
 1. [**Join Discord server**](https://discord.gg/4DNwb3rQhZ)
 2. **Fork the repository**
 3. **Create a new branch:**
-`git checkout -b feature/your-feature-name`
-4. **Make your changes and commit them:**
-`git commit -m 'Add your feature`
-5. **Push to your branch:**
-`git push origin feature/your-feature-name`
+```bash
+git checkout -b feature/your-feature-name
+5. **Make your changes and commit them:**
+```bash
+git commit -m 'Add your feature
+6. **Push to your branch:**
+```bash
+git push origin feature/your-feature-name
 6. **Create a pull request**
 
 ### Issues and Feature Requests
