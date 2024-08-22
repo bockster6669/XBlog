@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { cn } from '@/lib/utils';
+import { cn, getErrorMessage } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -35,14 +35,23 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Category } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { getCategorys } from '@/lib/features/categorys/categorys.actions';
+import { fetchCategorys } from '@/lib/features/categorys/categorys.actions';
 import { createdPost } from '@/lib/features/posts/posts.actions';
+import { GetPostsResponse } from '@/app/api/posts/route';
+import { toast, useToast } from '../ui/use-toast';
+
+function isSuccessResponse(
+  data: GetPostsResponse
+): data is Exclude<GetPostsResponse, { error: string }> {
+  return (data as { posts?: unknown }).posts !== undefined;
+}
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
   const postStatus = useAppSelector((state) => state.posts.status);
   const postError = useAppSelector((state) => state.posts.error);
   const [categoryList, setCategoryList] = useState<Category[] | null>(null);
+  const { toast } = useToast();
 
   const form = useForm<CreatePostFormValues>({
     defaultValues: {
@@ -62,8 +71,20 @@ export default function CreatePostForm() {
 
   useEffect(() => {
     const getCategoryList = async () => {
-      const response = await dispatch(getCategorys());
-      setCategoryList(response.payload);
+      try {
+        const response = await dispatch(fetchCategorys()).unwrap();
+        if ('error' in response) {
+          return;
+        }
+        setCategoryList(response.category);
+      } catch (error) {
+        const message = getErrorMessage(error);
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: message,
+        });
+      }
     };
     getCategoryList();
   }, []);

@@ -15,7 +15,7 @@ type CreatePostResponse =
       error: string;
     };
 
-export const getCategorys = createAsyncThunk(
+export const fetchCategorys = createAsyncThunk(
   'posts/createdPost',
   async () => {
     try {
@@ -25,7 +25,7 @@ export const getCategorys = createAsyncThunk(
       return response.data;
     } catch (error) {
       const message = getErrorMessage(error);
-      throw message;
+      throw new Error(message);
     }
   }
 );

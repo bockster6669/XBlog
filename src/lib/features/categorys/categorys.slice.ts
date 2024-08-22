@@ -1,6 +1,6 @@
 import { Category } from '@prisma/client';
 import { createSlice } from '@reduxjs/toolkit';
-import { getCategorys } from './categorys.actions';
+import { fetchCategorys } from './categorys.actions';
 
 type initialState = {
   categorys: Category[];
@@ -20,16 +20,16 @@ export const postsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getCategorys.pending, (state, action) => {
+      .addCase(fetchCategorys.pending, (state, action) => {
         state.status = 'pending';
       })
-      .addCase(getCategorys.fulfilled, (state, action) => {
+      .addCase(fetchCategorys.fulfilled, (state, action) => {
         state.status = 'fulfield';
         // state.posts.push(...action.payload)
       })
-      .addCase(getCategorys.rejected, (state, action) => {
+      .addCase(fetchCategorys.rejected, (state, action) => {
         state.status = 'rejected';
-        state.error = action.error.message || 'Unknown error'
+        state.error = action.error.message || 'Unknown error';
       });
   },
 });

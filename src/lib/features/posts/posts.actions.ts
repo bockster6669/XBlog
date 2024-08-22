@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 export const createdPost = createAsyncThunk(
   'posts/createdPost',
-  async (body: CreatePostFormValues, { rejectWithValue }) => {
+  async (body: CreatePostFormValues) => {
     try {
       const response = await axios.post<PostPostsResponse>(
         'http://localhost:3000/api/post',
@@ -17,7 +17,7 @@ export const createdPost = createAsyncThunk(
       return response.data;
     } catch (error) {
       const message = getErrorMessage(error);
-      throw message;
+      throw new Error(message);
     }
   }
 );
