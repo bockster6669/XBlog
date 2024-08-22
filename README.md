@@ -25,7 +25,7 @@ The goal of this project is to be a collaborative and beginner-friendly environm
 - **Styling**: [ShadCN/UI](https://shadcn.dev/)
 
 ## How to contribute
-We welcome contributions of all kinds! First of all, join our discord server. There you can see what tasks are left or you can add open a ticket and present your own idea features. Here's how you can get started:
+We welcome contributions of all kinds! First of all, join our discord server. There you can see what tasks are left or you can open a ticket and present your own idea features. Here's how you can get started:
 
 1. [**Join Discord server**](https://discord.gg/4DNwb3rQhZ)
 2. **Fork the repository**
