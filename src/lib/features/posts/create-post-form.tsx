@@ -38,11 +38,11 @@ import { Input } from '@/components/ui/input';
 import { fetchCategorys } from '@/lib/features/categorys/categorys.actions';
 import { createdPost } from '@/lib/features/posts/posts.actions';
 import { GetPostsResponse } from '@/app/api/posts/route';
-import { useToast } from '../../../components/ui/use-toast';
+import { toast, useToast } from '../../../components/ui/use-toast';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
-  const [categoryList, setCategoryList] = useState<Category[] | null>(null);
+  const categoryList = useAppSelector((state) => state.categorys.categorys);
   const { toast } = useToast();
 
   const form = useForm<CreatePostFormValues>({
@@ -60,13 +60,10 @@ export default function CreatePostForm() {
   useEffect(() => {
     const getCategoryList = async () => {
       try {
-        const data = await dispatch(fetchCategorys()).unwrap();
-        if ('error' in data) {
-          return;
-        }
-        setCategoryList(data.category);
+        await dispatch(fetchCategorys()).unwrap();
       } catch (error) {
-        if (!isAsyncThunkConditionError(error)) { // if its thunk condition error, better to not notify the user with this error
+        if (!isAsyncThunkConditionError(error)) {
+          // if its thunk condition error, better to not notify the user with this error
           const message = getErrorMessage(error);
           toast({
             variant: 'destructive',

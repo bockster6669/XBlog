@@ -1,12 +1,6 @@
-import { Category } from '@prisma/client';
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchCategorys } from './categorys.actions';
-
-type initialState = {
-  categorys: Category[];
-  status: 'idle' | 'pending' | 'fulfield' | 'rejected';
-  error: string | null;
-};
+import { type initialState } from './types';
 
 const initialState: initialState = {
   categorys: [],
@@ -25,7 +19,7 @@ export const categorysSlice = createSlice({
       })
       .addCase(fetchCategorys.fulfilled, (state, action) => {
         state.status = 'fulfield';
-        // state.posts.push(...action.payload)
+        state.categorys = action.payload.category
       })
       .addCase(fetchCategorys.rejected, (state, action) => {
         state.status = 'rejected';

@@ -1,19 +1,6 @@
-import { Category, Post, User } from '@prisma/client';
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchPaginatedPosts } from './posts.actions';
-
-type PostWithAutorAndCategory = Post & {
-  category: Category;
-  author: User;
-};
-
-type initialState = {
-  posts: PostWithAutorAndCategory[];
-  totalPosts: number;
-  status: 'idle' | 'pending' | 'fulfield' | 'rejected';
-  createPostStatus: 'idle' | 'pending' | 'fulfield' | 'rejected';
-  error: string | null;
-};
+import { type initialState } from './types';
 
 const initialState: initialState = {
   posts: [],

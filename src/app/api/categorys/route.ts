@@ -17,3 +17,4 @@ export async function GET(
     );
   }
 }
+export type GetCategorysResponse = Awaited<ReturnType<typeof GET>> extends NextResponse<infer T> ? T : never;
