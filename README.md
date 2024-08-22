@@ -46,8 +46,7 @@ To run the project locally, follow these steps:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/blog-app.git
-   cd blog-app
+   git clone https://github.com/bockster6669/blog-app.git
 
 
 ## Getting Started
