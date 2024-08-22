@@ -44,8 +44,9 @@ If you find a bug or have an idea for a new feature, please check the issues sec
 To run the project locally, follow these steps:
 
 1. **Clone the repository:**
-   ```bash
+```console
    git clone https://github.com/bockster6669/blog-app.git
-2. **Install dependencies:** ```bash npm install
-3. **Run the development server:** npm run dev
+```
+2. **Install dependencies:**  ```console npm install```
+3. **Run the development server:**  ```console npm run dev ```
 4. **Access the app:** The application should be running at http://localhost:3000.
