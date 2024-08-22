@@ -18,9 +18,21 @@ export const getErrorMessage = (error: unknown): string => {
     message = error.message;
   } else if (error && typeof error === 'object' && 'message' in error) {
     message = String(error.message);
-  }else {
+  } else {
     message = JSON.stringify(error);
   }
 
-  return message
+  return message;
+};
+
+export const isAsyncThunkConditionError = (error: unknown) => {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'name' in error &&
+    error.name === 'ConditionError'
+  ) {
+    return true;
+  } 
+  return false
 };

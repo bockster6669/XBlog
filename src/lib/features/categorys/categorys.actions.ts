@@ -1,8 +1,6 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
-
 import axios from 'axios';
 import { getErrorMessage } from '@/lib/utils';
+import { createAppAsyncThunk } from '@/lib/hooks';
 
 type CreatePostResponse =
   | {
@@ -15,7 +13,7 @@ type CreatePostResponse =
       error: string;
     };
 
-export const fetchCategorys = createAsyncThunk(
+export const fetchCategorys = createAppAsyncThunk(
   'posts/createdPost',
   async () => {
     try {

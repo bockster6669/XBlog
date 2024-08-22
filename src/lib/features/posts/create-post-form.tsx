@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { cn, getErrorMessage } from '@/lib/utils';
+import { cn, getErrorMessage, isAsyncThunkConditionError } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -42,21 +42,15 @@ import { useToast } from '../../../components/ui/use-toast';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
-  const postStatus = useAppSelector((state) => state.posts.status);
-  const postError = useAppSelector((state) => state.posts.error);
   const [categoryList, setCategoryList] = useState<Category[] | null>(null);
   const { toast } = useToast();
 
   const form = useForm<CreatePostFormValues>({
-    defaultValues: {
-      content: '',
-      title: '',
-      category: '',
-    },
     mode: 'onTouched',
     resolver: zodResolver(CreatePostSchema),
   });
-  const {isSubmitting } = form.formState
+  const { isSubmitting } = form.formState;
+
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
@@ -66,18 +60,20 @@ export default function CreatePostForm() {
   useEffect(() => {
     const getCategoryList = async () => {
       try {
-        const response = await dispatch(fetchCategorys()).unwrap();
-        if ('error' in response) {
+        const data = await dispatch(fetchCategorys()).unwrap();
+        if ('error' in data) {
           return;
         }
-        setCategoryList(response.category);
+        setCategoryList(data.category);
       } catch (error) {
-        const message = getErrorMessage(error);
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: message,
-        });
+        if (!isAsyncThunkConditionError(error)) { // if its thunk condition error, better to not notify the user with this error
+          const message = getErrorMessage(error);
+          toast({
+            variant: 'destructive',
+            title: 'Uh oh! Something went wrong.',
+            description: message,
+          });
+        }
       }
     };
     getCategoryList();

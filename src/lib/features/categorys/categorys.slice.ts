@@ -14,7 +14,7 @@ const initialState: initialState = {
   error: null,
 };
 
-export const postsSlice = createSlice({
+export const categorysSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {},
@@ -34,4 +34,4 @@ export const postsSlice = createSlice({
   },
 });
 
-export const postsReducer = postsSlice.reducer;
+export const categorysReducer = categorysSlice.reducer;

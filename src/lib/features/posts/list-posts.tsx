@@ -20,59 +20,46 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
-import axios from 'axios';
-import { Category, Post, User } from '@prisma/client';
-import { GetPostsResponse } from '@/app/api/posts/route';
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, isAsyncThunkConditionError } from '@/lib/utils';
 import { useToast } from '../../../components/ui/use-toast';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { fetchPaginatedPosts } from './posts.actions';
 
-type PostWithAutorAndCategory = Post & {
-  category: Category;
-  author: User;
-};
+const ListPosts = () => {
+  const dispatch = useAppDispatch();
+  const posts = useAppSelector((state) => state.posts.posts);
+  const totalPosts = useAppSelector((state) => state.posts.totalPosts);
+  const postsStatus = useAppSelector((state) => state.posts.status);
 
-const ListPosts: React.FC = () => {
-  const [posts, setPosts] = useState<PostWithAutorAndCategory[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  
+
   useEffect(() => {
+    console.log('use effect ran');
     const fetchPosts = async () => {
-      setLoading(true);
       const postPerPage = 2;
-      const skip = (currentPage - 1) * postPerPage;
 
       try {
-        const response = await axios.get<GetPostsResponse>(
-          `/api/posts?skip=${skip}&take=${postPerPage}`
-        );
-        const data = response.data;
-        if ('error' in data) {
-          return;
-        }
-        setPosts(data.posts);
-        setTotalPages(Math.ceil(data.totalPosts / postPerPage));
-        // const response = await dispatch(fetchCategorys()).unwrap();
-        // if ('error' in response) {
-        //   return;
-        // }
-        // setCategoryList(response.category);
+        await dispatch(
+          fetchPaginatedPosts({ postPerPage, currentPage })
+        ).unwrap();
+
+        setTotalPages(Math.ceil(totalPosts / postPerPage));
       } catch (error) {
-        const message = getErrorMessage(error);
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: message,
-        });
-      } finally {
-        setLoading(false);
+        if (!isAsyncThunkConditionError(error)) {
+          const message = getErrorMessage(error);
+          toast({
+            variant: 'destructive',
+            title: 'Uh oh! Something went wrong.',
+            description: message,
+          });
+        }
       }
     };
 
     fetchPosts();
-  }, [currentPage, toast]);
+  }, [currentPage, toast, dispatch, totalPosts]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -89,7 +76,7 @@ const ListPosts: React.FC = () => {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Blog Posts</h1>
-      {loading ? (
+      {postsStatus === 'pending' ? (
         <div>
           <Skeleton className="h-8 w-full mb-2" />
           <Skeleton className="h-8 w-full mb-2" />

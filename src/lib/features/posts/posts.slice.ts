@@ -1,41 +1,47 @@
-import { Post } from '@prisma/client';
+import { Category, Post, User } from '@prisma/client';
 import { createSlice } from '@reduxjs/toolkit';
-import { createdPost } from './posts.actions';
+import { fetchPaginatedPosts } from './posts.actions';
+
+type PostWithAutorAndCategory = Post & {
+  category: Category;
+  author: User;
+};
 
 type initialState = {
-  posts: Post[];
+  posts: PostWithAutorAndCategory[];
+  totalPosts: number;
   status: 'idle' | 'pending' | 'fulfield' | 'rejected';
+  createPostStatus: 'idle' | 'pending' | 'fulfield' | 'rejected';
   error: string | null;
 };
 
 const initialState: initialState = {
   posts: [],
+  totalPosts: 0,
   status: 'idle',
+  createPostStatus: 'idle',
   error: null,
 };
-//posts/increment -> ot reducer
-//posts/createdPost/fulfield -> ot thunk
 
 export const postsSlice = createSlice({
   name: 'posts',
   initialState,
-  reducers: {
-    // increment() {
-    //   state.counter += 1
-    // }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createdPost.pending, (state, action) => {
+      .addCase(fetchPaginatedPosts.pending, (state, action) => {
         state.status = 'pending';
       })
-      .addCase(createdPost.fulfilled, (state, action) => {
+      .addCase(fetchPaginatedPosts.fulfilled, (state, action) => {
         state.status = 'fulfield';
-        // state.posts.push(...action.payload)
+        if ('error' in action.payload) {
+          return;
+        }
+        state.totalPosts = action.payload.totalPosts
+        state.posts = action.payload.posts;
       })
-      .addCase(createdPost.rejected, (state, action) => {
+      .addCase(fetchPaginatedPosts.rejected, (state, action) => {
         state.status = 'rejected';
-        state.error = action.error.message || 'Unknown error'
       });
   },
 });
