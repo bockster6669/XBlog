@@ -30,11 +30,17 @@ We welcome contributions of all kinds! First of all, join our discord server. Th
 1. [**Join Discord server**](https://discord.gg/4DNwb3rQhZ)
 2. **Fork the repository**
 3. **Create a new branch:**
-`git checkout -b feature/your-feature-name`
+```console
+git checkout -b feature/your-feature-name
+```
 5. **Make your changes and commit them:**
-`git commit -m 'Add your feature`
-6. **Push to your branch:**
-`git push origin feature/your-feature-name`
+```console
+git commit -m 'Add your feature
+```
+7. **Push to your branch:**
+```console
+git push origin feature/your-feature-name
+```
 6. **Create a pull request**
 
 ### Issues and Feature Requests
@@ -45,8 +51,14 @@ To run the project locally, follow these steps:
 
 1. **Clone the repository:**
 ```console
-   git clone https://github.com/bockster6669/blog-app.git
+git clone https://github.com/bockster6669/blog-app.git
 ```
-2. **Install dependencies:**  ```console npm install```
-3. **Run the development server:**  ```console npm run dev ```
-4. **Access the app:** The application should be running at http://localhost:3000.
+2. **Install dependencies:**
+ ```console
+npm install
+```
+3. **Run the development server:**
+```console
+npm run dev
+```
+5. **Access the app:** The application should be running at http://localhost:3000.
