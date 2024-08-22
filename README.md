@@ -1,28 +1,28 @@
 # Blog App - Open Source Project
 
-<h1 align="left">Blog App - Open Source Project</h1>
+## Overview
 
-###
+This is an open-source blog application built with Next.js, Prisma, PostgreSQL, and Redux. The project is intended as a learning experience for beginners and those looking to contribute to an open-source project. The app allows users to create, view, and manage blog posts, categories, and user profiles.
 
-<p align="left">This is an open-source blog application built with [your stack: Next.js, React, Node.js, etc.]. The project is intended as a learning experience for beginners and those looking to contribute to an open-source project. The app allows users to create, view, and manage blog posts, categories, and user profiles.<br><br>The goal of this project is to be a collaborative and beginner-friendly environment for contributors who want to gain experience working on real-world applications. We welcome all contributions, whether they are bug fixes, new features, or documentation improvements.</p>
+The goal of this project is to be a collaborative and beginner-friendly environment for contributors who want to gain experience working on real-world applications. We welcome all contributions, whether they are bug fixes, new features, or documentation improvements.
 
-###
+## Features
 
-<h2 align="left">Features</h2>
+- User authentication and profile management
+- Creating, editing, and deleting blog posts
+- Category management for organizing posts
+- Pagination for blog posts
+- Responsive design using [ShadCN/UI](https://shadcn.dev/)
+- State management with Redux Toolkit
 
-###
+## Tech Stack
 
-<p align="left">- User authentication and profile management<br>- Creating, editing, and deleting blog posts<br>- Category management for organizing posts<br>- Pagination for blog posts<br>- Responsive design for better user experience on all devices</p>
-
-###
-
-<h2 align="left">Tech Stack</h2>
-
-###
-
-<p align="left">- **Frontend**: [Next.js](https://nextjs.org/)<br>- **Backend**: [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)<br>- **Database**: [PostgreSQL](https://www.postgresql.org/)<br>- **ORM**: [Prisma](https://www.prisma.io/)<br>- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)<br>- **Styling**: [ShadCN/UI](https://shadcn.dev/)</p>
-
-###
+- **Frontend**: [Next.js](https://nextjs.org/)
+- **Backend**: [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
+- **Styling**: [ShadCN/UI](https://shadcn.dev/)
 
 ## Getting Started
 
