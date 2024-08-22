@@ -29,7 +29,7 @@ export default function Navbar() {
         </div>
       </div>
       <div className="navbar-center">
-        <a className="btn btn-ghost text-xl">Bocksters Blog</a>
+        <a className="btn btn-ghost text-xl">Blog App</a>
       </div>
       <div className="navbar-end">
       </div>
