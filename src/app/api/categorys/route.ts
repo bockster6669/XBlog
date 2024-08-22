@@ -1,6 +1,7 @@
 import {NextRequest, NextResponse } from 'next/server';
 import { db } from '../../../../prisma/db';
 
+
 export async function GET(
   request: NextRequest,
   response: NextResponse

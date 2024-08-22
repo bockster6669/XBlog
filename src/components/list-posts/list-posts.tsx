@@ -31,12 +31,6 @@ type PostWithAutorAndCategory = Post & {
   author: User;
 };
 
-function isSuccessResponse(
-  data: GetPostsResponse
-): data is Exclude<GetPostsResponse, { error: string }> {
-  return (data as { posts?: unknown }).posts !== undefined;
-}
-
 const ListPosts: React.FC = () => {
   const [posts, setPosts] = useState<PostWithAutorAndCategory[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,11 +49,11 @@ const ListPosts: React.FC = () => {
           `/api/posts?skip=${skip}&take=${postPerPage}`
         );
         const data = response.data;
-
-        if (isSuccessResponse(data)) {
-          setPosts(data.posts);
-          setTotalPages(Math.ceil(data.totalPosts / postPerPage));
+        if ('error' in data) {
+          return;
         }
+        setPosts(data.posts);
+        setTotalPages(Math.ceil(data.totalPosts / postPerPage));
       } catch (error) {
         const message = getErrorMessage(error);
         toast({

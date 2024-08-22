@@ -25,7 +25,7 @@ export const fetchCategorys = createAsyncThunk(
       return response.data;
     } catch (error) {
       const message = getErrorMessage(error);
-      throw new Error(message);
+      throw message
     }
   }
 );

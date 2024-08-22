@@ -38,13 +38,7 @@ import { Input } from '@/components/ui/input';
 import { fetchCategorys } from '@/lib/features/categorys/categorys.actions';
 import { createdPost } from '@/lib/features/posts/posts.actions';
 import { GetPostsResponse } from '@/app/api/posts/route';
-import { toast, useToast } from '../ui/use-toast';
-
-function isSuccessResponse(
-  data: GetPostsResponse
-): data is Exclude<GetPostsResponse, { error: string }> {
-  return (data as { posts?: unknown }).posts !== undefined;
-}
+import { useToast } from '../ui/use-toast';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
@@ -62,7 +56,7 @@ export default function CreatePostForm() {
     mode: 'onTouched',
     resolver: zodResolver(CreatePostSchema),
   });
-
+  const {isSubmitting } = form.formState
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
@@ -87,7 +81,7 @@ export default function CreatePostForm() {
       }
     };
     getCategoryList();
-  }, []);
+  }, [dispatch, toast]);
 
   return (
     <Form {...form}>
@@ -181,7 +175,7 @@ export default function CreatePostForm() {
             </FormItem>
           )}
         />
-        {postStatus === 'fulfield' && (
+        {/* {postStatus === 'fulfield' && (
           <div className=" bg-emerald-500/15 text-emerald-500 rounded-lg px-3 py-1">
             Success
           </div>
@@ -190,10 +184,10 @@ export default function CreatePostForm() {
           <div className=" bg-destructive/15 text-destructive rounded-lg px-3 py-1">
             {postError}
           </div>
-        )}
+        )} */}
         <Button
           type="submit"
-          disabled={postStatus === 'pending'}
+          disabled={isSubmitting}
           className="bg-[#4070F4] w-full"
         >
           Submit

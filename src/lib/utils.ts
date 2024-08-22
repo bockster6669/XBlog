@@ -16,7 +16,9 @@ export const getErrorMessage = (error: unknown): string => {
     message = error.response?.data.error || 'Something went wrong';
   } else if (error instanceof Error) {
     message = error.message;
-  } else {
+  } else if (error && typeof error === 'object' && 'message' in error) {
+    message = String(error.message);
+  }else {
     message = JSON.stringify(error);
   }
 
