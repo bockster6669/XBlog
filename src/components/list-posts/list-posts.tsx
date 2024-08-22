@@ -67,7 +67,7 @@ const ListPosts: React.FC = () => {
     };
 
     fetchPosts();
-  }, [currentPage]);
+  }, [currentPage, toast]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
