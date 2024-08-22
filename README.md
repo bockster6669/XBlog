@@ -32,7 +32,7 @@ We welcome contributions of all kinds! First of all, join our discord server. Th
 3. **Create a new branch:**
 `git checkout -b feature/your-feature-name`
 4. **Make your changes and commit them:**
-`git commit -m 'Add your feature'`
+`git commit -m 'Add your feature`
 5 **Push to your branch:**
 `git push origin feature/your-feature-name`
 6. **Create a pull request**
