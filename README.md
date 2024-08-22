@@ -28,14 +28,15 @@ The goal of this project is to be a collaborative and beginner-friendly environm
 We welcome contributions of all kinds! First of all, join our discord server. There you can see what tasks are left or you can add open a ticket and present your own idea features. Here's how you can get started:
 
 1. [**Join Discord server**](https://discord.gg/4DNwb3rQhZ)
-1. **Fork the repository**
-2. **Create a new branch:**
+2. **Fork the repository**
+3. **Create a new branch:**
 `git checkout -b feature/your-feature-name`
-3. **Make your changes and commit them:**
+4. **Make your changes and commit them:**
 `git commit -m 'Add your feature'`
-4 **Push to your branch:**
+
+5 **Push to your branch:**
 `git push origin feature/your-feature-name`
-5. **Create a pull request**
+6. **Create a pull request**
 
 ### Issues and Feature Requests
 If you find a bug or have an idea for a new feature, please check the issues section first to see if it's already being discussed. If not, feel free to open a new issue.
