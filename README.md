@@ -2,9 +2,9 @@
 
 ## Overview
 
-This is an open-source blog application built with Next.js, Prisma, PostgreSQL, and Redux. The project is intended as a learning experience for beginners and those looking to contribute to an open-source project. The app allows users to create, view, and manage blog posts, categories, and user profiles.
+This is an open-source blog application built with Next.js, Prisma, PostgreSQL, and Redux. The project is a learning experience for beginners and those looking to contribute to an open-source project. The app allows users to create, view, and manage blog posts, categories, and user profiles.
 
-The goal of this project is to be a collaborative and beginner-friendly environment for contributors who want to gain experience working on real-world applications. We welcome all contributions, whether they are bug fixes, new features, or documentation improvements.
+This project aims to be a collaborative and beginner-friendly environment for contributors who want to gain experience working on real-world applications. We welcome all contributions, whether bug fixes, new features, or documentation improvements.
 
 ## Features
 
@@ -25,7 +25,7 @@ The goal of this project is to be a collaborative and beginner-friendly environm
 - **Styling**: [ShadCN/UI](https://shadcn.dev/)
 
 ## How to contribute
-We welcome contributions of all kinds! First of all, join our discord server. There you can see what tasks are left or you can open a ticket and present your own idea features. Here's how you can get started:
+We welcome contributions of all kinds! First of all, join our discord server. There, you can see what tasks are left, or you can open a ticket and present your own idea features. Here's how you can get started:
 
 1. [**Join Discord server**](https://discord.gg/4DNwb3rQhZ)
 2. **Fork the repository**
@@ -48,7 +48,7 @@ If you find a bug or have an idea for a new feature, please check the issues sec
 
 ## Tasks list
 - [ ] dark mode
-- [ ] fetch posts must be perform on the server, and the hole component should be SSR
+- [ ] fetch posts must be performed on the server, and the whole component should be SSR
 - [ ] abstract fetching functionality into its own hook
 - [ ] create separate components to render different markup based on the value of postStatus
 
