@@ -30,44 +30,22 @@ We welcome contributions of all kinds! First of all, join our discord server. Th
 1. [**Join Discord server**](https://discord.gg/4DNwb3rQhZ)
 2. **Fork the repository**
 3. **Create a new branch:**
-```bash
-git checkout -b feature/your-feature-name
+`git checkout -b feature/your-feature-name`
 5. **Make your changes and commit them:**
-```bash
-git commit -m 'Add your feature
+`git commit -m 'Add your feature`
 6. **Push to your branch:**
-```bash
-git push origin feature/your-feature-name
+`git push origin feature/your-feature-name`
 6. **Create a pull request**
 
 ### Issues and Feature Requests
 If you find a bug or have an idea for a new feature, please check the issues section first to see if it's already being discussed. If not, feel free to open a new issue.
 
 ## Getting Started
-
 To run the project locally, follow these steps:
 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/bockster6669/blog-app.git
-
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. **Install dependencies:** npm install
+3. **Run the development server:** npm run dev
+4. **Access the app:** The application should be running at http://localhost:3000.
