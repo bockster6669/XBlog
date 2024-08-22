@@ -1,12 +1,12 @@
 import { Action, configureStore, createAsyncThunk } from '@reduxjs/toolkit';
-import { categorysReducer} from './features/categorys/categorys.slice';
+import { categoriesReducer } from './features/categories/categories.slice';
 import { postsReducer } from './features/posts/posts.slice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       posts: postsReducer,
-      categorys: categorysReducer
+      categories: categoriesReducer,
     },
   });
 };

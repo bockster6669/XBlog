@@ -1,14 +1,14 @@
 import axios from 'axios';
 import { getErrorMessage } from '@/lib/utils';
 import { createAppAsyncThunk } from '@/lib/hooks';
-import { AxiosGetCategorysResponse } from './types';
+import { AxiosGetCategoriesResponse } from './types';
 
-export const fetchCategorys = createAppAsyncThunk(
+export const fetchCategories = createAppAsyncThunk(
   'posts/createdPost',
   async () => {
     try {
-      const response = await axios.get<AxiosGetCategorysResponse>(
-        'http://localhost:3000/api/categorys'
+      const response = await axios.get<AxiosGetCategoriesResponse>(
+        'http://localhost:3000/api/categories'
       );
       return response.data;
     } catch (error) {

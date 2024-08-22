@@ -35,14 +35,14 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Category } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { fetchCategorys } from '@/lib/features/categorys/categorys.actions';
+import { fetchCategories } from '@/lib/features/categories/categories.actions';
 import { createdPost } from '@/lib/features/posts/posts.actions';
 import { GetPostsResponse } from '@/app/api/posts/route';
 import { toast, useToast } from '../../../components/ui/use-toast';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
-  const categoryList = useAppSelector((state) => state.categorys.categorys);
+  const categoryList = useAppSelector((state) => state.categories.categories);
   const { toast } = useToast();
 
   const form = useForm<CreatePostFormValues>({
@@ -60,7 +60,7 @@ export default function CreatePostForm() {
   useEffect(() => {
     const getCategoryList = async () => {
       try {
-        await dispatch(fetchCategorys()).unwrap();
+        await dispatch(fetchCategories()).unwrap();
       } catch (error) {
         if (!isAsyncThunkConditionError(error)) {
           // if its thunk condition error, better to not notify the user with this error
@@ -137,7 +137,7 @@ export default function CreatePostForm() {
                       className="h-9"
                     />
                     <CommandList className="">
-                      <CommandEmpty>No categorys found.</CommandEmpty>
+                      <CommandEmpty>No categories found.</CommandEmpty>
                       <CommandGroup>
                         {categoryList &&
                           categoryList.map((item) => (

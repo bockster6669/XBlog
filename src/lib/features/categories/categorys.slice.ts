@@ -1,31 +1,31 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchCategorys } from './categorys.actions';
+import { fetchcategories } from './categories.actions';
 import { type initialState } from './types';
 
 const initialState: initialState = {
-  categorys: [],
+  categories: [],
   status: 'idle',
   error: null,
 };
 
-export const categorysSlice = createSlice({
+export const categoriesSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCategorys.pending, (state, action) => {
+      .addCase(fetchcategories.pending, (state, action) => {
         state.status = 'pending';
       })
-      .addCase(fetchCategorys.fulfilled, (state, action) => {
+      .addCase(fetchcategories.fulfilled, (state, action) => {
         state.status = 'fulfield';
-        state.categorys = action.payload.category
+        state.categories = action.payload.category;
       })
-      .addCase(fetchCategorys.rejected, (state, action) => {
+      .addCase(fetchcategories.rejected, (state, action) => {
         state.status = 'rejected';
         state.error = action.error.message || 'Unknown error';
       });
   },
 });
 
-export const categorysReducer = categorysSlice.reducer;
+export const categoriesReducer = categoriesSlice.reducer;

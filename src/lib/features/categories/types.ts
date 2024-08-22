@@ -1,13 +1,13 @@
-import { GetCategorysResponse } from '@/app/api/categorys/route';
+import { GetCategoriesResponse } from '@/app/api/categories/route';
 import { Category } from '@prisma/client';
 
 export type initialState = {
-  categorys: Category[];
+  categories: Category[];
   status: 'idle' | 'pending' | 'fulfield' | 'rejected';
   error: string | null;
 };
 
-export type AxiosGetCategorysResponse = Exclude<
-  GetCategorysResponse,
+export type AxiosGetCategoriesResponse = Exclude<
+  GetCategoriesResponse,
   { error: string }
 >;
