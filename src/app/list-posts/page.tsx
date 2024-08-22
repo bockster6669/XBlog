@@ -1,4 +1,4 @@
-import ListPosts from '@/components/list-posts/list-posts';
+import ListPosts from '@/lib/features/posts/list-posts';
 import React from 'react';
 
 export default function page() {

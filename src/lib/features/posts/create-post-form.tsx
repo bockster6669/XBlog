@@ -30,7 +30,7 @@ import {
 import {
   CreatePostFormValues,
   CreatePostSchema,
-} from '../../../resolvers/create-post-form.resolver';
+} from '../../../../resolvers/create-post-form.resolver';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Category } from '@prisma/client';
 import { useEffect, useState } from 'react';
@@ -38,7 +38,7 @@ import { Input } from '@/components/ui/input';
 import { fetchCategorys } from '@/lib/features/categorys/categorys.actions';
 import { createdPost } from '@/lib/features/posts/posts.actions';
 import { GetPostsResponse } from '@/app/api/posts/route';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '../../../components/ui/use-toast';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();

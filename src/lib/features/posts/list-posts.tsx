@@ -24,7 +24,7 @@ import axios from 'axios';
 import { Category, Post, User } from '@prisma/client';
 import { GetPostsResponse } from '@/app/api/posts/route';
 import { getErrorMessage } from '@/lib/utils';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '../../../components/ui/use-toast';
 
 type PostWithAutorAndCategory = Post & {
   category: Category;
@@ -54,6 +54,11 @@ const ListPosts: React.FC = () => {
         }
         setPosts(data.posts);
         setTotalPages(Math.ceil(data.totalPosts / postPerPage));
+        // const response = await dispatch(fetchCategorys()).unwrap();
+        // if ('error' in response) {
+        //   return;
+        // }
+        // setCategoryList(response.category);
       } catch (error) {
         const message = getErrorMessage(error);
         toast({
