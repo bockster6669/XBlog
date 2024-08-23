@@ -56,8 +56,9 @@ export const postsSlice = createAppSlice({
         state.totalPosts = action.payload.totalPosts;
         state.posts = action.payload.posts;
       },
-      rejected: (state) => {
+      rejected: (state, action) => {
         state.status = 'rejected';
+        state.error = action.error.message || 'Something went wrong'
       },
     }),
   }),

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -20,47 +20,29 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getErrorMessage, isAsyncThunkConditionError } from '@/lib/utils';
-import { useToast } from '../../../components/ui/use-toast';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { fetchPaginatedPosts } from './posts.slice';
-import { useRouter } from 'next/navigation';
+import router from 'next/router';
+import useGetPaginatedPosts from '../../../../hooks/posts.hooks';
+import { useToastContext } from '../../../../contexts/toast.context';
 
 const ListPosts = () => {
-  const dispatch = useAppDispatch();
-  const posts = useAppSelector((state) => state.posts.posts);
-  const totalPosts = useAppSelector((state) => state.posts.totalPosts);
-  const postsStatus = useAppSelector((state) => state.posts.status);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const { toast } = useToast();
   const postPerPage = 2;
-
-  const router = useRouter();
-
+  const toast = useToastContext()
+  const {
+    posts,
+    postsStatus,
+    postsError,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+  } = useGetPaginatedPosts(postPerPage);
+  
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        await dispatch(
-          fetchPaginatedPosts({ postPerPage, currentPage })
-        ).unwrap();
-
-        setTotalPages(Math.ceil(totalPosts / postPerPage));
-      } catch (error) {
-        if (!isAsyncThunkConditionError(error)) {
-          const message = getErrorMessage(error);
-          toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: message,
-          });
-        }
-      }
-    };
-
-    fetchPosts();
-  }, [currentPage, toast, dispatch, totalPosts]);
+    toast({
+      variant: 'destructive',
+      title: 'Uh oh! Something went wrong.',
+      description: postsError,
+    });
+  }, [postsError, toast]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -97,7 +79,10 @@ const ListPosts = () => {
                 </tr>
               ))
             : posts.map((post) => (
-                <TableRow key={post.id} onClick={()=>router.push(`/post/${post.id}`)}>
+                <TableRow
+                  key={post.id}
+                  onClick={() => router.push(`/post/${post.id}`)}
+                >
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>{post.author.username}</TableCell>
                   <TableCell>{post.category.name}</TableCell>

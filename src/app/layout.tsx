@@ -4,6 +4,8 @@ import './globals.css';
 import Navbar from '@/components/shared/Navbar';
 import StoreProvider from './StoreProvider';
 import { Toaster } from '@/components/ui/toaster';
+import { useToast } from '@/components/ui/use-toast';
+import { ToastContextProvider } from '../../contexts/toast.context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,9 +23,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`flex h-screen flex-col ${inter.className}`}>
         <StoreProvider>
-          <Navbar />
-          <div className="mt-10">{children}</div>
-          <Toaster />
+          <ToastContextProvider>
+            <Navbar />
+            <div className="mt-10">{children}</div>
+            <Toaster />
+          </ToastContextProvider>
         </StoreProvider>
       </body>
     </html>
