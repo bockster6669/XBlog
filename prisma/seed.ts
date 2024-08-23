@@ -82,7 +82,7 @@ async function seedPosts() {
     ];
 
     await Promise.all(posts.map((post) => prisma.post.create({ data: post })));
-    console.log('Posts have been seeded');
+    console.log('Posts has been seeded');
   } catch (error) {
     console.log('Error creating posts:', error);
   }
@@ -109,7 +109,7 @@ async function seedComments() {
     ];
 
     await Promise.all(comments.map((comment) => prisma.comment.create({ data: comment })));
-    console.log('Comments have been seeded');
+    console.log('Comments has been seeded');
   } catch (error) {
     console.log('Error creating comments:', error);
   }
