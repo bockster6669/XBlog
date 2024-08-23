@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
 import { type initialState } from './types';
 import { fetchCategoriesAsyncFunc } from './categories-async-funcs';
+import { createAppSlice } from '../posts/posts.slice';
 
 const initialState: initialState = {
   categories: [],
@@ -8,7 +8,7 @@ const initialState: initialState = {
   error: null,
 };
 
-export const categoriesSlice = createSlice({
+export const categoriesSlice = createAppSlice({
   name: 'posts',
   initialState,
   reducers: (create) => ({
