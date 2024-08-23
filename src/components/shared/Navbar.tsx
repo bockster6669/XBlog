@@ -30,7 +30,7 @@ export default function Navbar() {
         </div>
       </div>
       <div className="navbar-center">
-        <Link href='/' className="btn btn-ghost text-xl">Bocksters Blog</Link>
+        <Link href='/' className="btn btn-ghost text-xl">Blog App</Link>
       </div>
       <div className="navbar-end">
       </div>
