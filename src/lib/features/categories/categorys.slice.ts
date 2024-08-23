@@ -27,5 +27,5 @@ export const categoriesSlice = createSlice({
     }),
   }),
 });
-
+export const { fetchCategories } = categoriesSlice.actions;
 export const categoriesReducer = categoriesSlice.reducer;

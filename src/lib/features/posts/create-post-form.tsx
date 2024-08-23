@@ -34,8 +34,8 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
 import { useToast } from '../../../components/ui/use-toast';
 import { useEffect } from 'react';
-import { fetchCategories } from '../categories/categorys.actions';
 import { createPost } from './posts.slice';
+import { fetchCategories } from '../categories/categorys.slice';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
