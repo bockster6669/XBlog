@@ -52,6 +52,7 @@ If you find a bug or have an idea for a new feature, please check the issues sec
 - [ ] fetch posts must be performed on the server, and the whole component should be SSR
 - [ ] abstract fetching functionality into its own hook
 - [ ] create separate components to render different markup based on the value of postStatus
+- [ ] implement user authentication with next-auth
 
 ## Getting Started
 To run the project locally, follow these steps:
