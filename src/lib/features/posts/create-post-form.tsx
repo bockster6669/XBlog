@@ -32,7 +32,6 @@ import {
 } from '../../../../resolvers/create-post-form.resolver';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
-import { createdPost } from '@/lib/features/posts/posts.actions';
 import { useToast } from '../../../components/ui/use-toast';
 import { useEffect } from 'react';
 import { fetchCategories } from '../categories/categorys.actions';

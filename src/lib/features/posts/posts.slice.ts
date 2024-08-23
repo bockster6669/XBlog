@@ -4,11 +4,15 @@ import {
   FetchPaginatedPosts,
   type initialState,
 } from './types';
-import {  RootState } from '@/lib/store';
+import { RootState } from '@/lib/store';
 import { getErrorMessage } from '@/lib/utils';
 import axios from 'axios';
 import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
 import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
+import {
+  createPostAsyncFunc,
+  fetchPaginatedPostsAsyncFunc,
+} from './posts-async-fynctions';
 
 const initialState: initialState = {
   posts: [],
@@ -26,70 +30,42 @@ export const postsSlice = createAppSlice({
   name: 'posts',
   initialState,
   reducers: (create) => ({
-    createPost: create.asyncThunk(
-      async (body: CreatePostFormValues) => {
-        try {
-          const response = await axios.post<AxiosPostPostsResponse>(
-            'http://localhost:3000/api/post',
-            body
-          );
-          return response.data;
-        } catch (error) {
-          const message = getErrorMessage(error);
-          throw message;
-        }
-      },
-      {
-        options: {
-          condition(arg, thunkApi) {
-            const { posts } = thunkApi.getState() as RootState;
-            const status = posts.createPostStatus;
-            if (status !== 'idle') {
-              return false;
-            }
-          },
-        },
-      }
-    ),
-    fetchPaginatedPosts: create.asyncThunk(
-      async ({ postPerPage, currentPage }: FetchPaginatedPosts) => {
-        try {
-          const skip = (currentPage - 1) * postPerPage;
-          const response = await axios.get<AxiosGetPostsResponse>(
-            `/api/posts?skip=${skip}&take=${postPerPage}`
-          );
-          return response.data;
-        } catch (error) {
-          const message = getErrorMessage(error);
-          throw message;
-        }
-      },
-      {
-        options: {
-          condition(arg, thunkApi) {
-            const { posts } = thunkApi.getState() as RootState;
-            const status = posts.status;
-            if (status !== 'idle') {
-              return false;
-            }
-          },
-        },
-        pending: (state) => {
-          state.status = 'pending';
-        },
-        fulfilled: (state, action) => {
-          state.status = 'fulfield';
-          if ('error' in action.payload) {
-            return;
+    createPost: create.asyncThunk(createPostAsyncFunc, {
+      options: {
+        condition(arg, thunkApi) {
+          const { posts } = thunkApi.getState() as RootState;
+          const status = posts.createPostStatus;
+          if (status !== 'idle') {
+            return false;
           }
-          state.totalPosts = action.payload.totalPosts;
-          state.posts = action.payload.posts;
         },
-        rejected: (state) => {
-          state.status = 'rejected';
+      },
+    }),
+    fetchPaginatedPosts: create.asyncThunk(fetchPaginatedPostsAsyncFunc, {
+      options: {
+        condition(arg, thunkApi) {
+          const { posts } = thunkApi.getState() as RootState;
+          const status = posts.status;
+          if (status !== 'idle') {
+            return false;
+          }
         },
-      }
-    ),
+      },
+      pending: (state) => {
+        state.status = 'pending';
+      },
+      fulfilled: (state, action) => {
+        state.status = 'fulfield';
+        if ('error' in action.payload) {
+          return;
+        }
+        state.totalPosts = action.payload.totalPosts;
+        state.posts = action.payload.posts;
+      },
+      rejected: (state) => {
+        state.status = 'rejected';
+      },
+    }),
   }),
 });
 
