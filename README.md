@@ -47,7 +47,7 @@ git push origin feature/your-feature-name
 If you find a bug or have an idea for a new feature, please check the issues section first to see if it's already being discussed. If not, feel free to open a new issue.
 
 ## Tasks list
-- [ ] [prisma seeding file](https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding).
+- [x] [prisma seeding file](https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding) (can be improve).
 - [ ] dark mode
 - [ ] fetch posts must be performed on the server, and the whole component should be SSR
 - [ ] abstract fetching functionality into its own hook
