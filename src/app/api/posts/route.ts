@@ -16,6 +16,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     update: {},
     create: { name: categoryName },
   });
+  const [user1] = await db.user.findMany({ take: 1 });
 
   try {
     await db.post.create({
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
           connect: { id: category.id },
         },
         author: {
-          connect: { id: 2 },
+          connect: { id: user1.id },
         },
       },
     });
