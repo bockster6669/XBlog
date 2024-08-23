@@ -34,12 +34,11 @@ const ListPosts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const { toast } = useToast();
+  const postPerPage = 2;
 
   useEffect(() => {
     console.log('use effect ran');
     const fetchPosts = async () => {
-      const postPerPage = 2;
-
       try {
         await dispatch(
           fetchPaginatedPosts({ postPerPage, currentPage })
@@ -74,7 +73,7 @@ const ListPosts = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full mx-auto">
       <h1 className="text-2xl font-bold mb-4">Blog Posts</h1>
       {postsStatus === 'pending' ? (
         <div>
@@ -105,6 +104,7 @@ const ListPosts = () => {
           </TableBody>
         </Table>
       )}
+
       <div className="mt-4">
         <Pagination>
           <PaginationContent>
