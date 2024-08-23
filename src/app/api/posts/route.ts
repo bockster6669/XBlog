@@ -55,7 +55,6 @@ export async function GET(request: NextRequest) {
         author: true,
       },
     });
-
     return NextResponse.json(
       {
         posts,
@@ -72,5 +71,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export type GetPostsResponse = Awaited<ReturnType<typeof GET>> extends NextResponse<infer T> ? T : never;
-export type PostPostsResponse = Awaited<ReturnType<typeof POST>> extends NextResponse<infer T> ? T : never;
+export type GetPostsResponse = Awaited<
+  ReturnType<typeof GET>
+> extends NextResponse<infer T>
+  ? T
+  : never;
+export type PostPostsResponse = Awaited<
+  ReturnType<typeof POST>
+> extends NextResponse<infer T>
+  ? T
+  : never;

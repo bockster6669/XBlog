@@ -24,6 +24,7 @@ import { getErrorMessage, isAsyncThunkConditionError } from '@/lib/utils';
 import { useToast } from '../../../components/ui/use-toast';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchPaginatedPosts } from './posts.slice';
+import { useRouter } from 'next/navigation';
 
 const ListPosts = () => {
   const dispatch = useAppDispatch();
@@ -35,6 +36,8 @@ const ListPosts = () => {
   const [totalPages, setTotalPages] = useState(0);
   const { toast } = useToast();
   const postPerPage = 2;
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -94,7 +97,7 @@ const ListPosts = () => {
                 </tr>
               ))
             : posts.map((post) => (
-                <TableRow key={post.id}>
+                <TableRow key={post.id} onClick={()=>router.push(`/post/${post.id}`)}>
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>{post.author.username}</TableCell>
                   <TableCell>{post.category.name}</TableCell>

@@ -5,5 +5,5 @@ export default function layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main className="w-[1100px] mx-auto flex justify-center">{children}</main>;
+  return <main className="w-[1100px] mx-auto justify-center">{children}</main>;
 }
