@@ -75,38 +75,36 @@ const ListPosts = () => {
   return (
     <div className="w-full mx-auto">
       <h1 className="text-2xl font-bold mb-4">Blog Posts</h1>
-      <Table className="">
-        <TableCaption>A list of blog posts.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Author</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Content</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {postsStatus === 'pending'
-            ? Array.from<number>({ length: postPerPage }).map(
-                (_, index) => (
-                  <tr key={index}>
-                    <td colSpan={5}>
-                      <Skeleton className="h-12 w-full" />
-                    </td>
-                  </tr>
-                )
-              )
-            : posts.length > 1 &&
-              posts.map((post) => (
-                <TableRow key={post.id}>
-                  <TableCell className="font-medium">{post.title}</TableCell>
-                  <TableCell>{post.author.username}</TableCell>
-                  <TableCell>{post.category.name}</TableCell>
-                  <TableCell>{post.content}</TableCell>
-                </TableRow>
-              ))}
-        </TableBody>
-      </Table>
+      {postsStatus === 'pending' ? (
+        <div>
+          <Skeleton className="h-8 w-full mb-2" />
+          <Skeleton className="h-8 w-full mb-2" />
+          <Skeleton className="h-8 w-full mb-2" />
+        </div>
+      ) : (
+        <Table>
+          <TableCaption>A list of blog posts.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Author</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Content</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {posts.map((post) => (
+              <TableRow key={post.id}>
+                <TableCell className="font-medium">{post.title}</TableCell>
+                <TableCell>{post.author.username}</TableCell>
+                <TableCell>{post.category.name}</TableCell>
+                <TableCell>{post.content}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+
       <div className="mt-4">
         <Pagination>
           <PaginationContent>
