@@ -1,5 +1,7 @@
 import { Prisma } from '@prisma/client';
 
+type Comments = Pick<Prisma.CommentCreateInput, 'content'>;
+
 export const users: Prisma.UserCreateInput[] = [
   {
     username: 'john_doe',
@@ -33,8 +35,6 @@ export const tags: Prisma.TagCreateInput[] = [
     name: 'Js',
   },
 ];
-
-type Comments = Pick<Prisma.CommentCreateInput, 'content'>;
 
 export const comments: Comments[] = [
   {

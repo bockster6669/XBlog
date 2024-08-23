@@ -3,7 +3,11 @@ import axios from 'axios';
 import { GetPostsResponse, PostPostsResponse } from '@/app/api/posts/route';
 import { getErrorMessage } from '@/lib/utils';
 import { createAppAsyncThunk } from '@/lib/hooks';
-import { AxiosGetPostsResponse, AxiosPostPostsResponse, FetchPaginatedPosts } from './types';
+import {
+  AxiosGetPostsResponse,
+  AxiosPostPostsResponse,
+  FetchPaginatedPosts,
+} from './types';
 
 export const createdPost = createAppAsyncThunk(
   'posts/createdPost',
@@ -32,12 +36,16 @@ export const createdPost = createAppAsyncThunk(
 export const fetchPaginatedPosts = createAppAsyncThunk(
   'posts/createdPost',
   async ({ postPerPage, currentPage }: FetchPaginatedPosts) => {
-    const skip = (currentPage - 1) * postPerPage;
-
-    const response = await axios.get<AxiosGetPostsResponse>(
-      `/api/posts?skip=${skip}&take=${postPerPage}`
-    );
-    return response.data;
+    try {
+      const skip = (currentPage - 1) * postPerPage;
+      const response = await axios.get<AxiosGetPostsResponse>(
+        `/api/posts?skip=${skip}&take=${postPerPage}`
+      );
+      return response.data;
+    } catch (error) {
+      const message = getErrorMessage(error);
+      throw message;
+    }
   },
   {
     condition(arg, { getState }) {
