@@ -1,6 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchPaginatedPosts } from './posts.actions';
-import { type initialState } from './types';
+import {
+  AxiosGetPostsResponse,
+  AxiosPostPostsResponse,
+  FetchPaginatedPosts,
+  type initialState,
+} from './types';
+import {  RootState } from '@/lib/store';
+import { getErrorMessage } from '@/lib/utils';
+import axios from 'axios';
+import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
+import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
 
 const initialState: initialState = {
   posts: [],
@@ -10,27 +18,80 @@ const initialState: initialState = {
   error: null,
 };
 
-export const postsSlice = createSlice({
-  name: 'posts',
-  initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchPaginatedPosts.pending, (state, action) => {
-        state.status = 'pending';
-      })
-      .addCase(fetchPaginatedPosts.fulfilled, (state, action) => {
-        state.status = 'fulfield';
-        if ('error' in action.payload) {
-          return;
-        }
-        state.totalPosts = action.payload.totalPosts
-        state.posts = action.payload.posts;
-      })
-      .addCase(fetchPaginatedPosts.rejected, (state, action) => {
-        state.status = 'rejected';
-      });
-  },
+export const createAppSlice = buildCreateSlice({
+  creators: { asyncThunk: asyncThunkCreator },
 });
 
+export const postsSlice = createAppSlice({
+  name: 'posts',
+  initialState,
+  reducers: (create) => ({
+    createPost: create.asyncThunk(
+      async (body: CreatePostFormValues) => {
+        try {
+          const response = await axios.post<AxiosPostPostsResponse>(
+            'http://localhost:3000/api/post',
+            body
+          );
+          return response.data;
+        } catch (error) {
+          const message = getErrorMessage(error);
+          throw message;
+        }
+      },
+      {
+        options: {
+          condition(arg, thunkApi) {
+            const { posts } = thunkApi.getState() as RootState;
+            const status = posts.createPostStatus;
+            if (status !== 'idle') {
+              return false;
+            }
+          },
+        },
+      }
+    ),
+    fetchPaginatedPosts: create.asyncThunk(
+      async ({ postPerPage, currentPage }: FetchPaginatedPosts) => {
+        try {
+          const skip = (currentPage - 1) * postPerPage;
+          const response = await axios.get<AxiosGetPostsResponse>(
+            `/api/posts?skip=${skip}&take=${postPerPage}`
+          );
+          return response.data;
+        } catch (error) {
+          const message = getErrorMessage(error);
+          throw message;
+        }
+      },
+      {
+        options: {
+          condition(arg, thunkApi) {
+            const { posts } = thunkApi.getState() as RootState;
+            const status = posts.status;
+            if (status !== 'idle') {
+              return false;
+            }
+          },
+        },
+        pending: (state) => {
+          state.status = 'pending';
+        },
+        fulfilled: (state, action) => {
+          state.status = 'fulfield';
+          if ('error' in action.payload) {
+            return;
+          }
+          state.totalPosts = action.payload.totalPosts;
+          state.posts = action.payload.posts;
+        },
+        rejected: (state) => {
+          state.status = 'rejected';
+        },
+      }
+    ),
+  }),
+});
+
+export const { createPost, fetchPaginatedPosts } = postsSlice.actions;
 export const postsReducer = postsSlice.reducer;

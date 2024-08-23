@@ -1,6 +1,5 @@
 import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
 import axios from 'axios';
-import { GetPostsResponse, PostPostsResponse } from '@/app/api/posts/route';
 import { getErrorMessage } from '@/lib/utils';
 import { createAppAsyncThunk } from '@/lib/hooks';
 import {

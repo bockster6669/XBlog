@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchcategories } from './categories.actions';
 import { type initialState } from './types';
+import { fetchCategories } from './categorys.actions';
 
 const initialState: initialState = {
   categories: [],
@@ -14,14 +14,14 @@ export const categoriesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchcategories.pending, (state, action) => {
+      .addCase(fetchCategories.pending, (state, action) => {
         state.status = 'pending';
       })
-      .addCase(fetchcategories.fulfilled, (state, action) => {
+      .addCase(fetchCategories.fulfilled, (state, action) => {
         state.status = 'fulfield';
         state.categories = action.payload.category;
       })
-      .addCase(fetchcategories.rejected, (state, action) => {
+      .addCase(fetchCategories.rejected, (state, action) => {
         state.status = 'rejected';
         state.error = action.error.message || 'Unknown error';
       });

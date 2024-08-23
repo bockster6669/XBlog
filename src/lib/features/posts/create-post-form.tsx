@@ -16,7 +16,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,13 +31,12 @@ import {
   CreatePostSchema,
 } from '../../../../resolvers/create-post-form.resolver';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { Category } from '@prisma/client';
-import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { fetchCategories } from '@/lib/features/categories/categories.actions';
 import { createdPost } from '@/lib/features/posts/posts.actions';
-import { GetPostsResponse } from '@/app/api/posts/route';
-import { toast, useToast } from '../../../components/ui/use-toast';
+import { useToast } from '../../../components/ui/use-toast';
+import { useEffect } from 'react';
+import { fetchCategories } from '../categories/categorys.actions';
+import { createPost } from './posts.slice';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
@@ -54,7 +52,7 @@ export default function CreatePostForm() {
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
-    dispatch(createdPost(formData));
+    dispatch(createPost(formData));
   };
 
   useEffect(() => {

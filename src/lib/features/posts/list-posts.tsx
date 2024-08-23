@@ -23,7 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getErrorMessage, isAsyncThunkConditionError } from '@/lib/utils';
 import { useToast } from '../../../components/ui/use-toast';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { fetchPaginatedPosts } from './posts.actions';
+import { fetchPaginatedPosts } from './posts.slice';
 
 const ListPosts = () => {
   const dispatch = useAppDispatch();
