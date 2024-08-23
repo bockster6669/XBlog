@@ -1,18 +1,12 @@
 import {
-  AxiosGetPostsResponse,
-  AxiosPostPostsResponse,
-  FetchPaginatedPosts,
   type initialState,
 } from './types';
 import { RootState } from '@/lib/store';
-import { getErrorMessage } from '@/lib/utils';
-import axios from 'axios';
-import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
 import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
 import {
   createPostAsyncFunc,
   fetchPaginatedPostsAsyncFunc,
-} from './posts-async-fynctions';
+} from './posts-async-funcs';
 
 const initialState: initialState = {
   posts: [],
