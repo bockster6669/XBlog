@@ -94,15 +94,14 @@ const ListPosts = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {posts.length > 1 &&
-              posts.map((post) => (
-                <TableRow key={post.id}>
-                  <TableCell className="font-medium">{post.title}</TableCell>
-                  <TableCell>{post.author.username}</TableCell>
-                  <TableCell>{post.category.name}</TableCell>
-                  <TableCell>{post.content}</TableCell>
-                </TableRow>
-              ))}
+            {posts.map((post) => (
+              <TableRow key={post.id}>
+                <TableCell className="font-medium">{post.title}</TableCell>
+                <TableCell>{post.author.username}</TableCell>
+                <TableCell>{post.category.name}</TableCell>
+                <TableCell>{post.content}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       )}
