@@ -4,7 +4,7 @@ import React from 'react';
 export default function page() {
   return (
     <main className="w-[1100px] mx-auto flex justify-center">
-      <div>
+      <div className='w-full'>
         <ListPosts />
       </div>
     </main>
