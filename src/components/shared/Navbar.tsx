@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
+import { Menu } from 'lucide-react';
 
 export default function Navbar() {
   return (
@@ -7,7 +8,7 @@ export default function Navbar() {
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-           Burger menu
+           <Menu/>
           </div>
           <ul
             tabIndex={0}
