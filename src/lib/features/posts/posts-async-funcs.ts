@@ -10,7 +10,7 @@ import {
 export const createPostAsyncFunc = async (body: CreatePostFormValues) => {
   try {
     const response = await axios.post<AxiosPostPostsResponse>(
-      'http://localhost:3000/api/post',
+      '/api/post',
       body
     );
     return response.data;
