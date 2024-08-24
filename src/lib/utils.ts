@@ -33,6 +33,6 @@ export const isAsyncThunkConditionError = (error: unknown) => {
     error.name === 'ConditionError'
   ) {
     return true;
-  } 
-  return false
+  }
+  return false;
 };
