@@ -6,6 +6,7 @@ import StoreProvider from './StoreProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import { ToastContextProvider } from '../../contexts/toast.context';
+import { ThemeProvider } from 'next-themes';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,9 +25,16 @@ export default function RootLayout({
       <body className={`flex h-screen flex-col ${inter.className}`}>
         <StoreProvider>
           <ToastContextProvider>
-            <Navbar />
-            <div className="mt-10">{children}</div>
-            <Toaster />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Navbar />
+              <div className="mt-10">{children}</div>
+              <Toaster />
+            </ThemeProvider>
           </ToastContextProvider>
         </StoreProvider>
       </body>

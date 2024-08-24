@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import { Menu } from 'lucide-react';
+import { ModeToggle } from './ModeToggle';
 
 export default function Navbar() {
   return (
@@ -33,6 +34,7 @@ export default function Navbar() {
         <Link href='/' className="btn btn-ghost text-xl">Blog App</Link>
       </div>
       <div className="navbar-end">
+        <ModeToggle/>
       </div>
     </div>
   );
