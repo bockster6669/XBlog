@@ -25,8 +25,9 @@ import useGetPaginatedPosts from '../../../../hooks/posts.hooks';
 import { useToastContext } from '../../../../contexts/toast.context';
 
 const ListPosts = () => {
+  console.log('component render')
   const postPerPage = 2;
-  const toast = useToastContext()
+  const toast = useToastContext();
   const {
     posts,
     postsStatus,
@@ -35,13 +36,16 @@ const ListPosts = () => {
     setCurrentPage,
     totalPages,
   } = useGetPaginatedPosts(postPerPage);
-  
+  console.log(postsError);
+
   useEffect(() => {
-    toast({
-      variant: 'destructive',
-      title: 'Uh oh! Something went wrong.',
-      description: postsError,
-    });
+    if (postsError) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: postsError,
+      });
+    }
   }, [postsError, toast]);
 
   const handleNextPage = () => {
@@ -92,7 +96,7 @@ const ListPosts = () => {
         </TableBody>
       </Table>
       <div className="mt-4">
-        <Pagination>
+        <Pagination className="">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious href="#" onClick={handlePrevPage} />
@@ -110,7 +114,7 @@ const ListPosts = () => {
             ))}
             {totalPages > 3 && <PaginationEllipsis />}
             <PaginationItem>
-              <PaginationNext href="#" onClick={handleNextPage} />
+              <PaginationNext className="" href="#" onClick={handleNextPage} />
             </PaginationItem>
           </PaginationContent>
         </Pagination>

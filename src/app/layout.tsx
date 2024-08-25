@@ -21,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`flex h-screen flex-col ${inter.className}`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`flex h-screen flex-col ${inter.className} dark:bg-[#0D1117]`}>
         <StoreProvider>
           <ToastContextProvider>
             <ThemeProvider

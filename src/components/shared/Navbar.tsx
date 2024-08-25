@@ -6,7 +6,7 @@ import { Menu } from 'lucide-react';
 
 export default function Navbar() {
   return (
-    <div className="flex box-border px-2 py-1">
+    <div className="flex box-border px-2 py-1 dark:bg-[#010409]">
       <div className="mr-auto">
         <DropdownMenu>
           <DropdownMenuTrigger><Menu/></DropdownMenuTrigger>
