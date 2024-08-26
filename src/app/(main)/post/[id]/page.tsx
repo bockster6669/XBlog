@@ -1,6 +1,6 @@
 import React from 'react';
 import { db } from '../../../../../prisma/db';
-import { Post, User } from '@prisma/client';
+import { Comment, Post, User } from '@prisma/client';
 import Link from 'next/link';
 
 type Params = {
@@ -14,8 +14,10 @@ type Props = {
 type PostWithAutor =
   | (Post & {
       author: User;
+      comments: Comment[]
     })
   | null;
+
 
 const fetchPost = async (params: Params) => {
   return await db.post.findUnique({
@@ -24,6 +26,7 @@ const fetchPost = async (params: Params) => {
     },
     include: {
       author: true,
+      comments: true
     },
   });
 };
@@ -35,7 +38,7 @@ export default async function page({ params }: Props) {
   } catch (error) {
     return <div>There was an error while geting the post</div>;
   }
-
+  console.log(post)
   return (
     <>
       {post ? (
@@ -56,6 +59,7 @@ export default async function page({ params }: Props) {
                   {fullName}
                 </Link>
               </p>
+                {post.comments.map(comment => <p key={comment.id}>{comment.content}</p>)}
             </>
           );
         })()
