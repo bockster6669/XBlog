@@ -25,7 +25,7 @@ import useGetPaginatedPosts from '../../../../hooks/posts.hooks';
 import { useToastContext } from '../../../../contexts/toast.context';
 
 const ListPosts = () => {
-  console.log('component render')
+  console.log('component render');
   const postPerPage = 2;
   const toast = useToastContext();
   const {
@@ -86,6 +86,7 @@ const ListPosts = () => {
                 <TableRow
                   key={post.id}
                   onClick={() => router.push(`/post/${post.id}`)}
+                  className=" cursor-pointer"
                 >
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>{post.author.username}</TableCell>
