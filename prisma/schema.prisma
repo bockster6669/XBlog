@@ -23,6 +23,7 @@ model User {
   posts     Post[]
   comments  Comment[]
   createdAt DateTime  @default(now())
+  image String
 }
 
 model Post {

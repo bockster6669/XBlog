@@ -30,18 +30,16 @@ import {
   CreatePostFormValues,
   CreatePostSchema,
 } from '../../../../resolvers/create-post-form.resolver';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
 import { useEffect } from 'react';
 import { createPost } from './posts.slice';
-import { fetchCategories } from '../categories/categorys.slice';
 import { useToastContext } from '../../../../contexts/toast.context';
 import { useGetCategories } from '../categories/hooks';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
   const { categoryList, categoriesError } = useGetCategories();
-
   const toast = useToastContext();
 
   const form = useForm<CreatePostFormValues>({
@@ -59,7 +57,8 @@ export default function CreatePostForm() {
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
-    dispatch(createPost(formData));
+    await dispatch(createPost(formData));
+    console.log('mda')
   };
 
   useEffect(() => {

@@ -20,4 +20,8 @@ export const navbarLinks:NavBarLink[] = [
     href: '/posts',
     label: 'Posts',
   },
+  {
+    href: '/profile',
+    label: 'Profile',
+  },
 ];

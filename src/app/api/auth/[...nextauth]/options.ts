@@ -20,13 +20,13 @@ export const authOptions: NextAuthOptions = {
         if (!credentials) {
           return null;
         }
+
         const validatedFields = SignInFormSchema.safeParse(credentials);
 
         if (!validatedFields.success) {
           return null
         }
-        const { email, password } = credentials;
-
+        const { email, password } = validatedFields.data;
         try {
           const user = await db.user.findUnique({
             where: {
@@ -48,4 +48,5 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+ 
 };
