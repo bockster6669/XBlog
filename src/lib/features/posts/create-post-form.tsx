@@ -35,16 +35,12 @@ import { Input } from '@/components/ui/input';
 import { useEffect } from 'react';
 import { createPost } from './posts.slice';
 import { fetchCategories } from '../categories/categorys.slice';
-import { useSession } from 'next-auth/react';
 import { useToastContext } from '../../../../contexts/toast.context';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
   const categoryList = useAppSelector((state) => state.categories.categories);
   const toast = useToastContext();
-  const session = useSession();
-  console.log(session);
-  
 
   const form = useForm<CreatePostFormValues>({
     mode: 'onTouched',
