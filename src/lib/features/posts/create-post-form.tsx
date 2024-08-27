@@ -40,12 +40,17 @@ import { useGetCategories } from '../categories/hooks';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
-  const {categoryList, categoriesError} = useGetCategories();
+  const { categoryList, categoriesError } = useGetCategories();
 
   const toast = useToastContext();
 
   const form = useForm<CreatePostFormValues>({
     mode: 'onTouched',
+    defaultValues: {
+      category: '',
+      content: '',
+      title: '',
+    },
     resolver: zodResolver(CreatePostSchema),
   });
 
@@ -58,7 +63,7 @@ export default function CreatePostForm() {
   };
 
   useEffect(() => {
-    console.log(categoriesError)
+    console.log(categoriesError);
     if (categoriesError) {
       toast({
         variant: 'destructive',
