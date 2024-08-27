@@ -58,6 +58,7 @@ export default function CreatePostForm() {
   };
 
   useEffect(() => {
+    console.log(categoriesError)
     if (categoriesError) {
       toast({
         variant: 'destructive',

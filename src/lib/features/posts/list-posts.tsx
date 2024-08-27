@@ -38,6 +38,7 @@ const ListPosts = () => {
   const router = useRouter();
 
   useEffect(() => {
+    console.log(postsError)
     if (postsError) {
       toast({
         variant: 'destructive',
