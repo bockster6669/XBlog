@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
         email: validatedFieldsData.email,
       },
     });
-    console.log('rpodylvi')
     if (existsUser) {
       return NextResponse.json(
         { message: 'This user already exists' },

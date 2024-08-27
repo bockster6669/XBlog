@@ -2,6 +2,7 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { db } from '../../../../../prisma/db';
 import bcrypt from 'bcryptjs';
+import { SignInFormSchema } from '../../../../../resolvers/sign-in-form.resolver';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,11 +16,17 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) {
           return null;
         }
+        const validatedFields = SignInFormSchema.safeParse(credentials);
+
+        if (!validatedFields.success) {
+          return null
+        }
         const { email, password } = credentials;
+
         try {
           const user = await db.user.findUnique({
             where: {
