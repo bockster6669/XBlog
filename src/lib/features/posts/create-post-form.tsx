@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { cn, getErrorMessage, isAsyncThunkConditionError } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -36,16 +36,19 @@ import { useEffect } from 'react';
 import { createPost } from './posts.slice';
 import { fetchCategories } from '../categories/categorys.slice';
 import { useToastContext } from '../../../../contexts/toast.context';
+import { useGetCategories } from '../categories/hooks';
 
 export default function CreatePostForm() {
   const dispatch = useAppDispatch();
-  const categoryList = useAppSelector((state) => state.categories.categories);
+  const {categoryList, categoriesError} = useGetCategories();
+
   const toast = useToastContext();
 
   const form = useForm<CreatePostFormValues>({
     mode: 'onTouched',
     resolver: zodResolver(CreatePostSchema),
   });
+
   const { isSubmitting } = form.formState;
 
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
@@ -55,23 +58,14 @@ export default function CreatePostForm() {
   };
 
   useEffect(() => {
-    const getCategoryList = async () => {
-      try {
-        await dispatch(fetchCategories()).unwrap();
-      } catch (error) {
-        if (!isAsyncThunkConditionError(error)) {
-          // if its thunk condition error, better to not notify the user with this error
-          const message = getErrorMessage(error);
-          toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: message,
-          });
-        }
-      }
-    };
-    getCategoryList();
-  }, [dispatch, toast]);
+    if (categoriesError) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: categoriesError,
+      });
+    }
+  }, [categoriesError, toast]);
 
   return (
     <Form {...form}>
@@ -165,16 +159,6 @@ export default function CreatePostForm() {
             </FormItem>
           )}
         />
-        {/* {postStatus === 'fulfield' && (
-          <div className=" bg-emerald-500/15 text-emerald-500 rounded-lg px-3 py-1">
-            Success
-          </div>
-        )}
-        {postStatus === 'rejected' && (
-          <div className=" bg-destructive/15 text-destructive rounded-lg px-3 py-1">
-            {postError}
-          </div>
-        )} */}
         <Button
           type="submit"
           disabled={isSubmitting}

@@ -1,6 +1,7 @@
 import { type initialState } from './types';
 import { fetchCategoriesAsyncFunc } from './categories-async-funcs';
 import { createAppSlice } from '../posts/posts.slice';
+import { RootState } from '@/lib/store';
 
 const initialState: initialState = {
   categories: [],
@@ -9,10 +10,19 @@ const initialState: initialState = {
 };
 
 export const categoriesSlice = createAppSlice({
-  name: 'posts',
+  name: 'categories',
   initialState,
   reducers: (create) => ({
     fetchCategories: create.asyncThunk(fetchCategoriesAsyncFunc, {
+      options: {
+        condition(arg, thunkApi) {
+          const { categories } = thunkApi.getState() as RootState;
+          const status = categories.status;
+          if (status !== 'idle') {
+            return false;
+          }
+        },
+      },
       pending: (state) => {
         state.status = 'pending';
       },

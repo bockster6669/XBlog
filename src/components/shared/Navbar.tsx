@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Menu } from 'lucide-react';
+import { navbarLinks } from '../../../constants/navbar-links.constants';
 
 export default function Navbar() {
   return (
@@ -18,26 +19,18 @@ export default function Navbar() {
           <Menu />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Link href="/">Homepage</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/create-post">Create Post</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/about">About</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/list-posts">All Posts</Link>
-          </DropdownMenuItem>
+          {navbarLinks.map((link) => (
+            <DropdownMenuItem asChild key={link.label}>
+              <Link href={link.href}>{link.label}</Link>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
       <Link href="/" className="justify-self-center btn btn-ghost text-xl">
         Blog App
       </Link>
       <div className="ml-auto">
-        <ModeToggle/>
+        <ModeToggle />
       </div>
     </div>
   );

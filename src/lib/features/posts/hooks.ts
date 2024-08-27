@@ -2,7 +2,7 @@ import { fetchPaginatedPosts } from '@/lib/features/posts/posts.slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useState } from 'react';
 
-const useGetPaginatedPosts = (postPerPage: number) => {
+export const useGetPaginatedPosts = (postPerPage: number) => {
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -23,5 +23,3 @@ const useGetPaginatedPosts = (postPerPage: number) => {
     totalPages,
   };
 };
-
-export default useGetPaginatedPosts;

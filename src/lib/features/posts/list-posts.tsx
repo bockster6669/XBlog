@@ -21,8 +21,8 @@ import {
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
-import useGetPaginatedPosts from '../../../../hooks/posts.hooks';
 import { useToastContext } from '../../../../contexts/toast.context';
+import { useGetPaginatedPosts } from './hooks';
 
 const ListPosts = () => {
   const postPerPage = 2;
@@ -35,7 +35,7 @@ const ListPosts = () => {
     setCurrentPage,
     totalPages,
   } = useGetPaginatedPosts(postPerPage);
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     if (postsError) {
