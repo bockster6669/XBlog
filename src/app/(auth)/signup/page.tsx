@@ -50,7 +50,7 @@ export default function Page() {
     setSuccess(null);
     const { email, password, username } = formData;
     try {
-      const { data } = await axios.post<AxiosPostRegisterResponse>(
+      await axios.post<AxiosPostRegisterResponse>(
         '/api/register',
         {
           email,
