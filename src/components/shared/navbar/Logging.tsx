@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { signOut, signIn, useSession } from 'next-auth/react';
 import React from 'react';
 
@@ -9,7 +10,7 @@ export default function Logging() {
   return (
     <>
       {status === 'loading' ? (
-        <span>Loading</span>
+        <Skeleton className='w-16 h-10'/>
       ) : data ? (
         <Button onClick={() => signOut()}>Logout</Button>
       ) : (
