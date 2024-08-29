@@ -76,7 +76,6 @@ export default function SignUpComponent() {
         callbackUrl: '/',
       });
 
-      console.log('success');
       setSuccess('Success created user');
     } catch (err) {
       if (isAxiosError(err)) {
