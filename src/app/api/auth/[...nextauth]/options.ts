@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GitHubProvider from 'next-auth/providers/github';
 import { db } from '../../../../../prisma/db';
 import bcrypt from 'bcryptjs';
 import { SignInFormSchema } from '../../../../../resolvers/sign-in-form.resolver';
@@ -47,6 +48,10 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string
+    })
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {

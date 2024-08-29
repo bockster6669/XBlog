@@ -1,7 +1,10 @@
-import React from 'react'
+import SignUpComponent from '@/components/auth/sign-up';
+import React from 'react';
 
-export default function page() {
+export default function HomePage() {
   return (
-    <div>page</div>
-  )
+    <div>
+      Home page
+    </div>
+  );
 }
