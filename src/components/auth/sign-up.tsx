@@ -33,6 +33,7 @@ import {
 } from '../ui/form';
 import ErrorMessage from './error-message';
 import SuccessMessage from './success-message';
+import Link from 'next/link';
 
 type AxiosPostRegisterResponse = Exclude<
   PostRegisterResponse,
@@ -71,8 +72,8 @@ export default function SignUpComponent() {
       await signIn('credentials', {
         email,
         password,
-        redirect: false,
-        callbackUrl: 'http://localhost:3000/',
+        redirect: true,
+        callbackUrl: '/',
       });
 
       console.log('success');
@@ -88,126 +89,116 @@ export default function SignUpComponent() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-background">
-      <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Sign up
-          </CardTitle>
-          <CardDescription className="text-center">
-            Choose your preferred sign up method
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Form {...form}>
-            <form
-              className="space-y-4"
-              onSubmit={form.handleSubmit(handleSubmit)}
-            >
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel htmlFor="email" className="text-sm font-medium">
-                      Email
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        id="email"
-                        placeholder="email..."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+    <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">
+          Sign up
+        </CardTitle>
+        <CardDescription className="text-center">
+          Choose your preferred sign up method
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Form {...form}>
+          <form
+            className="space-y-4"
+            onSubmit={form.handleSubmit(handleSubmit)}
+          >
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel htmlFor="email" className="text-sm font-medium">
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      id="email"
+                      placeholder="email..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel htmlFor="username" className="text-sm font-medium">
+                    Username
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      id="username"
+                      placeholder="username..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel htmlFor="password" className="text-sm font-medium">
+                    Password
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      id="password"
+                      placeholder="password..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
               />
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel
-                      htmlFor="username"
-                      className="text-sm font-medium"
-                    >
-                      Username
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        id="username"
-                        placeholder="username..."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel
-                      htmlFor="password"
-                      className="text-sm font-medium"
-                    >
-                      Password
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        id="password"
-                        placeholder="password..."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="remember"
-                  checked={rememberMe}
-                  onCheckedChange={(checked) =>
-                    setRememberMe(checked as boolean)
-                  }
-                />
-                <Label htmlFor="remember" className="text-sm">
-                  Remember me
-                </Label>
-              </div>
-              <SuccessMessage message={success} />
-              <ErrorMessage message={error} />
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                Sign in
-              </Button>
-            </form>
-          </Form>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => signIn('github')}
-              className="w-full"
-            >
-              <Github className="mr-2 h-4 w-4" /> GitHub
+              <Label htmlFor="remember" className="text-sm">
+                Remember me
+              </Label>
+            </div>
+            <SuccessMessage message={success} />
+            <ErrorMessage message={error} />
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              Sign in
             </Button>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <p className="text-sm text-muted-foreground">
-            Dont have an account?
-            <a href="#" className="text-primary hover:underline">
-              Sign up
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+          </form>
+        </Form>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => signIn('github')}
+            className="w-full"
+          >
+            <Github className="mr-2 h-4 w-4" /> GitHub
+          </Button>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-center">
+        <p className="text-sm text-muted-foreground">
+          Already have an account?
+          <Link href="/signin" className="text-primary hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </CardFooter>
+    </Card>
   );
 }

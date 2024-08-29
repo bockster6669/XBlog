@@ -7,6 +7,8 @@ import { ToastContextProvider } from '../../contexts/toast.context';
 import { ThemeProvider } from 'next-themes';
 import { SessionWrapper } from '../../contexts/auth.context';
 import Navbar from '@/components/shared/navbar/Navbar';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './api/auth/[...nextauth]/options';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,13 +22,16 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  //не съм сигурен дали е нужно, предвид, че използваме middleware и там също проверяваме. Но е полезно
+  //за да не се получават по два /session рекуеста
+  const session = await getServerSession(authOptions)
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`flex h-screen flex-col ${inter.className} dark:bg-[#0D1117]`}
       >
         <StoreProvider>
-          <SessionWrapper>
+          <SessionWrapper session={session}>
             <ToastContextProvider>
               <ThemeProvider
                 attribute="class"

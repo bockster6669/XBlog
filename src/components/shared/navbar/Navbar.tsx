@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import React from 'react';
 import { ModeToggle } from './ModeToggle';
-import UserProfile from './UserProfile';
 import NavMenu from './NavMenu';
 import Logging from './Logging';
+import UserProfile from './UserProfile';
 
 export default function Navbar() {
   return (
@@ -15,7 +15,7 @@ export default function Navbar() {
         Blog App
       </Link>
       <div className="justify-self-end flex gap-2">
-        <Logging/>
+        <Logging />
         <UserProfile />
         <ModeToggle />
       </div>

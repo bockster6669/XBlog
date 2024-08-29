@@ -3,5 +3,5 @@ export default function AuthLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main className="mx-auto justify-center">{children}</main>;
+  return <main className="mx-auto justify-center w-[1100px]">{children}</main>;
 }

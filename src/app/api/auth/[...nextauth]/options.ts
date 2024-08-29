@@ -6,17 +6,14 @@ import bcrypt from 'bcryptjs';
 import { SignInFormSchema } from '../../../../../resolvers/sign-in-form.resolver';
 
 export const authOptions: NextAuthOptions = {
+  debug: true,
+  session: {
+    strategy: 'jwt',
+  },
   providers: [
     CredentialsProvider({
       name: 'Credentials',
-      credentials: {
-        email: {
-          label: 'Username',
-          type: 'email',
-          placeholder: 'jsmith@gmail.com',
-        },
-        password: { label: 'Password', type: 'password' },
-      },
+      credentials: {},
       async authorize(credentials) {
         if (!credentials) {
           return null;
@@ -50,14 +47,11 @@ export const authOptions: NextAuthOptions = {
     }),
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string
-    })
+      clientSecret: process.env.GITHUB_SECRET as string,
+    }),
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      console.log({ user, account, profile, email, credentials });
-      return true;
-    },
+   
   },
   pages: {
     signIn: '/signin',
