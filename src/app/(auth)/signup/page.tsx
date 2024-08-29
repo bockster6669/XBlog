@@ -62,7 +62,7 @@ export default function Page() {
       await signIn('credentials', {
         email,
         password,
-        redirect: true,
+        redirect: false,
         callbackUrl: 'http://localhost:3000/'
       });
 

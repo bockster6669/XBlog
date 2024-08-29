@@ -31,7 +31,7 @@ export default async function RootLayout({
               <ThemeProvider
                 attribute="class"
                 defaultTheme="system"
-                enableSystem
+                enableSystem={true}
               >
                 <Navbar />
                 <div className="mt-10">{children}</div>

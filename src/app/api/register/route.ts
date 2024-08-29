@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
   const validatedFieldsData = validatedFields.data;
 
   try {
-    console.log({validatedFieldsData})
     const existsUser = await db.user.findUnique({
       where: {
         email: validatedFieldsData.email,
@@ -30,11 +29,6 @@ export async function POST(req: NextRequest) {
       );
     }
     const hashedPass = await bcrypt.hash(validatedFieldsData.password, 10);
-    console.log({
-        email: validatedFieldsData.email,
-        password: hashedPass,
-        username: validatedFieldsData.username,
-    })
 
     await db.user.create({
       data: {

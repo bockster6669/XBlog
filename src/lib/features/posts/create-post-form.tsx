@@ -58,11 +58,9 @@ export default function CreatePostForm() {
     formData
   ) => {
     await dispatch(createPost(formData));
-    console.log('mda')
   };
 
   useEffect(() => {
-    console.log(categoriesError);
     if (categoriesError) {
       toast({
         variant: 'destructive',

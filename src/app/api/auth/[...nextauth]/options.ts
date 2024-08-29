@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         const validatedFields = SignInFormSchema.safeParse(credentials);
 
         if (!validatedFields.success) {
-          return null
+          return null;
         }
         const { email, password } = validatedFields.data;
         try {
@@ -48,5 +48,13 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
- 
+  callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      console.log({ user, account, profile, email, credentials });
+      return true;
+    },
+  },
+  pages: {
+    signIn: '/signin',
+  },
 };
