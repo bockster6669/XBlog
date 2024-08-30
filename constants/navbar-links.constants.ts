@@ -25,10 +25,6 @@ export const navbarLinks: NavBarLink[] = [
     href: '/posts',
     label: 'Posts',
   },
-  {
-    href: '/profile',
-    label: 'Profile',
-  },
 ];
 
 export const profileLinks: ProfileLink[] = [
