@@ -22,6 +22,7 @@ This project aims to be a collaborative and beginner-friendly environment for co
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
+- **Auth Solution**: [NextAuth.js](https://next-auth.js.org/getting-started/introduction))
 - **Styling**: [ShadCN/UI](https://shadcn.dev/)
 
 ## How to contribute
@@ -52,7 +53,7 @@ If you find a bug or have an idea for a new feature, please check the issues sec
 - [ ] fetch posts must be performed on the server, and the whole component should be SSR
 - [ ] abstract fetching functionality into its own hook
 - [ ] create separate components to render different markup based on the value of postStatus
-- [ ] implement user authentication with next-auth
+- [x] implement user authentication with next-auth
 
 ## Getting Started
 To run the project locally, follow these steps:
