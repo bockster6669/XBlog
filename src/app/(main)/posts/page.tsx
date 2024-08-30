@@ -1,10 +1,6 @@
 import ListPosts from '@/lib/features/posts/list-posts';
 import React from 'react';
 
-export default function page() {
-  return (
-    <>
-      <ListPosts />
-    </>
-  );
+export default async function Page() {
+  return <ListPosts />;
 }

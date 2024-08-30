@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '../../../../prisma/db';
 import { CreatePostSchema } from '../../../../resolvers/create-post-form.resolver';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/options';
 
-export async function POST(request: NextRequest, response: NextResponse) {
+export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Not user found' }, { status: 400 });
+  }
+
   const body = await request.json();
+
   const validFields = CreatePostSchema.safeParse(body);
 
   if (!validFields.success)
@@ -16,7 +25,6 @@ export async function POST(request: NextRequest, response: NextResponse) {
     update: {},
     create: { name: categoryName },
   });
-  const [user1] = await db.user.findMany({ take: 1 });
 
   try {
     await db.post.create({
@@ -27,7 +35,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
           connect: { id: category.id },
         },
         author: {
-          connect: { id: user1.id },
+          connect: { email: session.user.email },
         },
       },
     });

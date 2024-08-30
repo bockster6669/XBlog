@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { cn, getErrorMessage, isAsyncThunkConditionError } from '@/lib/utils';
+import { cn, getErrorMessage } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -30,48 +30,59 @@ import {
   CreatePostFormValues,
   CreatePostSchema,
 } from '../../../../resolvers/create-post-form.resolver';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
-import { useToast } from '../../../components/ui/use-toast';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPost } from './posts.slice';
-import { fetchCategories } from '../categories/categorys.slice';
+import { useToastContext } from '../../../../contexts/toast.context';
+import { useGetCategories } from '../categories/hooks';
+import ErrorMessage from '@/components/auth/error-message';
+import SuccessMessage from '@/components/auth/success-message';
 
 export default function CreatePostForm() {
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
   const dispatch = useAppDispatch();
-  const categoryList = useAppSelector((state) => state.categories.categories);
-  const { toast } = useToast();
+  const { categoryList, categoriesError } = useGetCategories();
+
+  const toast = useToastContext();
 
   const form = useForm<CreatePostFormValues>({
     mode: 'onTouched',
+    defaultValues: {
+      category: '',
+      content: '',
+      title: '',
+    },
     resolver: zodResolver(CreatePostSchema),
   });
+
   const { isSubmitting } = form.formState;
 
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
-    dispatch(createPost(formData));
+    setError(null);
+    setSuccess(null);
+    try {
+      await dispatch(createPost(formData)).unwrap();
+      setSuccess('Success created post');
+    } catch (error) {
+      const message = getErrorMessage(error);
+      setError(message);
+    }
   };
 
   useEffect(() => {
-    const getCategoryList = async () => {
-      try {
-        await dispatch(fetchCategories()).unwrap();
-      } catch (error) {
-        if (!isAsyncThunkConditionError(error)) {
-          // if its thunk condition error, better to not notify the user with this error
-          const message = getErrorMessage(error);
-          toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: message,
-          });
-        }
-      }
-    };
-    getCategoryList();
-  }, [dispatch, toast]);
+    if (categoriesError) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: categoriesError,
+      });
+    }
+  }, [categoriesError, toast]);
 
   return (
     <Form {...form}>
@@ -165,16 +176,8 @@ export default function CreatePostForm() {
             </FormItem>
           )}
         />
-        {/* {postStatus === 'fulfield' && (
-          <div className=" bg-emerald-500/15 text-emerald-500 rounded-lg px-3 py-1">
-            Success
-          </div>
-        )}
-        {postStatus === 'rejected' && (
-          <div className=" bg-destructive/15 text-destructive rounded-lg px-3 py-1">
-            {postError}
-          </div>
-        )} */}
+        <SuccessMessage message={success} />
+        <ErrorMessage message={error} />
         <Button
           type="submit"
           disabled={isSubmitting}

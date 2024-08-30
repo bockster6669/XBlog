@@ -39,7 +39,6 @@ export default async function page({ params }: Props) {
   } catch (error) {
     return <div>There was an error while geting the post</div>;
   }
-  console.log(post)
   return (
     <>
       {post ? (

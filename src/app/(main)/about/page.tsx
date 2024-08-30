@@ -44,6 +44,7 @@ export default function page() {
           <li>Database: PostgreSQL</li>
           <li>ORM: Prisma</li>
           <li>State Management: Redux Toolkit</li>
+          <li>Auth solution: NextAuth.js</li>
           <li>Styling: ShadCN/UI</li>
         </ul>
       </section>
