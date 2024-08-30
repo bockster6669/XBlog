@@ -42,10 +42,10 @@ import SuccessMessage from '@/components/auth/success-message';
 export default function CreatePostForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
   const dispatch = useAppDispatch();
-  const { categoryList, categoriesError } = useGetCategories();
-
+  const { categoryList, categoriesError, categoriesStatus } =
+    useGetCategories();
+  const isCategoryListLoading = categoriesStatus === 'pending';
   const toast = useToastContext();
 
   const form = useForm<CreatePostFormValues>({
@@ -145,7 +145,18 @@ export default function CreatePostForm() {
                       className="h-9"
                     />
                     <CommandList className="">
-                      <CommandEmpty>No categories found.</CommandEmpty>
+                      <CommandEmpty>
+                        {isCategoryListLoading ? (
+                          <div className="flex space-x-2 justify-center items-center dark:invert">
+                            <span className="sr-only">Loading...</span>
+                            <div className="size-2 bg-slate-200 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div className="size-2 bg-slate-200 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div className="size-2 bg-slate-200 rounded-full animate-bounce"></div>
+                          </div>
+                        ) : (
+                          'No categories found'
+                        )}
+                      </CommandEmpty>
                       <CommandGroup>
                         {categoryList &&
                           categoryList.map((item) => (
@@ -180,7 +191,7 @@ export default function CreatePostForm() {
         <ErrorMessage message={error} />
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isCategoryListLoading}
           className="bg-[#4070F4] w-full"
         >
           Submit

@@ -8,9 +8,11 @@ export const useGetCategories = () => {
 
   const categoryList = useAppSelector((state) => state.categories.categories);
   const categoriesError = useAppSelector((state) => state.categories.error);
+  const categoriesStatus = useAppSelector((state) => state.categories.status);
 
   return {
     categoryList,
     categoriesError,
+    categoriesStatus
   };
 }; 
