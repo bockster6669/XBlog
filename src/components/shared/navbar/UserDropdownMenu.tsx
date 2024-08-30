@@ -14,30 +14,12 @@ import Link from 'next/link';
 import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
 import { LogOut, User } from 'lucide-react';
 import { Session } from 'next-auth';
-
-type ProfileLink = {
-  href: string;
-  label: string;
-};
+import { profileLinks } from '../../../../constants/navbar-links.constants';
 
 type UserProfileProps = {
   session: Session | null;
 };
 
-const profileLinks: ProfileLink[] = [
-  {
-    href: '/profile/settings',
-    label: 'settings',
-  },
-  {
-    href: '/profile/settings',
-    label: 'change profile',
-  },
-  {
-    href: '/profile/settings',
-    label: 'language',
-  },
-];
 
 export default function UserDropdownMenu({ session }: UserProfileProps) {
   const { data, status } = useSession();

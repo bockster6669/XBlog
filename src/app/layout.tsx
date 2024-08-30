@@ -24,12 +24,10 @@ export default async function RootLayout({
 }>) {
   //не съм сигурен дали е нужно, предвид, че използваме middleware и там също проверяваме. Но е полезно
   //за да не се получават по два /session рекуеста
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`flex h-screen flex-col ${inter.className} dark:bg-[#0D1117]`}
-      >
+      <body className={`flex h-screen justify-center ${inter.className} dark:bg-[#0D1117]`}>
         <StoreProvider>
           <SessionWrapper session={session}>
             <ToastContextProvider>
@@ -38,9 +36,11 @@ export default async function RootLayout({
                 defaultTheme="system"
                 enableSystem={true}
               >
-                <Navbar />
-                <div className="mt-10">{children}</div>
-                <Toaster />
+                <div className='w-[1100px] h-full flex flex-col items-center'>
+                  <Navbar />
+                  <div className="mt-10 w-full flex justify-center">{children}</div>
+                  <Toaster />
+                </div>
               </ThemeProvider>
             </ToastContextProvider>
           </SessionWrapper>

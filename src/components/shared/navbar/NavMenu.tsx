@@ -22,7 +22,6 @@ export default function NavMenu() {
           <DropdownMenuItem
             asChild
             key={link.label}
-            className="cursor-pointer"
           >
             <Link href={link.href}>{link.label}</Link>
           </DropdownMenuItem>

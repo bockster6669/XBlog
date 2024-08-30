@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { cn } from '@/lib/utils';
+import { cn, getErrorMessage } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -32,14 +32,20 @@ import {
 } from '../../../../resolvers/create-post-form.resolver';
 import { useAppDispatch } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPost } from './posts.slice';
 import { useToastContext } from '../../../../contexts/toast.context';
 import { useGetCategories } from '../categories/hooks';
+import ErrorMessage from '@/components/auth/error-message';
+import SuccessMessage from '@/components/auth/success-message';
 
 export default function CreatePostForm() {
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
   const dispatch = useAppDispatch();
   const { categoryList, categoriesError } = useGetCategories();
+
   const toast = useToastContext();
 
   const form = useForm<CreatePostFormValues>({
@@ -57,7 +63,15 @@ export default function CreatePostForm() {
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
-    await dispatch(createPost(formData));
+    setError(null);
+    setSuccess(null);
+    try {
+      await dispatch(createPost(formData)).unwrap();
+      setSuccess('Success created post');
+    } catch (error) {
+      const message = getErrorMessage(error);
+      setError(message);
+    }
   };
 
   useEffect(() => {
@@ -162,6 +176,8 @@ export default function CreatePostForm() {
             </FormItem>
           )}
         />
+        <SuccessMessage message={success} />
+        <ErrorMessage message={error} />
         <Button
           type="submit"
           disabled={isSubmitting}

@@ -63,7 +63,7 @@ export default function Component() {
               <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>
             <h2 className="text-2xl font-semibold">{user.name}</h2>
-            <p className="text-muted-foreground text-center mt-2">{user.bio}</p>
+            <p className="text-muted-foreground text-center mt-2 line-clamp-3">{user.bio}</p>
           </CardContent>
         </Card>
         <Card className="md:col-span-2">

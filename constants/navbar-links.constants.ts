@@ -33,15 +33,15 @@ export const navbarLinks: NavBarLink[] = [
 
 export const profileLinks: ProfileLink[] = [
   {
-    href: '/profile/settings',
+    href: '/profile',
     label: 'settings',
   },
   {
-    href: '/profile/settings',
+    href: '/profile',
     label: 'change profile',
   },
   {
-    href: '/profile/settings',
+    href: '/profile',
     label: 'language',
   },
 ];
