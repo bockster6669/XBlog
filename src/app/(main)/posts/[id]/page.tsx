@@ -2,6 +2,7 @@ import React from 'react';
 import { db } from '../../../../../prisma/db';
 import { Comment, Post, User } from '@prisma/client';
 import Link from 'next/link';
+import PostWrapper from '@/components/post/[id]/PostWrapper';
 
 type Params = {
   id: string;

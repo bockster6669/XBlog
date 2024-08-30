@@ -85,8 +85,8 @@ const ListPosts = () => {
             : posts.map((post) => (
                 <TableRow
                   key={post.id}
-                  onClick={() => router.push(`/post/${post.id}`)}
-                  className=" cursor-pointer"
+                  onClick={() => router.push(`/posts/${post.id}`)}
+                  className="cursor-pointer"
                 >
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>{post.author.username}</TableCell>
