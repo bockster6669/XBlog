@@ -2,7 +2,8 @@ import React from 'react';
 import { db } from '../../../../../prisma/db';
 import { Comment, Post, User } from '@prisma/client';
 import Link from 'next/link';
-import PostWrapper from '@/components/post/[id]/PostWrapper';
+import PostWrapper from '@/components/posts/id/PostWrapper';
+import { getErrorMessage } from '@/lib/utils';
 
 type Params = {
   id: string;
@@ -12,56 +13,50 @@ type Props = {
   params: Params;
 };
 
-type PostWithAutor =
+export type PostWithAutorAndComments =
+  | string
   | (Post & {
       author: User;
-      comments: Comment[]
+      comments: Comment[];
     })
   | null;
 
-
 const fetchPost = async (params: Params) => {
-  return await db.post.findUnique({
-    where: {
-      id: params.id,
-    },
-    include: {
-      author: true,
-      comments: true
-    },
-  });
+  let post;
+  try {
+    post = await db.post.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: {
+        author: true,
+        comments: true,
+      },
+    });
+    return post;
+  } catch (error) {
+    const message = getErrorMessage(error);
+    return {error: message};
+  }
 };
 
 export default async function page({ params }: Props) {
-  let post: PostWithAutor;
-  try {
-    post = await fetchPost(params);
-  } catch (error) {
-    return <div>There was an error while geting the post</div>;
+  const post = await fetchPost(params);
+
+  if(!post) {
+    return <div>Post doens not exists</div>
   }
+
+  if('error' in post) {
+    return <div>Something went wrong while getting post: {post.error}</div>
+  }
+
+  console.log(post);
   return (
     <>
       {post ? (
         (() => {
-          const fullName = post.author.firstName + ' ' + post.author.lastName;
-
-          return (
-            <>
-              <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-                {post.title}
-              </h1>
-              <p className="leading-7 [&:not(:first-child)]:mt-6">
-                {post.content}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Posted by{' '}
-                <Link href={`/user/${post.author.id}`} className=" underline">
-                  {fullName}
-                </Link>
-              </p>
-                {post.comments.map(comment => <p key={comment.id}>{comment.content}</p>)}
-            </>
-          );
+          return <PostWrapper post={post} />;
         })()
       ) : (
         <div>Post not found</div>

@@ -1,4 +1,4 @@
-import { PostWithAutorAndComments } from '@/app/(main)/post/[id]/page';
+import { PostWithAutorAndComments } from '@/app/(main)/posts/[id]/page';
 import Link from 'next/link';
 import React from 'react';
 import { Comment } from './Comment';

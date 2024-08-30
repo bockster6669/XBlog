@@ -56,6 +56,7 @@ export default function SignInComponent() {
   ) => {
     setError(null);
     setSuccess(null);
+  
     try {
       const result = await signIn('credentials', {
         email: formData.email,
@@ -63,16 +64,26 @@ export default function SignInComponent() {
         redirect: false,
       });
 
-      if (result?.error) {
-        console.log('imashe erorche');
-        throw new Error(result?.error);
+      if (!result) {
+        setError('Unexpected error occurred. Please try again later.');
+        return;
       }
-
-      setSuccess('Success sign in');
-      router.push('/');
+  
+      if (result.error) {
+        console.log(result.error);
+        setError(result.error);
+        return;
+      }
+  
+      if (result.status !== 200) {
+        setError('Error while signing in');
+        return;
+      }
+  
+      setSuccess('Successfully signed in');
+      router.push('/')
     } catch (error) {
       console.error(error);
-
       setError('Error occurred while signing in');
     }
   };

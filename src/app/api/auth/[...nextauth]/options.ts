@@ -16,37 +16,37 @@ export const authOptions: NextAuthOptions = {
       credentials: {},
       async authorize(credentials) {
         if (!credentials) {
-          return null;
+          throw new Error('No credentials were found');
         }
-
         const validatedFields = SignInFormSchema.safeParse(credentials);
 
         if (!validatedFields.success) {
-          return null;
+          throw new Error('Credentials are not in valid format');
         }
         const { email, password } = validatedFields.data;
+
+        let user = null
+
         try {
-          const user = await db.user.findUnique({
+          user = await db.user.findUnique({
             where: {
               email,
             },
           });
-
-          if (!user) {
-            console.log({ddz:'nema takuv ludak'});
-
-            return null;
-          }
-
-          const isTheSamePass = await bcrypt.compare(password, user.password);
-
-          if (isTheSamePass) return user;
-
-          return null;
         } catch (error) {
           console.log(error);
-          return null;
+          throw new Error('Error occured while searching for a user');
         }
+
+        if (!user) {
+          throw new Error("This user doesn't exists");
+        }
+
+        const isTheSamePass = await bcrypt.compare(password, user.password);
+
+        if (!isTheSamePass) throw new Error('Wrong credentials');
+
+        return user;
       },
     }),
     GitHubProvider({
