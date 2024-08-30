@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return NextResponse.json({ error: 'Not user found' }, { status: 400 });
+    return NextResponse.json({ error: 'User not found' }, { status: 400 });
   }
 
   const body = await request.json();

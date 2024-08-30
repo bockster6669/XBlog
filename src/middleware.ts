@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from '../routes';
+import {
+  apiAuthRegex,
+  authRoutes,
+  DEFAULT_LOGIN_REDIRECT,
+  publicRoutes,
+} from '../routes';
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const pathname = req.nextUrl.pathname;
-  const isApiAuthRoute = pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(pathname);
   const isAuthRoute = authRoutes.includes(pathname);
+  const isPublicRoute = publicRoutes.includes(pathname);
+  const isApiAuthRoute = apiAuthRegex.test(pathname);
 
   console.log({ token });
 
@@ -17,12 +22,14 @@ export default async function middleware(req: NextRequest) {
 
   if (isAuthRoute) {
     if (token) {
-      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.nextUrl));
+      return NextResponse.redirect(
+        new URL(DEFAULT_LOGIN_REDIRECT, req.nextUrl)
+      );
     }
     return NextResponse.next();
   }
 
-  if(!token && !isPublicRoute) {
+  if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL('/signin', req.nextUrl));
   }
 

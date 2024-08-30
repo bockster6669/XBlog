@@ -8,9 +8,9 @@ export const authRoutes = ['/signin', '/signup'];
 /**
  * Prefix for api authentication routes.
  * Routes that start with this type of prefix are used for API authentication purposes
- * @type {string}
+ * @type {string[]}
  */
-export const apiAuthPrefix = '/api/auth';
+export const apiAuthRegex = /^\/api\/auth(\/.*)?$|^\/api\/register$/;
 
 /**
  * An array of routes that are accessible to the public.

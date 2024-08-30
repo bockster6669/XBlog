@@ -32,11 +32,13 @@ import {
 import ErrorMessage from './error-message';
 import SuccessMessage from './success-message';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function SignInComponent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
+  const router = useRouter();
 
   const form = useForm<SignInFormSchemaValues>({
     defaultValues: {
@@ -58,19 +60,20 @@ export default function SignInComponent() {
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-        redirect: true,
-        callbackUrl: '/',
+        redirect: false,
       });
 
       if (result?.error) {
-        throw new Error(result.error);
+        console.log('imashe erorche');
+        throw new Error(result?.error);
       }
 
-      setSuccess('Success signin');
+      setSuccess('Success sign in');
+      router.push('/');
     } catch (error) {
       console.error(error);
 
-      setError('Error occurred while signing up');
+      setError('Error occurred while signing in');
     }
   };
 

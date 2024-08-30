@@ -34,6 +34,7 @@ import {
 import ErrorMessage from './error-message';
 import SuccessMessage from './success-message';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type AxiosPostRegisterResponse = Exclude<
   PostRegisterResponse,
@@ -53,8 +54,8 @@ export default function SignUpComponent() {
     },
     resolver: zodResolver(SignUpFormSchema),
   });
-
   const { isSubmitting } = form.formState;
+  const router = useRouter();
 
   const handleSubmit: SubmitHandler<SignUpFormSchemaValues> = async (
     formData
@@ -63,23 +64,30 @@ export default function SignUpComponent() {
     setSuccess(null);
     const { email, password, username } = formData;
     try {
+
       await axios.post<AxiosPostRegisterResponse>('/api/register', {
         email,
         password,
         username,
-      });
+      }).then(res=>console.log({res}));
 
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
-        redirect: true,
-        callbackUrl: '/',
+        redirect: false,
       });
 
+      if (result?.error) {
+        console.log('imashe erorche', result);
+        throw new Error(result?.error);
+      }
+
       setSuccess('Success created user');
+      router.push('/');
     } catch (err) {
+      console.log(err);
+
       if (isAxiosError(err)) {
-        console.log(err);
         setError(err.response?.data.message);
       } else {
         setError('Unsuccess registration');

@@ -5,10 +5,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { signIn, useSession } from 'next-auth/react';
 import React from 'react';
 import UserDropdownMenu from './UserDropdownMenu';
+import { useRouter } from 'next/navigation';
 
 
 export default function AuthWrapper() {
   const { data, status } = useSession();
+  const router = useRouter();
   return (
     <>
       {status === 'loading' ? (
@@ -17,10 +19,10 @@ export default function AuthWrapper() {
         <UserDropdownMenu session={data} />
       ) : (
         <>
-          <Button onClick={() => signIn()} variant="outline">
+          <Button onClick={() => router.push('/signup')} variant="outline">
             Sign up
           </Button>
-          <Button onClick={() => signIn()}>Sign in</Button>
+          <Button onClick={() => router.push('/signin')}>Sign in</Button>
         </>
       )}
     </>

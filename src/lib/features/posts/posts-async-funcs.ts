@@ -8,7 +8,6 @@ import {
 } from './types';
 
 export const createPostAsyncFunc = async (body: CreatePostFormValues) => {
- await wait(3000);
   try {
     const response = await axios.post<AxiosPostPostsResponse>(
       '/api/posts',

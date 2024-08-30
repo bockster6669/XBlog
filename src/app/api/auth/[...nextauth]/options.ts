@@ -32,7 +32,11 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          if (!user) return null;
+          if (!user) {
+            console.log({ddz:'nema takuv ludak'});
+
+            return null;
+          }
 
           const isTheSamePass = await bcrypt.compare(password, user.password);
 
@@ -50,9 +54,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_SECRET as string,
     }),
   ],
-  callbacks: {
-   
-  },
+  callbacks: {},
   pages: {
     signIn: '/signin',
   },

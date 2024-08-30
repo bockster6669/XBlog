@@ -8,8 +8,6 @@ type PostWrapperProps = {
 };
 
 export default function PostWrapper({ post }: PostWrapperProps) {
-  const fullName = post.author.firstName + ' ' + post.author.lastName;
-  console.log(fullName);
   return (
     <div>
       <div>
@@ -22,7 +20,7 @@ export default function PostWrapper({ post }: PostWrapperProps) {
         <div className="text-sm text-muted-foreground mt-5">
           Posted by
           <Link href={`/user/${post.author.id}`} className="underline">
-            {fullName}
+            {post.author.username}
           </Link>
         </div>
       </div>
