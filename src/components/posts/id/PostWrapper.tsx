@@ -4,7 +4,7 @@ import React from 'react';
 import { Comment } from './Comment';
 
 type PostWrapperProps = {
-  post: Exclude<PostWithAutorAndComments, null>;
+  post: Exclude<PostWithAutorAndComments, null | string>;
 };
 
 export default function PostWrapper({ post }: PostWrapperProps) {

@@ -3,6 +3,7 @@ import { db } from '../../../../../prisma/db';
 import { Comment, Post, User } from '@prisma/client';
 import Link from 'next/link';
 import PostWrapper from '@/components/posts/id/PostWrapper';
+import { getErrorMessage } from '@/lib/utils';
 
 type Params = {
   id: string;
@@ -13,40 +14,49 @@ type Props = {
 };
 
 export type PostWithAutorAndComments =
+  | string
   | (Post & {
       author: User;
-      comments: Comment[]
+      comments: Comment[];
     })
   | null;
 
-
 const fetchPost = async (params: Params) => {
-  return await db.post.findUnique({
-    where: {
-      id: params.id,
-    },
-    include: {
-      author: true,
-      comments: true
-    },
-  });
+  let post;
+  try {
+    post = await db.post.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: {
+        author: true,
+        comments: true,
+      },
+    });
+    return post;
+  } catch (error) {
+    const message = getErrorMessage(error);
+    return {error: message};
+  }
 };
 
 export default async function page({ params }: Props) {
-  let post: PostWithAutorAndComments;
-  try {
-    post = await fetchPost(params);
-  } catch (error) {
-    return <div>There was an error while geting the post</div>;
+  const post = await fetchPost(params);
+
+  if(!post) {
+    return <div>Post doens not exists</div>
   }
-  console.log(post)
+
+  if('error' in post) {
+    return <div>Something went wrong while getting post: {post.error}</div>
+  }
+
+  console.log(post);
   return (
     <>
       {post ? (
         (() => {
-          return (
-           <PostWrapper post={post}/>
-          );
+          return <PostWrapper post={post} />;
         })()
       ) : (
         <div>Post not found</div>
