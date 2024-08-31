@@ -41,7 +41,7 @@ type AxiosPostRegisterResponse = Exclude<
   { error: string }
 >;
 
-export default function SignUpComponent() {
+export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
@@ -64,12 +64,13 @@ export default function SignUpComponent() {
     setSuccess(null);
     const { email, password, username } = formData;
     try {
-
-      await axios.post<AxiosPostRegisterResponse>('/api/register', {
-        email,
-        password,
-        username,
-      }).then(res=>console.log({res}));
+      await axios
+        .post<AxiosPostRegisterResponse>('/api/register', {
+          email,
+          password,
+          username,
+        })
+        .then((res) => console.log({ res }));
 
       const result = await signIn('credentials', {
         email,

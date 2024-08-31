@@ -34,7 +34,7 @@ import SuccessMessage from './success-message';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function SignInComponent() {
+export default function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
@@ -56,7 +56,7 @@ export default function SignInComponent() {
   ) => {
     setError(null);
     setSuccess(null);
-  
+
     try {
       const result = await signIn('credentials', {
         email: formData.email,
@@ -68,20 +68,20 @@ export default function SignInComponent() {
         setError('Unexpected error occurred. Please try again later.');
         return;
       }
-  
+
       if (result.error) {
         console.log(result.error);
         setError(result.error);
         return;
       }
-  
+
       if (result.status !== 200) {
         setError('Error while signing in');
         return;
       }
-  
+
       setSuccess('Successfully signed in');
-      router.push('/')
+      router.push('/');
     } catch (error) {
       console.error(error);
       setError('Error occurred while signing in');
