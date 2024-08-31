@@ -6,7 +6,7 @@ export const CreatePostSchema = z.object({
   excerpt: z.string().min(5),
   category: z
     .string()
-    .min(1, { message: 'You have to choose category for this post' }),
-  categories: z.array(z.string().min(1)).min(1),
+    .min(1, { message: 'You have to choose a category for this post' }),
+  categories: z.array(z.object({ name: z.string() })).min(1),
 });
 export type CreatePostFormValues = z.infer<typeof CreatePostSchema>;

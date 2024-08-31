@@ -33,53 +33,55 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
-import { DevTool } from '@hookform/devtools';
+import { Delete, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
+type Category = { name: string };
+
 export default function CreatePostForm() {
+  const toast = useToastContext();
+  const dispatch = useAppDispatch();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const dispatch = useAppDispatch();
   const { categoryList, categoriesError, categoriesStatus } =
     useGetCategories();
   const isCategoryListLoading = categoriesStatus === 'pending';
-  const toast = useToastContext();
 
   const form = useForm<CreatePostFormValues>({
     mode: 'onTouched',
     defaultValues: {
       category: '',
-      categories: [''],
       content: '',
       title: '',
       excerpt: '',
+      categories: [],
     },
     resolver: zodResolver(CreatePostSchema),
   });
-
-  const { fields, append } = useFieldArray({
-    control: form.control,
+  const { fields, append, remove } = useFieldArray({
     name: 'categories',
+    control: form.control,
   });
 
   const handleAddCategory = () => {
-    const currentCategory = form.getValues('category');
-    console.log({ currentCategory });
+    const categoryValue = form.getValues('category');
 
-    if (currentCategory) {
-
-      append({ name: currentCategory });
-      form.setValue('category', ''); // Изчистване на полето след добавяне
+    if (categoryValue) {
+      append({ name: categoryValue });
+      form.resetField('category');
+    } else {
+      form.trigger('category');
     }
   };
   const { isSubmitting } = form.formState;
+  console.log(form.formState);
 
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
     setError(null);
     setSuccess(null);
+
     try {
       await dispatch(createPost(formData)).unwrap();
       setSuccess('Success created post');
@@ -190,10 +192,14 @@ export default function CreatePostForm() {
                 </FormItem>
               )}
             />
-            <div className="mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {fields.map((field, index) => (
-                <Badge key={field.id} className="mr-2">
+                <Badge
+                  key={field.id}
+                  className="mr-2 py-2 px-3 flex items-center gap-2"
+                >
                   {field.name}
+                  <Delete onClick={() => remove(index)} />
                 </Badge>
               ))}
             </div>
@@ -210,7 +216,6 @@ export default function CreatePostForm() {
         </Form>
       </CardContent>
       <CardFooter className=""></CardFooter>
-      <DevTool control={form.control} />
     </Card>
   );
 }
