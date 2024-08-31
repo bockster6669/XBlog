@@ -30,7 +30,6 @@ export async function POST(req: NextRequest) {
     }
     const hashedPass = await bcrypt.hash(validatedFieldsData.password, 10);
 
-    console.log('shte go zapishe')
     await db.user.create({
       data: {
         email: validatedFieldsData.email,

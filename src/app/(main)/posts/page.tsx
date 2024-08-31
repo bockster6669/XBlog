@@ -1,43 +1,55 @@
-'use client';
-
-import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Badge } from 'lucide-react';
+import { Badge, SearchIcon } from 'lucide-react';
+import { useGetCategories } from '@/lib/features/categories/hooks';
+import { db } from '../../../../prisma/db';
+import Image from 'next/image';
 
-export default function Component() {
- 
+async function getPosts() {
+  return await db.post.findMany({
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+}
+
+async function getCategories() {
+  return await db.category.findMany();
+}
+
+export default async function PostsPage() {
+  const posts = await getPosts();
+  const categories = await getCategories();
   return (
-    <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
+    <main className='w-full mt-8'>
       <div className="mb-8 grid gap-4 md:mb-12 md:grid-cols-[1fr_auto]">
         <div className="relative">
-          <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <SearchIcon
+            className="absolute left-2.5 top-2.5 text-muted-foreground"
+            width={18}
+            height={18}
+          />
           <Input
             type="search"
             placeholder="Search blog posts..."
-            value={searchTerm}
-            onChange={handleSearch}
             className="pl-8"
           />
         </div>
         <div className="flex gap-2">
           {categories.map((category) => (
-            <Button
-              key={category}
-              variant={
-                selectedCategories.includes(category) ? 'solid' : 'outline'
-              }
-              onClick={() => handleCategoryChange(category)}
-              className="whitespace-nowrap"
-            >
-              {category}
+            <Button key={category.id} className="whitespace-nowrap">
+              {category.name}
             </Button>
           ))}
         </div>
       </div>
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredPosts.map((post) => (
+        {posts.map((post) => (
           <div
             key={post.id}
             className="group relative overflow-hidden rounded-lg"
@@ -45,45 +57,29 @@ export default function Component() {
             <Link href="#" className="absolute inset-0 z-10" prefetch={false}>
               <span className="sr-only">View post</span>
             </Link>
-            <img
-              src="/placeholder.svg"
+            <Image
+              src="/medium-thumbnail.png"
               alt={post.title}
               width={400}
-              height={225}
+              height={255}
               className="h-60 w-full object-cover transition-opacity group-hover:opacity-80"
               style={{ aspectRatio: '400/225', objectFit: 'cover' }}
             />
             <div className="p-4">
               <h3 className="text-lg font-semibold">{post.title}</h3>
-              <p className="text-muted-foreground">{post.excerpt}</p>
+              <p className="text-muted-foreground line-clamp-4">
+                {post.content}
+              </p>
               <div className="mt-4 flex items-center justify-between">
-                <Badge variant="outline">{post.category}</Badge>
-                <p className="text-sm text-muted-foreground">{post.date}</p>
+                <Badge>{post.category.name}</Badge>
+                <p className="text-sm text-muted-foreground">
+                  {String(post.createdAt)}
+                </p>
               </div>
             </div>
           </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-function SearchIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
+    </main>
   );
 }

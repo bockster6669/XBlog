@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   if (!validFields.success)
     return NextResponse.json({ error: 'Not valid fields' }, { status: 400 });
 
-  const { content, title, category: categoryName } = validFields.data;
+  const {  title, content, excerpt, category: categoryName } = validFields.data;
 
   const category = await db.category.upsert({
     where: { name: categoryName },
@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         content,
+        excerpt,
         category: {
           connect: { id: category.id },
         },

@@ -25,7 +25,6 @@ export const fetchPaginatedPostsAsyncFunc = async ({
   postPerPage,
   currentPage,
 }: FetchPaginatedPosts) => {
-  await wait(3000);
   try {
     const skip = (currentPage - 1) * postPerPage;
     const response = await axios.get<AxiosGetPostsResponse>(

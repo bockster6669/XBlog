@@ -1,31 +1,18 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { cn, getErrorMessage } from '@/lib/utils';
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { getErrorMessage } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import {
   CreatePostFormValues,
   CreatePostSchema,
@@ -38,6 +25,17 @@ import { useToastContext } from '../../../../contexts/toast.context';
 import { useGetCategories } from '../categories/hooks';
 import ErrorMessage from '@/components/auth/error-message';
 import SuccessMessage from '@/components/auth/success-message';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+import { Plus } from 'lucide-react';
+import { DevTool } from '@hookform/devtools';
+import { Badge } from '@/components/ui/badge';
 
 export default function CreatePostForm() {
   const [error, setError] = useState<string | null>(null);
@@ -52,12 +50,29 @@ export default function CreatePostForm() {
     mode: 'onTouched',
     defaultValues: {
       category: '',
+      categories: [''],
       content: '',
       title: '',
+      excerpt: '',
     },
     resolver: zodResolver(CreatePostSchema),
   });
 
+  const { fields, append } = useFieldArray({
+    control: form.control,
+    name: 'categories',
+  });
+
+  const handleAddCategory = () => {
+    const currentCategory = form.getValues('category');
+    console.log({ currentCategory });
+
+    if (currentCategory) {
+
+      append({ name: currentCategory });
+      form.setValue('category', ''); // Изчистване на полето след добавяне
+    }
+  };
   const { isSubmitting } = form.formState;
 
   const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
@@ -85,118 +100,117 @@ export default function CreatePostForm() {
   }, [categoriesError, toast]);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-4 w-[400px]"
-      >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#4070F4]">Title</FormLabel>
-              <FormControl>
-                <Input placeholder="title..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#4070F4]">Content</FormLabel>
-              <FormControl>
-                <Input placeholder="content..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem className="flex flex-col ">
-              <FormLabel className="text-[#4070F4]">Category</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild className=" w-full">
+    <Card>
+      <CardHeader>
+        <CardTitle>Create New Post</CardTitle>
+        <CardDescription>
+          Fill out the form to create a new blog post.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4 w-[400px]"
+          >
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[#4070F4]">Title</FormLabel>
                   <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        'w-full justify-between',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value || 'Select Category'}
-                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
+                    <Input placeholder="title..." {...field} />
                   </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-[400px] p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Search category..."
-                      className="h-9"
-                    />
-                    <CommandList className="">
-                      <CommandEmpty>
-                        {isCategoryListLoading ? (
-                          <div className="flex space-x-2 justify-center items-center dark:invert">
-                            <span className="sr-only">Loading...</span>
-                            <div className="size-2 bg-slate-200 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                            <div className="size-2 bg-slate-200 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                            <div className="size-2 bg-slate-200 rounded-full animate-bounce"></div>
-                          </div>
-                        ) : (
-                          'No categories found'
-                        )}
-                      </CommandEmpty>
-                      <CommandGroup>
-                        {categoryList &&
-                          categoryList.map((item) => (
-                            <CommandItem
-                              value={item.name}
-                              key={item.name}
-                              onSelect={() => {
-                                form.setValue('category', item.name);
-                              }}
-                            >
-                              {item.name}
-                              <CheckIcon
-                                className={cn(
-                                  'ml-auto h-4 w-4',
-                                  item.name === field.value
-                                    ? 'opacity-100'
-                                    : 'opacity-0'
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <SuccessMessage message={success} />
-        <ErrorMessage message={error} />
-        <Button
-          type="submit"
-          disabled={isSubmitting || isCategoryListLoading}
-          className="bg-[#4070F4] w-full"
-        >
-          Submit
-        </Button>
-      </form>
-    </Form>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[#4070F4]">Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="content..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="excerpt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[#4070F4]">Excerpt</FormLabel>
+                  <FormControl>
+                    <Input placeholder="excerpt..." {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Shor summary of the content. Its used like a preview of the
+                    post
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[#4070F4]">Category</FormLabel>
+                  <FormControl>
+                    <div className="relative flex gap-1">
+                      <Input
+                        {...field}
+                        list="category-suggestions"
+                        placeholder={
+                          isCategoryListLoading
+                            ? 'Category list is loading...'
+                            : 'Select category'
+                        }
+                        disabled={isCategoryListLoading}
+                      />
+                      <datalist id="category-suggestions">
+                        {categoryList.map((category) => (
+                          <option value={category.name} key={category.id} />
+                        ))}
+                      </datalist>
+                      <Button type="button" onClick={handleAddCategory}>
+                        <Plus />
+                        Add tag
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="mt-2">
+              {fields.map((field, index) => (
+                <Badge key={field.id} className="mr-2">
+                  {field.name}
+                </Badge>
+              ))}
+            </div>
+            <SuccessMessage message={success} />
+            <ErrorMessage message={error} />
+            <Button
+              type="submit"
+              disabled={isSubmitting || isCategoryListLoading}
+              className="bg-[#4070F4] w-full"
+            >
+              Submit
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className=""></CardFooter>
+      <DevTool control={form.control} />
+    </Card>
   );
 }

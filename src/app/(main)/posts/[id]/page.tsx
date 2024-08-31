@@ -53,7 +53,7 @@ export default async function page({ params }: Props) {
 
   console.log(post);
   return (
-    <>
+    <main>
       {post ? (
         (() => {
           return <PostWrapper post={post} />;
@@ -61,6 +61,6 @@ export default async function page({ params }: Props) {
       ) : (
         <div>Post not found</div>
       )}
-    </>
+    </main>
   );
 }

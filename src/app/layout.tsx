@@ -38,7 +38,7 @@ export default async function RootLayout({
               >
                 <div className='w-[1100px] h-full flex flex-col items-center'>
                   <Navbar />
-                  <div className="mt-10 w-full">{children}</div>
+                  {children}
                   <Toaster />
                 </div>
               </ThemeProvider>

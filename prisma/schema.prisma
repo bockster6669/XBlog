@@ -23,13 +23,14 @@ model User {
   posts     Post[]
   comments  Comment[]
   createdAt DateTime  @default(now())
-  image String
+  image     String?
 }
 
 model Post {
   id         String    @id @default(uuid())
   title      String
   content    String
+  excerpt    String
   author     User      @relation(fields: [authorId], references: [id])
   authorId   String
   category   Category  @relation(fields: [categoryId], references: [id])
