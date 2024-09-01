@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { categories, tags, users } from '../constants/prisma-seed.constants';
+import { tags, users } from '../constants/prisma-seed.constants';
 const prisma = new PrismaClient();
 
 async function seedTags() {
@@ -16,23 +16,6 @@ async function seedTags() {
     console.log('Tags has been seeded');
   } catch (error) {
     console.log('Error creating tags:', error);
-  }
-}
-
-async function seedCategories() {
-  try {
-    await Promise.all(
-      categories.map((category) =>
-        prisma.category.upsert({
-          where: { name: category.name },
-          create: category,
-          update: {},
-        })
-      )
-    );
-    console.log('Categories has been seeded');
-  } catch (error) {
-    console.log('Error creating category:', error);
   }
 }
 
@@ -56,7 +39,7 @@ async function seedUsers() {
 async function seedPosts() {
   try {
     const [user1, user2] = await prisma.user.findMany({ take: 2 });
-    const [category1, category2] = await prisma.category.findMany({ take: 2 });
+    const [tag1, tag2] = await prisma.tag.findMany({ take: 2 });
     const tags = await prisma.tag.findMany();
     const posts: Prisma.PostCreateInput[] = [
       {
@@ -64,7 +47,7 @@ async function seedPosts() {
         content:
           'This post covers the basics of Next.js, a popular React framework.',
         author: { connect: { id: user1.id } },
-        category: { connect: { id: category1.id } },
+        excerpt: 'Excerpt',
         tags: {
           connect: tags.map((tag) => ({ id: tag.id })),
         },
@@ -74,7 +57,7 @@ async function seedPosts() {
         content:
           'This post explains how to use Prisma with Next.js for database interactions.',
         author: { connect: { id: user2.id } },
-        category: { connect: { id: category2.id } },
+        excerpt: 'Excerpt',
         tags: {
           connect: tags.map((tag) => ({ id: tag.id })),
         },
@@ -117,7 +100,6 @@ async function seedComments() {
 
 async function main() {
   await seedTags();
-  await seedCategories();
   await seedUsers();
   await seedPosts();
   await seedComments();

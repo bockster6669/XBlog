@@ -1,11 +1,11 @@
 import { getErrorMessage, wait } from '@/lib/utils';
 import axios from 'axios';
-import { AxiosGetCategoriesResponse } from './types';
+import { AxiosGetTagsResponse } from './types';
 
-export const fetchCategoriesAsyncFunc = async () => {
+export const fetchTagsAsyncFunc = async () => {
   try {
-    const response = await axios.get<AxiosGetCategoriesResponse>(
-      '/api/categories'
+    const response = await axios.get<AxiosGetTagsResponse>(
+      '/api/tags'
     );
     return response.data;
   } catch (error) {

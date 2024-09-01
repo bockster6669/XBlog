@@ -18,13 +18,34 @@ export async function POST(request: NextRequest) {
   if (!validFields.success)
     return NextResponse.json({ error: 'Not valid fields' }, { status: 400 });
 
-  const {  title, content, excerpt, category: categoryName } = validFields.data;
+  const { title, content, excerpt, tags } = validFields.data;
 
-  const category = await db.category.upsert({
-    where: { name: categoryName },
-    update: {},
-    create: { name: categoryName },
-  });
+  let tagIds = null
+  try {
+    tagIds = await Promise.all(
+      tags.map(async (tag) => {
+        const upsertedTag = await db.tag.upsert({
+          where: { name: tag.name },
+          update: {},
+          create: { name: tag.name },
+        });
+  
+        return upsertedTag.id;
+      })
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Error accured while adding tags' },
+      { status: 400 }
+    );
+  }
+
+  if(!tagIds) {
+    return NextResponse.json(
+      { error: 'Can not create post without tags tags' },
+      { status: 400 }
+    );
+  }
 
   try {
     await db.post.create({
@@ -32,8 +53,8 @@ export async function POST(request: NextRequest) {
         title,
         content,
         excerpt,
-        category: {
-          connect: { id: category.id },
+        tags: {
+          connect: tagIds.map((id) => ({ id })), // Свързване на категориите
         },
         author: {
           connect: { email: session.user.email },
@@ -42,6 +63,7 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({ success: 'Post created' }, { status: 200 });
   } catch (error) {
+    console.log( 'Error accured while creating a post', error)
     return NextResponse.json(
       { error: 'Error accured while creating a post' },
       { status: 400 }
@@ -60,7 +82,7 @@ export async function GET(request: NextRequest) {
       skip,
       take,
       include: {
-        category: true,
+        tags: true,
         author: true,
       },
     });

@@ -14,7 +14,7 @@ export const navbarLinks: NavBarLink[] = [
     label: 'Homepage',
   },
   {
-    href: 'create-post',
+    href: '/create-post',
     label: 'Create Post',
   },
   {

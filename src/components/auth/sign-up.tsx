@@ -185,7 +185,7 @@ export default function SignUpForm() {
             <SuccessMessage message={success} />
             <ErrorMessage message={error} />
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              Sign in
+              Sign up
             </Button>
           </form>
         </Form>

@@ -21,15 +21,6 @@ export const users: Prisma.UserCreateInput[] = [
   },
 ];
 
-export const categories: Prisma.CategoryCreateInput[] = [
-  {
-    name: 'Web Development',
-  },
-  {
-    name: 'Database',
-  },
-];
-
 export const tags: Prisma.TagCreateInput[] = [
   {
     name: 'Js',

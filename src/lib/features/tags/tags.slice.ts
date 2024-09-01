@@ -1,23 +1,23 @@
 import { type initialState } from './types';
-import { fetchCategoriesAsyncFunc } from './categories-async-funcs';
 import { createAppSlice } from '../posts/posts.slice';
 import { RootState } from '@/lib/store';
+import { fetchTagsAsyncFunc } from './tags-async-funcs';
 
 const initialState: initialState = {
-  categories: [],
+  tags: [],
   status: 'idle',
   error: null,
 };
 
-export const categoriesSlice = createAppSlice({
-  name: 'categories',
+export const tagsSlice = createAppSlice({
+  name: 'tags',
   initialState,
   reducers: (create) => ({
-    fetchCategories: create.asyncThunk(fetchCategoriesAsyncFunc, {
+    fetchTags: create.asyncThunk(fetchTagsAsyncFunc, {
       options: {
         condition(arg, thunkApi) {
-          const { categories } = thunkApi.getState() as RootState;
-          const status = categories.status;
+          const { tags } = thunkApi.getState() as RootState;
+          const status = tags.status;
           if (status !== 'idle') {
             return false;
           }
@@ -28,7 +28,7 @@ export const categoriesSlice = createAppSlice({
       },
       fulfilled: (state, action) => {
         state.status = 'fulfield';
-        state.categories = action.payload.category;
+        state.tags = action.payload.tag;
       },
       rejected: (state, action) => {
         state.status = 'rejected';
@@ -37,5 +37,5 @@ export const categoriesSlice = createAppSlice({
     }),
   }),
 });
-export const { fetchCategories } = categoriesSlice.actions;
-export const categoriesReducer = categoriesSlice.reducer;
+export const { fetchTags } = tagsSlice.actions;
+export const tagsReducer = tagsSlice.reducer;

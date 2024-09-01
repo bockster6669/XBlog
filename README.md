@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is an open-source blog application built with Next.js, Prisma, PostgreSQL, and Redux. The project is a learning experience for beginners and those looking to contribute to an open-source project. The app allows users to create, view, and manage blog posts, categories, and user profiles.
+This is an open-source blog application built with Next.js, Prisma, PostgreSQL, and Redux. The project is a learning experience for beginners and those looking to contribute to an open-source project. The app allows users to create, view, and manage blog posts, tags, and user profiles.
 
 This project aims to be a collaborative and beginner-friendly environment for contributors who want to gain experience working on real-world applications. We welcome all contributions, whether bug fixes, new features, or documentation improvements.
 

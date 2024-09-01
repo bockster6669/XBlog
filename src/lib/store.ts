@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { postsReducer } from './features/posts/posts.slice';
-import { categoriesReducer } from './features/categories/categorys.slice';
+import { tagsReducer } from './features/tags/tags.slice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       posts: postsReducer,
-      categories: categoriesReducer,
+      tags: tagsReducer,
     },
   });
 };

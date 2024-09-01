@@ -1,6 +1,6 @@
 import React from 'react';
 import { db } from '../../../../../prisma/db';
-import { Comment, Post, User } from '@prisma/client';
+import { Post, User } from '@prisma/client';
 import Link from 'next/link';
 import PostWrapper from '@/components/posts/id/PostWrapper';
 import { getErrorMessage } from '@/lib/utils';
@@ -17,7 +17,6 @@ export type PostWithAutorAndComments =
   | string
   | (Post & {
       author: User;
-      comments: Comment[];
     })
   | null;
 
@@ -30,30 +29,29 @@ const fetchPost = async (params: Params) => {
       },
       include: {
         author: true,
-        comments: true,
+        tags: true,
       },
     });
     return post;
   } catch (error) {
     const message = getErrorMessage(error);
-    return {error: message};
+    return { error: message };
   }
 };
 
 export default async function page({ params }: Props) {
   const post = await fetchPost(params);
 
-  if(!post) {
-    return <div>Post doens not exists</div>
+  if (!post) {
+    return <div>Post doens not exists</div>;
   }
 
-  if('error' in post) {
-    return <div>Something went wrong while getting post: {post.error}</div>
+  if ('error' in post) {
+    return <div>Something went wrong while getting post: {post.error}</div>;
   }
 
-  console.log(post);
   return (
-    <main>
+    <main className="size-full mt-8 ">
       {post ? (
         (() => {
           return <PostWrapper post={post} />;

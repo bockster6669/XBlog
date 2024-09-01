@@ -1,5 +1,5 @@
 import { GetPostsResponse, PostPostsResponse } from '@/app/api/posts/route';
-import { Post, Category, User } from '@prisma/client';
+import { Tag, Post, User } from '@prisma/client';
 
 export type FetchPaginatedPosts = { postPerPage: number; currentPage: number };
 
@@ -13,13 +13,13 @@ export type AxiosPostPostsResponse = Exclude<
   { error: string }
 >;
 
-export type PostWithAutorAndCategory = Post & {
-  category: Category;
+export type PostWithAutorAndTags = Post & {
+  tags: Tag[];
   author: User;
 };
 
 export type initialState = {
-  posts: PostWithAutorAndCategory[];
+  posts: PostWithAutorAndTags[];
   totalPosts: number;
   status: 'idle' | 'pending' | 'fulfield' | 'rejected';
   createPostStatus: 'idle' | 'pending' | 'fulfield' | 'rejected';

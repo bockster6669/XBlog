@@ -15,7 +15,7 @@ export default function page() {
           PostgreSQL, and Redux. The project is intended as a learning
           experience for beginners and those looking to contribute to an
           open-source project. The app allows users to create, view, and manage
-          blog posts, categories, and user profiles. The goal of this project is
+          blog posts, tags, and user profiles. The goal of this project is
           to be a collaborative and beginner-friendly environment for
           contributors who want to gain experience working on real-world
           applications. We welcome all contributions, whether they are bug
@@ -29,7 +29,7 @@ export default function page() {
         <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
           <li>User authentication and profile management</li>
           <li>Creating, editing, and deleting blog posts</li>
-          <li>Category management for organizing posts</li>
+          <li>Tags management for organizing posts</li>
           <li>Responsive design using ShadCN/UI</li>
           <li>State management with Redux Toolkit</li>
         </ul>

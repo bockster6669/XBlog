@@ -22,7 +22,6 @@ import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { createPost } from './posts.slice';
 import { useToastContext } from '../../../../contexts/toast.context';
-import { useGetCategories } from '../categories/hooks';
 import ErrorMessage from '@/components/auth/error-message';
 import SuccessMessage from '@/components/auth/success-message';
 import {
@@ -35,45 +34,44 @@ import {
 } from '@/components/ui/card';
 import { Delete, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
-type Category = { name: string };
+import { useGetTags } from '../tags/hooks';
 
 export default function CreatePostForm() {
   const toast = useToastContext();
   const dispatch = useAppDispatch();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { categoryList, categoriesError, categoriesStatus } =
-    useGetCategories();
-  const isCategoryListLoading = categoriesStatus === 'pending';
+  const { tagsList, tagsError, tagsStatus } = useGetTags();
+  console.log(tagsList)
+  const istagsListLoading = tagsStatus === 'pending';
 
   const form = useForm<CreatePostFormValues>({
     mode: 'onTouched',
     defaultValues: {
-      category: '',
+      tag: '',
       content: '',
       title: '',
       excerpt: '',
-      categories: [],
+      tags: [],
     },
     resolver: zodResolver(CreatePostSchema),
   });
   const { fields, append, remove } = useFieldArray({
-    name: 'categories',
+    name: 'tags',
     control: form.control,
   });
 
-  const handleAddCategory: () => void = async () => {
-    const isValid = await form.trigger('category');
+  const handleAddtag: () => void = async () => {
+    const isValid = await form.trigger('tag');
     if (!isValid) return;
 
-    const categoryValue = form.getValues('category');
+    const tagValue = form.getValues('tag');
 
-    if (categoryValue) {
-      append({ name: categoryValue });
-      form.resetField('category');
+    if (tagValue) {
+      append({ name: tagValue });
+      form.resetField('tag');
     } else {
-      form.trigger('category');
+      form.trigger('tag');
     }
   };
   const { isSubmitting } = form.formState;
@@ -95,22 +93,22 @@ export default function CreatePostForm() {
 
   const handleErrorSubmit = () => {
     if (fields.length === 0) {
-      form.setError('category', {
+      form.setError('tag', {
         type: 'custom',
-        message: 'you should provide category',
+        message: 'you should provide tag',
       });
     }
   };
 
   useEffect(() => {
-    if (categoriesError) {
+    if (tagsError) {
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: categoriesError,
+        description: tagsError,
       });
     }
-  }, [categoriesError, toast]);
+  }, [tagsError, toast]);
 
   return (
     <Card>
@@ -131,7 +129,7 @@ export default function CreatePostForm() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >Title</FormLabel>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input placeholder="title..." {...field} />
                   </FormControl>
@@ -144,7 +142,7 @@ export default function CreatePostForm() {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >Content</FormLabel>
+                  <FormLabel>Content</FormLabel>
                   <FormControl>
                     <Input placeholder="content..." {...field} />
                   </FormControl>
@@ -157,7 +155,7 @@ export default function CreatePostForm() {
               name="excerpt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >Excerpt</FormLabel>
+                  <FormLabel>Excerpt</FormLabel>
                   <FormControl>
                     <Input placeholder="excerpt..." {...field} />
                   </FormControl>
@@ -172,42 +170,46 @@ export default function CreatePostForm() {
 
             <FormField
               control={form.control}
-              name="category"
+              name="tag"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor='categoryInput' >Category tag</FormLabel>
+                  <FormLabel htmlFor="tagInput">tag</FormLabel>
                   <FormControl>
                     <div className="relative flex gap-1">
                       <Input
                         {...field}
-                        id='categoryInput'
-                        list="category-suggestions"
+                        id="tagInput"
+                        list="tag-suggestions"
                         placeholder={
-                          isCategoryListLoading
-                            ? 'Category list is loading...'
-                            : 'Select category tag'
+                          istagsListLoading
+                            ? 'tag list is loading...'
+                            : 'Select tag'
                         }
-                        disabled={isCategoryListLoading}
+                        disabled={istagsListLoading}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault(); // предотвратява стандартното поведение на формата при Enter
-                            handleAddCategory();
+                            handleAddtag();
                           }
                         }}
                       />
-                      <datalist id="category-suggestions">
-                        {categoryList.map((category) => (
-                          <option value={category.name} key={category.id} />
+                      <datalist id="tag-suggestions">
+                        {tagsList.map((tag) => (
+                          <option value={tag.name} key={tag.id} />
                         ))}
                       </datalist>
-                      <Button type="button" onClick={handleAddCategory} variant='outline'>
-                        <Plus />
+                      <Button
+                        type="button"
+                        onClick={handleAddtag}
+                        variant="outline"
+                      >
+                        <Plus width={20} height={20} className="mr-2" />
                         Add tag
                       </Button>
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Add at least one category tag. You can also press Enter instead
+                    Add at least one tag. You can also press Enter instead
                     of the Add tag button
                   </FormDescription>
                   <FormMessage />
@@ -235,7 +237,7 @@ export default function CreatePostForm() {
             <ErrorMessage message={error} />
             <Button
               type="submit"
-              disabled={isSubmitting || isCategoryListLoading}
+              disabled={isSubmitting || istagsListLoading}
               className="bg-[#4070F4] w-full"
             >
               Submit

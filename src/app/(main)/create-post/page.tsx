@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function Page() {
   return (
-    <main className='mt-8'>
+    <main className='mt-8 flex justify-center'>
       <CreatePostForm />
     </main>
   );
