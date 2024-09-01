@@ -3,12 +3,11 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { disLikeComment, likeComment } from '@/lib/actions/comment.actions';
-import { getErrorMessage } from '@/lib/utils';
 import { User, type Comment } from '@prisma/client';
 import { formatDistance } from 'date-fns';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useToastContext } from '../../../../../contexts/toast.context';
+import { useOptimistic } from 'react';
 
 type CommentProps = Comment & {
   author: User;
@@ -19,33 +18,37 @@ export default function Comment({ comment }: { comment: CommentProps }) {
   const creationDate = formatDistance(comment.createdAt, new Date(), {
     addSuffix: true,
   });
-  const [reactionError, setReactionError] = useState<string | null>(null);
-
+  const [optimisticLikes, addOptimisticLike] = useOptimistic(
+    comment.likes,
+    (state, newLike: number) => (state! += newLike)
+  );
+  const [optimisticDisLikes, addOptimisticDisLike] = useOptimistic(
+    comment.disLikes,
+    (state, disLike: number) => (state! += disLike)
+  );
   const handleLike = async () => {
-    try {
-      await likeComment(comment.id);
-    } catch (error) {
-      setReactionError(getErrorMessage(error));
-    }
-  };
-  const handleDisLike = async () => {
-    try {
-      await disLikeComment(comment.id);
-    } catch (error) {
-      setReactionError(getErrorMessage(error));
-    }
-  };
-
-  useEffect(() => {
-    console.log('use effect = ', reactionError);
-    if (reactionError) {
+    addOptimisticLike(1)
+    const result = await likeComment(comment.id);
+    if (result?.error) {
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong with reactions.',
-        description: reactionError,
+        description: result.error,
       });
     }
-  }, [reactionError, toast]);
+  };
+
+  const handleDisLike = async () => {
+    addOptimisticDisLike(1)
+    const result = await disLikeComment(comment.id);
+    if (result?.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong with reactions.',
+        description: result.error,
+      });
+    }
+  };
 
   return (
     <div className="flex items-start gap-4">
@@ -65,17 +68,20 @@ export default function Comment({ comment }: { comment: CommentProps }) {
         </div>
         <div className="text-muted-foreground">{comment.content}</div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={handleLike}>
+          <Button variant="ghost" onClick={handleLike}>
             <ThumbsUp className="size-4 text-emerald-500" />
             <span className="ml-2 text-sm text-muted-foreground">
-              {comment.likes}
+              {optimisticLikes}
             </span>
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleDisLike}>
+          <Button variant="ghost" onClick={handleDisLike}>
             <ThumbsDown className="size-4 text-destructive" />
             <span className="ml-2 text-sm text-muted-foreground">
-              {comment.disLikes}
+              {optimisticDisLikes}
             </span>
+          </Button>
+          <Button variant="ghost" onClick={handleDisLike}>
+            <span>Answer</span>
           </Button>
         </div>
       </div>

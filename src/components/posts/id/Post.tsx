@@ -43,7 +43,7 @@ export default function Post({ post }: { post: PostWithAutorAndTags }) {
           <Badge
             variant="secondary"
             key={tag.name}
-            className="mr-2 py-2 flex items-center gap-2"
+            className="mr-1 px-2 py-1"
           >
             {tag.name}
           </Badge>
