@@ -63,7 +63,10 @@ export default function CreatePostForm() {
     control: form.control,
   });
 
-  const handleAddCategory = () => {
+  const handleAddCategory: () => void = async () => {
+    const isValid = await form.trigger('category');
+    if (!isValid) return;
+
     const categoryValue = form.getValues('category');
 
     if (categoryValue) {
@@ -74,9 +77,8 @@ export default function CreatePostForm() {
     }
   };
   const { isSubmitting } = form.formState;
-  console.log(form.formState);
 
-  const handleSubmit: SubmitHandler<CreatePostFormValues> = async (
+  const handleSuccessSubmit: SubmitHandler<CreatePostFormValues> = async (
     formData
   ) => {
     setError(null);
@@ -88,6 +90,15 @@ export default function CreatePostForm() {
     } catch (error) {
       const message = getErrorMessage(error);
       setError(message);
+    }
+  };
+
+  const handleErrorSubmit = () => {
+    if (fields.length === 0) {
+      form.setError('category', {
+        type: 'custom',
+        message: 'you should provide category',
+      });
     }
   };
 
@@ -112,7 +123,7 @@ export default function CreatePostForm() {
       <CardContent className="grid gap-4">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={form.handleSubmit(handleSuccessSubmit, handleErrorSubmit)}
             className="space-y-4 w-[400px]"
           >
             <FormField
@@ -120,7 +131,7 @@ export default function CreatePostForm() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#4070F4]">Title</FormLabel>
+                  <FormLabel >Title</FormLabel>
                   <FormControl>
                     <Input placeholder="title..." {...field} />
                   </FormControl>
@@ -133,7 +144,7 @@ export default function CreatePostForm() {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#4070F4]">Content</FormLabel>
+                  <FormLabel >Content</FormLabel>
                   <FormControl>
                     <Input placeholder="content..." {...field} />
                   </FormControl>
@@ -146,7 +157,7 @@ export default function CreatePostForm() {
               name="excerpt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#4070F4]">Excerpt</FormLabel>
+                  <FormLabel >Excerpt</FormLabel>
                   <FormControl>
                     <Input placeholder="excerpt..." {...field} />
                   </FormControl>
@@ -164,30 +175,41 @@ export default function CreatePostForm() {
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#4070F4]">Category</FormLabel>
+                  <FormLabel htmlFor='categoryInput' >Category tag</FormLabel>
                   <FormControl>
                     <div className="relative flex gap-1">
                       <Input
                         {...field}
+                        id='categoryInput'
                         list="category-suggestions"
                         placeholder={
                           isCategoryListLoading
                             ? 'Category list is loading...'
-                            : 'Select category'
+                            : 'Select category tag'
                         }
                         disabled={isCategoryListLoading}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault(); // предотвратява стандартното поведение на формата при Enter
+                            handleAddCategory();
+                          }
+                        }}
                       />
                       <datalist id="category-suggestions">
                         {categoryList.map((category) => (
                           <option value={category.name} key={category.id} />
                         ))}
                       </datalist>
-                      <Button type="button" onClick={handleAddCategory}>
+                      <Button type="button" onClick={handleAddCategory} variant='outline'>
                         <Plus />
                         Add tag
                       </Button>
                     </div>
                   </FormControl>
+                  <FormDescription>
+                    Add at least one category tag. You can also press Enter instead
+                    of the Add tag button
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -196,10 +218,16 @@ export default function CreatePostForm() {
               {fields.map((field, index) => (
                 <Badge
                   key={field.id}
-                  className="mr-2 py-2 px-3 flex items-center gap-2"
+                  className="mr-2 py-2 flex items-center gap-2"
+                  variant="outline"
                 >
                   {field.name}
-                  <Delete onClick={() => remove(index)} />
+                  <Delete
+                    onClick={() => remove(index)}
+                    width={20}
+                    height={20}
+                    className="cursor-pointer text-destructive"
+                  />
                 </Badge>
               ))}
             </div>
