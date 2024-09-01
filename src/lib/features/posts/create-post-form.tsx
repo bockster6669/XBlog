@@ -42,7 +42,6 @@ export default function CreatePostForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const { tagsList, tagsError, tagsStatus } = useGetTags();
-  console.log(tagsList)
   const istagsListLoading = tagsStatus === 'pending';
 
   const form = useForm<CreatePostFormValues>({

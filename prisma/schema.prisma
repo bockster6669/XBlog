@@ -21,16 +21,16 @@ model User {
 }
 
 model Post {
-  id         String      @id @default(uuid())
-  title      String
-  content    String
-  excerpt    String
-  author     User        @relation(fields: [authorId], references: [id])
-  authorId   String
-  comments   Comment[]
-  tags       Tag[]       @relation("PostTags")
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id        String    @id @default(uuid())
+  title     String
+  content   String
+  excerpt   String
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+  comments  Comment[]
+  tags      Tag[]     @relation("PostTags")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Comment {
@@ -39,6 +39,8 @@ model Comment {
   post      Post     @relation(fields: [postId], references: [id])
   postId    String
   author    User     @relation(fields: [authorId], references: [id])
+  likes     Int      @default(0)
+  disLikes  Int      @default(0)
   authorId  String
   createdAt DateTime @default(now())
 }

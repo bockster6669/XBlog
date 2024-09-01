@@ -6,6 +6,7 @@ export const CreatePostSchema = z.object({
   excerpt: z.string().min(5),
   tag: z
     .string()
+    .max(10)
     .optional()
     .refine(
       (value) => !value || /^(?!\s*$)[a-zA-Z0-9 ]+$/.test(value),
