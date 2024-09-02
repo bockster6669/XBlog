@@ -3,8 +3,19 @@ import { db } from '../../../../../prisma/db';
 import { Post as PrismaPost, User } from '@prisma/client';
 import { getErrorMessage } from '@/lib/utils';
 import Post from '@/components/posts/id/Post'; // Преименувайте компонента
-import Comment from '../../../../components/posts/id/Comment';
 import { Separator } from '@/components/ui/separator';
+import {
+  Comment,
+  CommentAvatar,
+  CommentContent,
+  CommentDescription,
+  EditModeActions,
+} from '@/components/shared/comment/Comment';
+import { formatDistance } from 'date-fns';
+import {
+  MyButtons,
+  Reactions,
+} from '../../../../components/shared/comment/my-funcs';
 
 type Params = {
   id: string;
@@ -66,12 +77,35 @@ export default async function page({ params }: Props) {
           <Separator className="mt-5" />
 
           <section className="mt-5">
-            <span className=' font-bold'>{post.comments.length} Comments</span>
-            {/* <Comment type='new' /> */}
+            <span className=" font-bold">{post.comments.length} Comments</span>
             <div className="space-y-6">
-              {post.comments.map((comment) => (
-                <Comment key={comment.id} comment={comment} />
-              ))}
+              {post.comments.map((comment) => {
+                const creationDate = formatDistance(
+                  comment.createdAt,
+                  new Date(),
+                  {
+                    addSuffix: true,
+                  }
+                );
+                return (
+                  <Comment isInEditMode={true}>
+                    <CommentAvatar userImg="" username="bobo" />
+                    <CommentContent>
+                      <div className="flex items-center gap-2">
+                        <div className="font-medium">
+                          {comment.author.username}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {creationDate}
+                        </div>
+                      </div>
+                      <CommentDescription>{comment.content}</CommentDescription>
+                      <MyButtons comment={comment} />
+                    </CommentContent>
+                    <EditModeActions render={Reactions} />
+                  </Comment>
+                );
+              })}
             </div>
           </section>
         </div>

@@ -26,9 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function HomePage() {
-  // const creationDate = formatDistance(comment.createdAt, new Date(), {
-  //   addSuffix: true,
-  // });
+  
   return (
     <main>
       <Comment isInEditMode={true}>
