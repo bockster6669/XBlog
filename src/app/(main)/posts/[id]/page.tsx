@@ -3,7 +3,7 @@ import { db } from '../../../../../prisma/db';
 import { Post as PrismaPost, User } from '@prisma/client';
 import { getErrorMessage } from '@/lib/utils';
 import PostComponent from '@/components/posts/id/Post'; // Преименувайте компонента
-import Comment from './Comment';
+import Comment from '../../../../components/posts/id/Comment';
 
 type Params = {
   id: string;
@@ -57,7 +57,7 @@ export default async function page({ params }: Props) {
   }
 
   return (
-    <main className="size-full mt-8">
+    <main className="size-full mt-8 p-2">
       {post ? (
         <div className="h-full">
           <PostComponent post={post} />

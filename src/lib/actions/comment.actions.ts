@@ -43,3 +43,37 @@ export const disLikeComment = async (id: string) => {
     revalidatePath(`/posts/${id}`);
   }
 };
+
+export const saveComment = async (id: string, content: string) => {
+  try {
+    await db.comment.update({
+      where: {
+        id,
+      },
+      data: {
+        content,
+      },
+    });
+  } catch (error) {
+    const message = getErrorMessage(error);
+    return { error: message };
+  } finally {
+    revalidatePath(`/posts/${id}`);
+  }
+};
+
+export const deleteComment = async (id: string) => {
+  try {
+    await db.comment.delete({
+      where: {
+        id,
+      },
+    });
+    console.log('deleted')
+  } catch (error) {
+    const message = getErrorMessage(error);
+    return { error: message };
+  } finally {
+    revalidatePath(`/posts/${id}`);
+  }
+};

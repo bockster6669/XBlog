@@ -17,7 +17,7 @@ export default async function PostsPage() {
   const tags = await db.tag.findMany();
 
   return (
-    <main className="2-full mt-8 ">
+    <main className="2-full mt-8">
       <div className="mb-8 grid gap-4 md:mb-12 md:grid-cols-[1fr_auto]">
         <div className="relative">
           <SearchIcon
