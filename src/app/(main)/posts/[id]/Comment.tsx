@@ -5,9 +5,24 @@ import { Button } from '@/components/ui/button';
 import { disLikeComment, likeComment } from '@/lib/actions/comment.actions';
 import { User, type Comment } from '@prisma/client';
 import { formatDistance } from 'date-fns';
-import { ThumbsDown, ThumbsUp } from 'lucide-react';
+import {
+  EllipsisVertical,
+  Pencil,
+  ThumbsDown,
+  ThumbsUp,
+  Trash2,
+} from 'lucide-react';
 import { useToastContext } from '../../../../../contexts/toast.context';
-import { useOptimistic } from 'react';
+import { useEffect, useOptimistic, useRef, useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 type CommentProps = Comment & {
   author: User;
@@ -15,6 +30,8 @@ type CommentProps = Comment & {
 
 export default function Comment({ comment }: { comment: CommentProps }) {
   const toast = useToastContext();
+  const [isContentEditable, setIsContentEditable] = useState(false);
+  const contentFieldRef = useRef<HTMLParagraphElement | null>(null);
   const creationDate = formatDistance(comment.createdAt, new Date(), {
     addSuffix: true,
   });
@@ -27,7 +44,7 @@ export default function Comment({ comment }: { comment: CommentProps }) {
     (state, disLike: number) => (state! += disLike)
   );
   const handleLike = async () => {
-    addOptimisticLike(1)
+    addOptimisticLike(1);
     const result = await likeComment(comment.id);
     if (result?.error) {
       toast({
@@ -39,7 +56,7 @@ export default function Comment({ comment }: { comment: CommentProps }) {
   };
 
   const handleDisLike = async () => {
-    addOptimisticDisLike(1)
+    addOptimisticDisLike(1);
     const result = await disLikeComment(comment.id);
     if (result?.error) {
       toast({
@@ -48,6 +65,10 @@ export default function Comment({ comment }: { comment: CommentProps }) {
         description: result.error,
       });
     }
+  };
+
+  const handleEdit = () => {
+    setIsContentEditable(true); // Включваме режим за редакци
   };
 
   return (
@@ -61,12 +82,21 @@ export default function Comment({ comment }: { comment: CommentProps }) {
           {comment.author.username.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      <div className="grid gap-2">
+      <div className="flex-1">
         <div className="flex items-center gap-2">
           <div className="font-medium">{comment.author.username}</div>
           <div className="text-xs text-muted-foreground">{creationDate}</div>
         </div>
-        <div className="text-muted-foreground">{comment.content}</div>
+        <p
+          suppressContentEditableWarning={true} // Избягва предупреждения на React за contentEditable
+          className={cn('text-muted-foreground ', {
+            ' border-blue-500 border-b-2': isContentEditable,
+          })}
+          contentEditable={isContentEditable}
+          ref={contentFieldRef}
+        >
+          {comment.content}
+        </p>
         <div className="flex items-center gap-2">
           <Button variant="ghost" onClick={handleLike}>
             <ThumbsUp className="size-4 text-emerald-500" />
@@ -83,8 +113,40 @@ export default function Comment({ comment }: { comment: CommentProps }) {
           <Button variant="ghost" onClick={handleDisLike}>
             <span>Answer</span>
           </Button>
+          <Button
+            className="ml-auto"
+            size="sm"
+            variant="secondary"
+            onClick={() => setIsContentEditable(false)}
+          >
+            <span>Cancel</span>
+          </Button>
+          <Button
+            className="ml-1"
+            size="sm"
+            onClick={() => setIsContentEditable(false)}
+          >
+            <span>Save</span>
+          </Button>
         </div>
       </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="my-auto">
+          <EllipsisVertical />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleEdit}>
+            <Pencil />
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Trash2 />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
