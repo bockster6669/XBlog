@@ -64,18 +64,12 @@ export const MyButtons = ({ comment }: any) => (
 
 export const Reactions = ({
   editMode,
-  descriptionFieldRef,
   setEditMode,
 }: any) => {
   const handleEdit = () => {
     setEditMode(true);
-    setTimeout(() => {
-      if (descriptionFieldRef.current) {
-        descriptionFieldRef.current.focus();
-        setCursorToEnd(descriptionFieldRef.current);
-      }
-    }, 0);
   };
+
   return (
     !editMode && (
       <DropdownMenu>
@@ -96,5 +90,13 @@ export const Reactions = ({
         </DropdownMenuContent>
       </DropdownMenu>
     )
+  );
+};
+
+export const EnterNewCommentButtons = () => {
+  return (
+    <Button className="ml-auto mt-2" size="sm" onClick={() => {}}>
+      <span>Post</span>
+    </Button>
   );
 };

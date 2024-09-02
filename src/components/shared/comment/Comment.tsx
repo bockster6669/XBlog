@@ -1,12 +1,13 @@
-'use client'
+'use client';
 
-import { cn } from '@/lib/utils';
+import { cn, setCursorToEnd } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 import React, {
   createContext,
   ReactNode,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -74,8 +75,19 @@ export function CommentContent({ className, children }: CommentContentProps) {
   return <div className={cn('flex-1', className)}>{children}</div>;
 }
 
-export function CommentDescription({ children }: { children: ReactNode }) {
+export function CommentDescription({ children }: { children?: ReactNode }) {
   const { editMode, descriptionFieldRef } = useCommentContext();
+
+  useEffect(() => {
+    if (editMode) {
+      setTimeout(() => {
+        if (descriptionFieldRef.current) {
+          descriptionFieldRef.current.focus();
+          setCursorToEnd(descriptionFieldRef.current);
+        }
+      }, 0);
+    }
+  }, [editMode, descriptionFieldRef]);
 
   return (
     <p
@@ -98,5 +110,5 @@ export function CommentDescription({ children }: { children: ReactNode }) {
 export function EditModeActions({ render }: EditModeActionsProps) {
   const { editMode, setEditMode, descriptionFieldRef } = useCommentContext();
 
-  return render({setEditMode, editMode, descriptionFieldRef});
+  return render({ setEditMode, editMode, descriptionFieldRef });
 }

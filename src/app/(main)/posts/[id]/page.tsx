@@ -13,24 +13,17 @@ import {
 } from '@/components/shared/comment/Comment';
 import { formatDistance } from 'date-fns';
 import {
+  EnterNewCommentButtons,
   MyButtons,
   Reactions,
 } from '../../../../components/shared/comment/my-funcs';
-
-type Params = {
-  id: string;
-};
+import { Params } from 'next/dist/shared/lib/router/utils/route-matcher';
 
 type Props = {
-  params: Params;
+  params: {
+    id: string;
+  };
 };
-
-export type PostWithAuthorAndComments =
-  | string
-  | (PrismaPost & {
-      author: User;
-    })
-  | null;
 
 const fetchPost = async (params: Params) => {
   let post;
@@ -70,7 +63,7 @@ export default async function page({ params }: Props) {
 
   return (
     <main className="size-full mt-8 p-2">
-      {post ? (
+      {
         <div className="h-full">
           <Post post={post} />
 
@@ -78,6 +71,15 @@ export default async function page({ params }: Props) {
 
           <section className="mt-5">
             <span className=" font-bold">{post.comments.length} Comments</span>
+            <Comment isInEditMode={true} className='mt-4'>
+              <CommentAvatar userImg="" username="bobo" />
+              <CommentContent>
+                <CommentDescription />
+                <div className="flex">
+                  <EnterNewCommentButtons />
+                </div>
+              </CommentContent>
+            </Comment>
             <div className="space-y-6">
               {post.comments.map((comment) => {
                 const creationDate = formatDistance(
@@ -88,7 +90,7 @@ export default async function page({ params }: Props) {
                   }
                 );
                 return (
-                  <Comment isInEditMode={true}>
+                  <Comment key={comment.id}>
                     <CommentAvatar userImg="" username="bobo" />
                     <CommentContent>
                       <div className="flex items-center gap-2">
@@ -109,9 +111,7 @@ export default async function page({ params }: Props) {
             </div>
           </section>
         </div>
-      ) : (
-        <div>Post not found</div>
-      )}
+      }
     </main>
   );
 }
