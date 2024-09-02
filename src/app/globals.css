@@ -68,3 +68,7 @@
   }
   
 }
+
+.comment-placeholder:empty:not(:focus)::before {
+  content: 'Add comment...';
+}

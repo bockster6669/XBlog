@@ -71,10 +71,10 @@ export default async function page({ params }: Props) {
 
           <section className="mt-5">
             <span className=" font-bold">{post.comments.length} Comments</span>
-            <Comment isInEditMode={true} className='mt-4'>
+            <Comment isInEditMode={true} className="mt-4">
               <CommentAvatar userImg="" username="bobo" />
               <CommentContent>
-                <CommentDescription />
+                <CommentDescription className="border-b border-slate-500 focus:border-blue-500" />
                 <div className="flex">
                   <EnterNewCommentButtons />
                 </div>

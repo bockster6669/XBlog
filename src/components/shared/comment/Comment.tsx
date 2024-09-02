@@ -8,6 +8,7 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -75,7 +76,7 @@ export function CommentContent({ className, children }: CommentContentProps) {
   return <div className={cn('flex-1', className)}>{children}</div>;
 }
 
-export function CommentDescription({ children }: { children?: ReactNode }) {
+export function CommentDescription({ children, className }: { children?: ReactNode, className?:string  }) {
   const { editMode, descriptionFieldRef } = useCommentContext();
 
   useEffect(() => {
@@ -91,12 +92,9 @@ export function CommentDescription({ children }: { children?: ReactNode }) {
 
   return (
     <p
-      suppressContentEditableWarning={true} // Избягва предупреждения на React за contentEditable
+      suppressContentEditableWarning={true}
       className={cn(
-        'text-muted-foreground max-h-16 overflow-y-auto outline-none',
-        {
-          ' border-blue-500 border-b-2': editMode,
-        }
+        'text-muted-foreground max-h-16 overflow-y-auto outline-none comment-placeholder', className
       )}
       tabIndex={0}
       contentEditable={editMode}
