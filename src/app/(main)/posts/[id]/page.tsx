@@ -2,8 +2,9 @@ import React from 'react';
 import { db } from '../../../../../prisma/db';
 import { Post as PrismaPost, User } from '@prisma/client';
 import { getErrorMessage } from '@/lib/utils';
-import PostComponent from '@/components/posts/id/Post'; // Преименувайте компонента
+import Post from '@/components/posts/id/Post'; // Преименувайте компонента
 import Comment from '../../../../components/posts/id/Comment';
+import { Separator } from '@/components/ui/separator';
 
 type Params = {
   id: string;
@@ -60,11 +61,18 @@ export default async function page({ params }: Props) {
     <main className="size-full mt-8 p-2">
       {post ? (
         <div className="h-full">
-          <PostComponent post={post} />
-          <section className="max-w-2xl space-y-6">
-            {post.comments.map((comment) => (
-              <Comment key={comment.id} comment={comment} />
-            ))}
+          <Post post={post} />
+
+          <Separator className="mt-5" />
+
+          <section className="mt-5">
+            <span className=' font-bold'>{post.comments.length} Comments</span>
+            {/* <Comment type='new' /> */}
+            <div className="space-y-6">
+              {post.comments.map((comment) => (
+                <Comment key={comment.id} comment={comment} />
+              ))}
+            </div>
           </section>
         </div>
       ) : (

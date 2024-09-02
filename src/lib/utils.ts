@@ -25,6 +25,19 @@ export const getErrorMessage = (error: unknown): string => {
   return message;
 };
 
+
+export const setCursorToEnd = (element: HTMLParagraphElement) => {
+  const range = document.createRange();
+  const selection = window.getSelection();
+
+  if (selection && element) {
+    range.selectNodeContents(element);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+};
+
 export const isAsyncThunkConditionError = (error: unknown) => {
   if (
     error &&

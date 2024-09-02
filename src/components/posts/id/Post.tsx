@@ -38,7 +38,7 @@ export default function Post({ post }: { post: PostWithAutorAndTags }) {
 
       <p className="mt-8">{post.content}</p>
 
-      <div className="flex flex-wrap gap-2 mt-10 mb-20">
+      <div className="flex flex-wrap gap-2 mt-10">
         {post.tags.map((tag) => (
           <Badge
             variant="secondary"
