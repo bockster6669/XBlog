@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import {
   Comment,
-  CommentAvatar,
   CommentContent,
   CommentDescription,
   CommentController,
@@ -39,6 +38,7 @@ import { Comment as TComment, User } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { CommentContext } from '../../shared/comment/types';
 import { useParams } from 'next/navigation';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 type CommentProps = {
   comment: TComment & {
@@ -75,7 +75,10 @@ export const CompleteComment = ({ comment }: CommentProps) => {
   };
   return (
     <Comment>
-      <CommentAvatar userImg="" username="bobo" />
+      <Avatar className="w-10 h-10 border">
+        <AvatarImage src={comment.author.image || ''} alt={`profile image of ${comment.author.username}`} />
+        <AvatarFallback>{comment.author.username.slice(0, 2).toUpperCase()}</AvatarFallback>
+      </Avatar>
       <CommentContent>
         <div className="flex items-center gap-2">
           <div className="font-medium">{comment.author.username}</div>

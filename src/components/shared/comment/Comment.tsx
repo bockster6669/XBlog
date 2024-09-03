@@ -8,7 +8,6 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -16,7 +15,6 @@ import React, {
 import {
   CommentContext,
   CommentProps,
-  CommentAvatarProps,
   CommentContentProps,
   CommentControllerProps,
 } from './types';
@@ -59,19 +57,6 @@ export function Comment({ className, children, isInEditMode }: CommentProps) {
   );
 }
 
-export function CommentAvatar({
-  className,
-  username,
-  userImg,
-}: CommentAvatarProps) {
-  return (
-    <Avatar className={cn('w-10 h-10 border', className)}>
-      <AvatarImage src={userImg} alt={`profile image of ${username}`} />
-      <AvatarFallback>{username.slice(0, 2).toUpperCase()}</AvatarFallback>
-    </Avatar>
-  );
-}
-
 export function CommentContent({ className, children }: CommentContentProps) {
   return <div className={cn('flex-1', className)}>{children}</div>;
 }
@@ -109,6 +94,11 @@ export function CommentDescription({
       tabIndex={0}
       contentEditable={editMode}
       ref={descriptionFieldRef}
+      onClick={() => {
+        if (descriptionFieldRef.current) {
+          setCursorToEnd(descriptionFieldRef.current);
+        }
+      }}
     >
       {children}
     </p>

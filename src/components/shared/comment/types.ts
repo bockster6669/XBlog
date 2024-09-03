@@ -6,12 +6,6 @@ export type CommentProps = {
   isInEditMode?: boolean;
 };
 
-export type CommentAvatarProps = {
-  className?: string;
-  username: string;
-  userImg: string;
-};
-
 export type CommentContentProps = {
   className?: string;
   children: ReactNode;
