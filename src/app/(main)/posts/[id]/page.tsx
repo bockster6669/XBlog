@@ -1,5 +1,4 @@
 import React from 'react';
-import { db } from '../../../../../prisma/db';
 import { getErrorMessage } from '@/lib/utils';
 import Post from '@/components/posts/id/Post'; // Преименувайте компонента
 import { Separator } from '@/components/ui/separator';
@@ -14,20 +13,36 @@ import {
   CommentDescription,
 } from '@/components/shared/comment/Comment';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Comment as TComment } from '@prisma/client';
+import { Prisma, Comment as TComment } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { PostModel } from '@/models/post.model';
+import { db } from '@/prisma/db';
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
+type PostFindUniqueResult = Prisma.Result<
+  typeof db.post,
+  {
+    where: {
+      id: string;
+    };
+    include: {
+      author: true;
+      tags: true;
+      comments: {
+        include: {
+          author: true;
+        };
+      };
+    };
+  },
+  'findUnique'
+>;
 
-const fetchPost = async (params: Params) => {
-  let post;
+const fetchPost = async (params: { id: string }) => {
+  let post: PostFindUniqueResult;
+  
   try {
-    post = await db.post.findUnique({
+    post = await PostModel.findUnique({
       where: {
         id: params.id,
       },
@@ -49,7 +64,13 @@ const fetchPost = async (params: Params) => {
   }
 };
 
-export default async function page({ params }: Props) {
+export default async function page({
+  params,
+}: {
+  params: {
+    id: string;
+  };
+}) {
   const post = await fetchPost(params);
   const session = await getServerSession(authOptions);
 

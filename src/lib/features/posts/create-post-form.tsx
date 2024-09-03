@@ -16,12 +16,12 @@ import {
 import {
   CreatePostFormValues,
   CreatePostSchema,
-} from '../../../../resolvers/create-post-form.resolver';
+} from '../../../resolvers/create-post-form.resolver';
 import { useAppDispatch } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { createPost } from './posts.slice';
-import { useToastContext } from '../../../../contexts/toast.context';
+import { useToastContext } from '../../../contexts/toast.context';
 import ErrorMessage from '@/components/auth/error-message';
 import SuccessMessage from '@/components/auth/success-message';
 import {
@@ -208,8 +208,8 @@ export default function CreatePostForm() {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Add at least one tag. You can also press Enter instead
-                    of the Add tag button
+                    Add at least one tag. You can also press Enter instead of
+                    the Add tag button
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../../prisma/db';
-import { CreatePostSchema } from '../../../../resolvers/create-post-form.resolver';
+import { CreatePostSchema } from '../../../resolvers/create-post-form.resolver';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/options';
+import { PostModel } from '@/models/post.model';
+import { TagModel } from '@/models/tag.model';
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -20,16 +21,16 @@ export async function POST(request: NextRequest) {
 
   const { title, content, excerpt, tags } = validFields.data;
 
-  let tagIds = null
+  let tagIds = null;
   try {
     tagIds = await Promise.all(
       tags.map(async (tag) => {
-        const upsertedTag = await db.tag.upsert({
+        const upsertedTag = await await TagModel.upsert({
           where: { name: tag.name },
           update: {},
           create: { name: tag.name },
         });
-  
+
         return upsertedTag.id;
       })
     );
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if(!tagIds) {
+  if (!tagIds) {
     return NextResponse.json(
       { error: 'Can not create post without tags tags' },
       { status: 400 }
@@ -48,22 +49,20 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await db.post.create({
-      data: {
-        title,
-        content,
-        excerpt,
-        tags: {
-          connect: tagIds.map((id) => ({ id })), // Свързване на категориите
-        },
-        author: {
-          connect: { email: session.user.email },
-        },
+    await PostModel.create({
+      title,
+      content,
+      excerpt,
+      tags: {
+        connect: tagIds.map((id) => ({ id })), // Свързване на категориите
+      },
+      author: {
+        connect: { email: session.user.email },
       },
     });
     return NextResponse.json({ success: 'Post created' }, { status: 200 });
   } catch (error) {
-    console.log( 'Error accured while creating a post', error)
+    console.log('Error accured while creating a post', error);
     return NextResponse.json(
       { error: 'Error accured while creating a post' },
       { status: 400 }
@@ -77,15 +76,9 @@ export async function GET(request: NextRequest) {
   const take = Number(searchParams.get('take')) || 10;
 
   try {
-    const totalPosts = await db.post.count();
-    const posts = await db.post.findMany({
-      skip,
-      take,
-      include: {
-        tags: true,
-        author: true,
-      },
-    });
+    const totalPosts = await PostModel.countPosts();
+    const posts = await PostModel.getPaginatedPosts(skip, take);
+
     return NextResponse.json(
       {
         posts,

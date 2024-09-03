@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../../prisma/db';
-import { SignUpFormSchema } from '../../../../resolvers/sign-up-form.resolver';
+import { SignUpFormSchema } from '../../../resolvers/sign-up-form.resolver';
 import bcrypt from 'bcryptjs';
+import { UserModel } from '@/models/user.model';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -17,11 +17,10 @@ export async function POST(req: NextRequest) {
   const validatedFieldsData = validatedFields.data;
 
   try {
-    const existsUser = await db.user.findUnique({
-      where: {
-        email: validatedFieldsData.email,
-      },
+    const existsUser = await UserModel.findUser({
+      email: validatedFieldsData.email,
     });
+
     if (existsUser) {
       return NextResponse.json(
         { message: 'This user already exists' },
@@ -30,12 +29,10 @@ export async function POST(req: NextRequest) {
     }
     const hashedPass = await bcrypt.hash(validatedFieldsData.password, 10);
 
-    await db.user.create({
-      data: {
-        email: validatedFieldsData.email,
-        password: hashedPass,
-        username: validatedFieldsData.username,
-      },
+    await UserModel.create({
+      email: validatedFieldsData.email,
+      password: hashedPass,
+      username: validatedFieldsData.username,
     });
 
     return NextResponse.json({ message: 'Success login' }, { status: 200 });

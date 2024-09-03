@@ -28,7 +28,7 @@ import {
 import {
   SignInFormSchemaValues,
   SignInFormSchema,
-} from '../../../resolvers/sign-in-form.resolver';
+} from '../../resolvers/sign-in-form.resolver';
 import ErrorMessage from './error-message';
 import SuccessMessage from './success-message';
 import Link from 'next/link';

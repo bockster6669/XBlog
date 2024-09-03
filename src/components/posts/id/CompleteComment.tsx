@@ -32,7 +32,7 @@ import {
   createComment,
 } from '@/lib/actions/comment.actions';
 import { useCallback, useEffect, useState } from 'react';
-import { useToastContext } from '../../../../contexts/toast.context';
+import { useToastContext } from '../../../contexts/toast.context';
 import { formatDistance } from 'date-fns';
 import { Comment as TComment, User } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
@@ -76,8 +76,13 @@ export const CompleteComment = ({ comment }: CommentProps) => {
   return (
     <Comment>
       <Avatar className="w-10 h-10 border">
-        <AvatarImage src={comment.author.image || ''} alt={`profile image of ${comment.author.username}`} />
-        <AvatarFallback>{comment.author.username.slice(0, 2).toUpperCase()}</AvatarFallback>
+        <AvatarImage
+          src={comment.author.image || ''}
+          alt={`profile image of ${comment.author.username}`}
+        />
+        <AvatarFallback>
+          {comment.author.username.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
       <CommentContent>
         <div className="flex items-center gap-2">

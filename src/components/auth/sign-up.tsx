@@ -21,7 +21,7 @@ import { signIn } from 'next-auth/react';
 import {
   SignUpFormSchemaValues,
   SignUpFormSchema,
-} from '../../../resolvers/sign-up-form.resolver';
+} from '../../resolvers/sign-up-form.resolver';
 import { PostRegisterResponse } from '@/app/api/register/route';
 import {
   Form,

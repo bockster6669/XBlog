@@ -1,6 +1,6 @@
 import { getErrorMessage, wait } from '@/lib/utils';
 import axios from 'axios';
-import { CreatePostFormValues } from '../../../../resolvers/create-post-form.resolver';
+import { CreatePostFormValues } from '../../../resolvers/create-post-form.resolver';
 import {
   AxiosGetPostsResponse,
   AxiosPostPostsResponse,

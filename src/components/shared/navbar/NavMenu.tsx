@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Menu } from 'lucide-react';
 import React from 'react';
-import { navbarLinks } from '../../../../constants/navbar-links.constants';
+import { navbarLinks } from '../../../constants/navbar-links.constants';
 import Link from 'next/link';
 
 export default function NavMenu() {
@@ -19,10 +19,7 @@ export default function NavMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {navbarLinks.map((link) => (
-          <DropdownMenuItem
-            asChild
-            key={link.label}
-          >
+          <DropdownMenuItem asChild key={link.label}>
             <Link href={link.href}>{link.label}</Link>
           </DropdownMenuItem>
         ))}

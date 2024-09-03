@@ -1,9 +1,9 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GitHubProvider from 'next-auth/providers/github';
-import { db } from '../../../../../prisma/db';
 import bcrypt from 'bcryptjs';
-import { SignInFormSchema } from '../../../../../resolvers/sign-in-form.resolver';
+import { SignInFormSchema } from '../../../../resolvers/sign-in-form.resolver';
+import { UserModel } from '@/models/user.model';
 
 export const authOptions: NextAuthOptions = {
   debug: true,
@@ -25,14 +25,10 @@ export const authOptions: NextAuthOptions = {
         }
         const { email, password } = validatedFields.data;
 
-        let user = null
+        let user = null;
 
         try {
-          user = await db.user.findUnique({
-            where: {
-              email,
-            },
-          });
+          user = await UserModel.findUser({ email });
         } catch (error) {
           console.log(error);
           throw new Error('Error occured while searching for a user');

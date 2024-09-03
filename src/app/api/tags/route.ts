@@ -1,9 +1,9 @@
+import { TagModel } from '@/models/tag.model';
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../../prisma/db';
 
 export async function GET(request: NextRequest, response: NextResponse) {
   try {
-    const tag = await db.tag.findMany();
+    const tag = await TagModel.findMany();
     return NextResponse.json({ tag }, { status: 200 });
   } catch (error) {
     console.log(error);

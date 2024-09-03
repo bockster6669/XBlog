@@ -1,11 +1,28 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SearchIcon } from 'lucide-react';
-import { db } from '../../../../prisma/db';
 import PostPreview from '@/components/posts/PostPreview';
+import { PostModel } from '@/models/post.model';
+import { TagModel } from '@/models/tag.model';
+import { db } from '@/prisma/db';
+import { Prisma } from '@prisma/client';
+
+type PostFindUniqueResult = Prisma.Result<
+  typeof db.post,
+  {
+    include: {
+      tags: {
+        select: {
+          name: true;
+        };
+      };
+    };
+  },
+  'findMany'
+>;
 
 export default async function PostsPage() {
-  const posts = await db.post.findMany({
+  const posts = await PostModel.findMany({
     include: {
       tags: {
         select: {
@@ -14,7 +31,8 @@ export default async function PostsPage() {
       },
     },
   });
-  const tags = await db.tag.findMany();
+ 
+  const tags = await TagModel.findMany();
 
   return (
     <main className="2-full mt-8">

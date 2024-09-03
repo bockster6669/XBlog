@@ -1,24 +1,20 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { db } from '../../../prisma/db';
-import { getErrorMessage, wait } from '../utils';
+import { getErrorMessage } from '../utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { CommentModel } from '@/models/comment.model';
+import { UserModel } from '@/models/user.model';
 
 export const likeComment = async (
   id: string,
   method: 'increment' | 'decrement'
 ) => {
   try {
-    await db.comment.update({
-      where: {
-        id,
-      },
-      data: {
-        likes: {
-          [method]: 1,
-        },
+    await CommentModel.update(id, {
+      likes: {
+        [method]: 1,
       },
     });
   } catch (error) {
@@ -34,14 +30,9 @@ export const disLikeComment = async (
   method: 'increment' | 'decrement'
 ) => {
   try {
-    await db.comment.update({
-      where: {
-        id,
-      },
-      data: {
-        disLikes: {
-          [method]: 1,
-        },
+    await CommentModel.update(id, {
+      disLikes: {
+        [method]: 1,
       },
     });
   } catch (error) {
@@ -54,14 +45,7 @@ export const disLikeComment = async (
 
 export const saveComment = async (id: string, content: string) => {
   try {
-    await db.comment.update({
-      where: {
-        id,
-      },
-      data: {
-        content,
-      },
-    });
+    await CommentModel.update(id, { content });
   } catch (error) {
     const message = getErrorMessage(error);
     return { error: message };
@@ -72,11 +56,7 @@ export const saveComment = async (id: string, content: string) => {
 
 export const deleteComment = async (id: string) => {
   try {
-    await db.comment.delete({
-      where: {
-        id,
-      },
-    });
+    await CommentModel.delete(id);
   } catch (error) {
     const message = getErrorMessage(error);
     return { error: message };
@@ -87,24 +67,22 @@ export const deleteComment = async (id: string) => {
 
 export async function createComment(content: string, postId: string) {
   try {
-    const trimContent = content.trim()
+    const trimContent = content.trim();
     if (!trimContent) {
       return {
-        error:
-          'Can not create comment with empty text',
+        error: 'Can not create comment with empty text',
       };
     }
 
     const session = await getServerSession(authOptions);
+    
     if (!session || !session.user || !session.user.email)
       return {
         error:
           'User tried to create post, but its coresponding profile was not found',
       };
 
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
+    const user = await UserModel.findUser({ email: session.user.email });
 
     if (!user) {
       console.log(
@@ -116,15 +94,13 @@ export async function createComment(content: string, postId: string) {
       };
     }
 
-    const newComment = await db.comment.create({
-      data: {
-        content: trimContent,
-        author: {
-          connect: { id: user.id },
-        },
-        post: {
-          connect: { id: postId },
-        },
+    const newComment = await CommentModel.create({
+      content: trimContent,
+      author: {
+        connect: { id: user.id },
+      },
+      post: {
+        connect: { id: postId },
       },
     });
 
