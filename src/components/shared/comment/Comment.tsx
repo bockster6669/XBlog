@@ -42,7 +42,7 @@ function CommentContextProvider({
   );
 }
 
-function useCommentContext() {
+export function useCommentContext() {
   const context = useContext(commentContext);
   if (!context)
     throw new Error(
@@ -76,7 +76,13 @@ export function CommentContent({ className, children }: CommentContentProps) {
   return <div className={cn('flex-1', className)}>{children}</div>;
 }
 
-export function CommentDescription({ children, className }: { children?: ReactNode, className?:string  }) {
+export function CommentDescription({
+  children,
+  className,
+}: {
+  children?: ReactNode;
+  className?: string;
+}) {
   const { editMode, descriptionFieldRef } = useCommentContext();
 
   useEffect(() => {
@@ -94,7 +100,11 @@ export function CommentDescription({ children, className }: { children?: ReactNo
     <p
       suppressContentEditableWarning={true}
       className={cn(
-        'text-muted-foreground max-h-16 overflow-y-auto outline-none comment-placeholder focus:border-b focus:border-blue-500', className
+        'text-muted-foreground max-h-16 overflow-y-auto outline-none comment-placeholder border-slate-600 focus:border-blue-500',
+        {
+          'border-b': editMode,
+        },
+        className
       )}
       tabIndex={0}
       contentEditable={editMode}

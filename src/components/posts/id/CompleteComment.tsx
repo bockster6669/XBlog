@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   EllipsisVertical,
+  MessageSquareText,
   Pencil,
   ThumbsDown,
   ThumbsUp,
@@ -22,19 +23,22 @@ import {
   CommentContent,
   CommentDescription,
   CommentController,
+  useCommentContext,
 } from '../../shared/comment/Comment';
 import {
   likeComment,
   disLikeComment,
   deleteComment,
   saveComment,
+  createComment,
 } from '@/lib/actions/comment.actions';
-import { useOptimistic, startTransition } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useToastContext } from '../../../../contexts/toast.context';
 import { formatDistance } from 'date-fns';
 import { Comment as TComment, User } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { CommentContext } from '../../shared/comment/types';
+import { useParams } from 'next/navigation';
 
 type CommentProps = {
   comment: TComment & {
@@ -47,7 +51,7 @@ type CommentOptionsProps = {
   commentId: string;
 };
 
-export const FullComment = ({ comment }: CommentProps) => {
+export const CompleteComment = ({ comment }: CommentProps) => {
   const creationDate = formatDistance(comment.createdAt, new Date(), {
     addSuffix: true,
   });
@@ -126,22 +130,24 @@ export const FullComment = ({ comment }: CommentProps) => {
     </Comment>
   );
 };
-
 const CommentFeedbackButtons = ({ comment }: { comment: TComment }) => {
-  const [optimisticLikes, addOptimisticLike] = useOptimistic(
-    comment.likes,
-    (state, newLike: number) => (state! += newLike)
+  const [userReaction, setUserReaction] = useState<'none' | 'like' | 'dislike'>(
+    'none'
   );
-  const [optimisticDisLikes, addOptimisticDisLike] = useOptimistic(
-    comment.disLikes,
-    (state, disLike: number) => (state! += disLike)
-  );
+  const [likes, setLikes] = useState(comment.likes);
+  const [disLikes, setDisLikes] = useState(comment.disLikes);
 
   const handleLike = async () => {
-    startTransition(() => {
-      addOptimisticLike(1);
-    });
-    const result = await likeComment(comment.id);
+    if (userReaction === 'like') return;
+
+    if (userReaction === 'dislike') {
+      setDisLikes((prev) => prev - 1);
+      await disLikeComment(comment.id, 'decrement');
+    }
+
+    setLikes((prev) => prev + 1);
+    setUserReaction('like');
+    const result = await likeComment(comment.id, 'increment');
     if (result?.error) {
       toast({
         variant: 'destructive',
@@ -152,10 +158,16 @@ const CommentFeedbackButtons = ({ comment }: { comment: TComment }) => {
   };
 
   const handleDisLike = async () => {
-    startTransition(() => {
-      addOptimisticDisLike(1);
-    });
-    const result = await disLikeComment(comment.id);
+    if (userReaction === 'dislike') return;
+
+    if (userReaction === 'like') {
+      setLikes((prev) => prev - 1);
+      await likeComment(comment.id, 'decrement');
+    }
+
+    setDisLikes((prev) => prev + 1);
+    setUserReaction('dislike');
+    const result = await disLikeComment(comment.id, 'increment');
     if (result?.error) {
       toast({
         variant: 'destructive',
@@ -167,26 +179,29 @@ const CommentFeedbackButtons = ({ comment }: { comment: TComment }) => {
 
   return (
     <>
-      <Button variant="ghost" onClick={handleLike}>
-        <ThumbsUp className="size-4 text-emerald-500" />
-        <span className="ml-2 text-sm text-muted-foreground">
-          {optimisticLikes}
-        </span>
+      <Button
+        variant={userReaction === 'like' ? 'secondary' : 'ghost'}
+        onClick={handleLike}
+      >
+        <ThumbsUp className="size-4" />
+        <span className="ml-2 text-sm text-muted-foreground">{likes}</span>
       </Button>
-      <Button variant="ghost" onClick={handleDisLike}>
-        <ThumbsDown className="size-4 text-destructive" />
-        <span className="ml-2 text-sm text-muted-foreground">
-          {optimisticDisLikes}
-        </span>
+      <Button
+        variant={userReaction === 'dislike' ? 'secondary' : 'ghost'}
+        onClick={handleDisLike}
+      >
+        <ThumbsDown className="size-4" />
+        <span className="ml-2 text-sm text-muted-foreground">{disLikes}</span>
       </Button>
       <Button variant="ghost">
-        <span>Answer</span>
+        <span className="max-sm:hidden">Answer</span>
+        <MessageSquareText className="hidden max-sm:block size-5" />
       </Button>
     </>
   );
 };
 
-export const CommentOptions = ({
+const CommentOptions = ({
   editMode,
   setEditMode,
   commentId,
@@ -231,12 +246,78 @@ export const CommentOptions = ({
 };
 
 export const EnterNewCommentButton = () => {
-  const handlePost = () => {
-    console.log('post');
+  const params = useParams<{ id: string }>();
+  const { descriptionFieldRef, editMode } = useCommentContext();
+  const [canPost, setCanPost] = useState(false);
+
+  const handlePost = async () => {
+    if (!descriptionFieldRef.current?.textContent) return;
+
+    const result = await createComment(
+      descriptionFieldRef.current.textContent,
+      params.id
+    );
+
+    descriptionFieldRef.current.textContent = '';
+
+    if (result?.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong with reactions.',
+        description: result.error,
+      });
+    }
   };
+
+  const handleCancel = () => {
+    if (descriptionFieldRef.current?.textContent) {
+      descriptionFieldRef.current.textContent = '';
+      setCanPost(false);
+    }
+  };
+
+  const checkCanPost = useCallback(() => {
+    const textContent = descriptionFieldRef.current?.textContent ?? '';
+    setCanPost(textContent.trim().length > 0);
+  }, [descriptionFieldRef]);
+
+  useEffect(() => {
+    checkCanPost();
+    const handleInput = () => checkCanPost();
+    const currentRef = descriptionFieldRef.current;
+
+    if (currentRef) {
+      currentRef.addEventListener('input', handleInput);
+    }
+
+    return () => {
+      if (currentRef) {
+        currentRef.removeEventListener('input', handleInput);
+      }
+    };
+  }, [checkCanPost, descriptionFieldRef]);
+
   return (
-    <Button className="ml-auto mt-2" size="sm" onClick={handlePost}>
-      <span>Post</span>
-    </Button>
+    editMode && (
+      <div className="ml-auto flex gap-2">
+        <Button
+          className="ml-auto mt-2 w-20 rounded-full"
+          size="sm"
+          onClick={handleCancel}
+          variant="ghost"
+        >
+          <span>Cancel</span>
+        </Button>
+        <Button
+          className="mt-2 w-20 rounded-full"
+          size="sm"
+          onClick={handlePost}
+          variant={canPost ? 'default' : 'secondary'}
+          disabled={!canPost}
+        >
+          <span>Post</span>
+        </Button>
+      </div>
+    )
   );
 };

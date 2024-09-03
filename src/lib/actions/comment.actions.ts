@@ -3,8 +3,13 @@
 import { revalidatePath } from 'next/cache';
 import { db } from '../../../prisma/db';
 import { getErrorMessage, wait } from '../utils';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
-export const likeComment = async (id: string) => {
+export const likeComment = async (
+  id: string,
+  method: 'increment' | 'decrement'
+) => {
   try {
     await db.comment.update({
       where: {
@@ -12,7 +17,7 @@ export const likeComment = async (id: string) => {
       },
       data: {
         likes: {
-          increment: 1,
+          [method]: 1,
         },
       },
     });
@@ -24,7 +29,10 @@ export const likeComment = async (id: string) => {
   }
 };
 
-export const disLikeComment = async (id: string) => {
+export const disLikeComment = async (
+  id: string,
+  method: 'increment' | 'decrement'
+) => {
   try {
     await db.comment.update({
       where: {
@@ -32,7 +40,7 @@ export const disLikeComment = async (id: string) => {
       },
       data: {
         disLikes: {
-          increment: 1,
+          [method]: 1,
         },
       },
     });
@@ -69,7 +77,6 @@ export const deleteComment = async (id: string) => {
         id,
       },
     });
-    console.log('deleted')
   } catch (error) {
     const message = getErrorMessage(error);
     return { error: message };
@@ -77,3 +84,55 @@ export const deleteComment = async (id: string) => {
     revalidatePath(`/posts/${id}`);
   }
 };
+
+export async function createComment(content: string, postId: string) {
+  try {
+    const trimContent = content.trim()
+    if (!trimContent) {
+      return {
+        error:
+          'Can not create comment with empty text',
+      };
+    }
+
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || !session.user.email)
+      return {
+        error:
+          'User tried to create post, but its coresponding profile was not found',
+      };
+
+    const user = await db.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      console.log(
+        'User tried to create post, but its coresponding profile was not found'
+      );
+      return {
+        error:
+          'User tried to create post, but its coresponding profile was not found',
+      };
+    }
+
+    const newComment = await db.comment.create({
+      data: {
+        content: trimContent,
+        author: {
+          connect: { id: user.id },
+        },
+        post: {
+          connect: { id: postId },
+        },
+      },
+    });
+
+    console.log('Comment created:', newComment);
+  } catch (error) {
+    const message = getErrorMessage(error);
+    return { error: message };
+  } finally {
+    revalidatePath(`/posts/${postId}`);
+  }
+}

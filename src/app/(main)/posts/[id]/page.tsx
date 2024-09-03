@@ -3,17 +3,10 @@ import { db } from '../../../../../prisma/db';
 import { getErrorMessage } from '@/lib/utils';
 import Post from '@/components/posts/id/Post'; // Преименувайте компонента
 import { Separator } from '@/components/ui/separator';
-import {
-  EnterNewCommentButton,
-  FullComment,
-} from '../../../../components/posts/id/CommentActions';
 import { Params } from 'next/dist/shared/lib/router/utils/route-matcher';
-import {
-  Comment,
-  CommentAvatar,
-  CommentContent,
-  CommentDescription,
-} from '@/components/shared/comment/Comment';
+import NewComment from '@/components/posts/id/NewComment';
+import { CompleteComment } from '@/components/posts/id/CompleteComment';
+import { Comment } from '@prisma/client';
 
 type Props = {
   params: {
@@ -56,7 +49,12 @@ export default async function page({ params }: Props) {
   if ('error' in post) {
     return <div>Something went wrong while getting post: {post.error}</div>;
   }
+  const parseDate = (dateString: string) => new Date(dateString);
 
+  const sortedComments = post.comments.sort((a:Comment, b: Comment) => {
+    return parseDate(b.createdAt.toISOString()).getTime() - parseDate(a.createdAt.toISOString()).getTime();
+  });
+  
   return (
     <main className="size-full mt-8 p-2">
       {
@@ -67,18 +65,10 @@ export default async function page({ params }: Props) {
 
           <section className="mt-5">
             <span className=" font-bold">{post.comments.length} Comments</span>
-            <Comment isInEditMode={true} className="mt-4">
-              <CommentAvatar userImg="" username="bobo" />
-              <CommentContent>
-                <CommentDescription className="border-b border-slate-500 focus:border-blue-500" />
-                <div className="flex">
-                  <EnterNewCommentButton />
-                </div>
-              </CommentContent>
-            </Comment>
+            <NewComment />
             <div className="space-y-6">
-              {post.comments.map((comment) => (
-                <FullComment key={comment.id} comment={comment} />
+              {sortedComments.map((comment, index) => (
+                <CompleteComment key={comment.id} comment={comment} />
               ))}
             </div>
           </section>
