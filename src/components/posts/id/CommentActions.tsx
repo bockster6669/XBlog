@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,7 @@ import {
   CommentContent,
   CommentDescription,
   CommentController,
-} from './Comment';
+} from '../../shared/comment/Comment';
 import {
   likeComment,
   disLikeComment,
@@ -34,7 +34,7 @@ import { useToastContext } from '../../../../contexts/toast.context';
 import { formatDistance } from 'date-fns';
 import { Comment as TComment, User } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
-import { CommentContext } from './types';
+import { CommentContext } from '../../shared/comment/types';
 
 type CommentProps = {
   comment: TComment & {
@@ -81,7 +81,11 @@ export const FullComment = ({ comment }: CommentProps) => {
         <div className="flex items-center gap-2">
           <CommentFeedbackButtons comment={comment} />
           <CommentController
-            render={({ setEditMode, editMode, descriptionFieldRef }: CommentContext) =>
+            render={({
+              setEditMode,
+              editMode,
+              descriptionFieldRef,
+            }: CommentContext) =>
               editMode && (
                 <>
                   <Button

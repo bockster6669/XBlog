@@ -6,9 +6,14 @@ import { Separator } from '@/components/ui/separator';
 import {
   EnterNewCommentButton,
   FullComment,
-} from '../../../../components/shared/comment/my-funcs';
+} from '../../../../components/posts/id/CommentActions';
 import { Params } from 'next/dist/shared/lib/router/utils/route-matcher';
-import { Comment, CommentAvatar, CommentContent, CommentDescription } from '@/components/shared/comment/Comment';
+import {
+  Comment,
+  CommentAvatar,
+  CommentContent,
+  CommentDescription,
+} from '@/components/shared/comment/Comment';
 
 type Props = {
   params: {
