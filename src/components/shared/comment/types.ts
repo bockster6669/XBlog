@@ -23,15 +23,11 @@ export type CommentContext = {
   descriptionFieldRef: React.MutableRefObject<HTMLParagraphElement | null>;
 };
 
-export type EditModeActionsProps = {
+export type CommentControllerProps = {
   render: ({
     setEditMode,
     descriptionFieldRef,
     editMode,
-  }: {
-    setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-    descriptionFieldRef: React.MutableRefObject<HTMLParagraphElement | null>;
-    editMode: boolean;
-  }) => ReactNode;
+  }: CommentContext) => ReactNode;
 };
 

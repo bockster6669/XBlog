@@ -18,7 +18,7 @@ import {
   CommentProps,
   CommentAvatarProps,
   CommentContentProps,
-  EditModeActionsProps,
+  CommentControllerProps,
 } from './types';
 
 const commentContext = createContext<CommentContext | null>(null);
@@ -94,7 +94,7 @@ export function CommentDescription({ children, className }: { children?: ReactNo
     <p
       suppressContentEditableWarning={true}
       className={cn(
-        'text-muted-foreground max-h-16 overflow-y-auto outline-none comment-placeholder', className
+        'text-muted-foreground max-h-16 overflow-y-auto outline-none comment-placeholder focus:border-b focus:border-blue-500', className
       )}
       tabIndex={0}
       contentEditable={editMode}
@@ -105,7 +105,7 @@ export function CommentDescription({ children, className }: { children?: ReactNo
   );
 }
 
-export function EditModeActions({ render }: EditModeActionsProps) {
+export function CommentController({ render }: CommentControllerProps) {
   const { editMode, setEditMode, descriptionFieldRef } = useCommentContext();
 
   return render({ setEditMode, editMode, descriptionFieldRef });
