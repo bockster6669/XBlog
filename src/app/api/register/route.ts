@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SignUpFormSchema } from '../../../resolvers/sign-up-form.resolver';
 import bcrypt from 'bcryptjs';
-import { UserModel } from '@/models/user.model';
+import { UserRepo } from '@/repository/user.repo';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -17,8 +17,10 @@ export async function POST(req: NextRequest) {
   const validatedFieldsData = validatedFields.data;
 
   try {
-    const existsUser = await UserModel.findUser({
-      email: validatedFieldsData.email,
+    const existsUser = await UserRepo.findUnique({
+      where: {
+        email: validatedFieldsData.email,
+      },
     });
 
     if (existsUser) {
@@ -29,10 +31,12 @@ export async function POST(req: NextRequest) {
     }
     const hashedPass = await bcrypt.hash(validatedFieldsData.password, 10);
 
-    await UserModel.create({
-      email: validatedFieldsData.email,
-      password: hashedPass,
-      username: validatedFieldsData.username,
+    await UserRepo.create({
+      data: {
+        email: validatedFieldsData.email,
+        password: hashedPass,
+        username: validatedFieldsData.username,
+      },
     });
 
     return NextResponse.json({ message: 'Success login' }, { status: 200 });

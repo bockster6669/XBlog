@@ -2,37 +2,24 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SearchIcon } from 'lucide-react';
 import PostPreview from '@/components/posts/PostPreview';
-import { PostModel } from '@/models/post.model';
-import { TagModel } from '@/models/tag.model';
-import { db } from '@/prisma/db';
-import { Prisma } from '@prisma/client';
+import { PostRepo } from '@/repository/post.repo';
+import { TagRepo } from '@/repository/tag.repo';
 
-type PostFindUniqueResult = Prisma.Result<
-  typeof db.post,
-  {
-    include: {
-      tags: {
-        select: {
-          name: true;
-        };
-      };
-    };
-  },
-  'findMany'
->;
-
-export default async function PostsPage() {
-  const posts = await PostModel.findMany({
-    include: {
-      tags: {
-        select: {
-          name: true,
-        },
+export const options = {
+  include: {
+    author: true,
+    tags: true,
+    comments: {
+      include: {
+        author: true,
       },
     },
-  });
- 
-  const tags = await TagModel.findMany();
+  },
+};
+
+export default async function PostsPage() {
+  const posts = await PostRepo.findMany(options);
+  const tags = await TagRepo.findMany();
 
   return (
     <main className="2-full mt-8">

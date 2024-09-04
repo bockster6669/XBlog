@@ -1,9 +1,9 @@
-import { TagModel } from '@/models/tag.model';
+import { TagRepo } from '@/repository/tag.repo';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest, response: NextResponse) {
   try {
-    const tag = await TagModel.findMany();
+    const tag = await TagRepo.findMany();
     return NextResponse.json({ tag }, { status: 200 });
   } catch (error) {
     console.log(error);

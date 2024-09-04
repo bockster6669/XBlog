@@ -3,7 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GitHubProvider from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
 import { SignInFormSchema } from '../../../../resolvers/sign-in-form.resolver';
-import { UserModel } from '@/models/user.model';
+import { UserRepo } from '@/repository/user.repo';
 
 export const authOptions: NextAuthOptions = {
   debug: true,
@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         let user = null;
 
         try {
-          user = await UserModel.findUser({ email });
+          user = await UserRepo.findUnique({ where: { email } });
         } catch (error) {
           console.log(error);
           throw new Error('Error occured while searching for a user');

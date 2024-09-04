@@ -4,17 +4,22 @@ import { revalidatePath } from 'next/cache';
 import { getErrorMessage } from '../utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { CommentModel } from '@/models/comment.model';
-import { UserModel } from '@/models/user.model';
+import { CommentRepo } from '@/repository/comment.repo';
+import { UserRepo } from '@/repository/user.repo';
 
 export const likeComment = async (
   id: string,
   method: 'increment' | 'decrement'
 ) => {
   try {
-    await CommentModel.update(id, {
-      likes: {
-        [method]: 1,
+    await CommentRepo.update({
+      where: {
+        id,
+      },
+      data: {
+        likes: {
+          [method]: 1,
+        },
       },
     });
   } catch (error) {
@@ -30,9 +35,14 @@ export const disLikeComment = async (
   method: 'increment' | 'decrement'
 ) => {
   try {
-    await CommentModel.update(id, {
-      disLikes: {
-        [method]: 1,
+    await CommentRepo.update({
+      where: {
+        id,
+      },
+      data: {
+        disLikes: {
+          [method]: 1,
+        },
       },
     });
   } catch (error) {
@@ -45,7 +55,10 @@ export const disLikeComment = async (
 
 export const saveComment = async (id: string, content: string) => {
   try {
-    await CommentModel.update(id, { content });
+    await CommentRepo.update({
+      where: { id },
+      data: { content },
+    });
   } catch (error) {
     const message = getErrorMessage(error);
     return { error: message };
@@ -56,7 +69,11 @@ export const saveComment = async (id: string, content: string) => {
 
 export const deleteComment = async (id: string) => {
   try {
-    await CommentModel.delete(id);
+    await CommentRepo.delete({
+      where: {
+        id,
+      },
+    });
   } catch (error) {
     const message = getErrorMessage(error);
     return { error: message };
@@ -75,14 +92,16 @@ export async function createComment(content: string, postId: string) {
     }
 
     const session = await getServerSession(authOptions);
-    
+
     if (!session || !session.user || !session.user.email)
       return {
         error:
           'User tried to create post, but its coresponding profile was not found',
       };
 
-    const user = await UserModel.findUser({ email: session.user.email });
+    const user = await UserRepo.findUnique({
+      where: { email: session.user.email },
+    });
 
     if (!user) {
       console.log(
@@ -94,13 +113,15 @@ export async function createComment(content: string, postId: string) {
       };
     }
 
-    const newComment = await CommentModel.create({
-      content: trimContent,
-      author: {
-        connect: { id: user.id },
-      },
-      post: {
-        connect: { id: postId },
+    const newComment = await CommentRepo.create({
+      data: {
+        content: trimContent,
+        author: {
+          connect: { id: user.id },
+        },
+        post: {
+          connect: { id: postId },
+        },
       },
     });
 

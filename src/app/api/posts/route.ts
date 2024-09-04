@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CreatePostSchema } from '../../../resolvers/create-post-form.resolver';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/options';
-import { PostModel } from '@/models/post.model';
-import { TagModel } from '@/models/tag.model';
+import { PostRepo } from '@/repository/post.repo';
+import { TagRepo } from '@/repository/tag.repo';
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   try {
     tagIds = await Promise.all(
       tags.map(async (tag) => {
-        const upsertedTag = await await TagModel.upsert({
+        const upsertedTag = await await TagRepo.upsert({
           where: { name: tag.name },
           update: {},
           create: { name: tag.name },
@@ -49,15 +49,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await PostModel.create({
-      title,
-      content,
-      excerpt,
-      tags: {
-        connect: tagIds.map((id) => ({ id })), // Свързване на категориите
-      },
-      author: {
-        connect: { email: session.user.email },
+    await PostRepo.create({
+      data: {
+        title,
+        content,
+        excerpt,
+        tags: {
+          connect: tagIds.map((id) => ({ id })), // Свързване на категориите
+        },
+        author: {
+          connect: { email: session.user.email },
+        },
       },
     });
     return NextResponse.json({ success: 'Post created' }, { status: 200 });
@@ -76,8 +78,15 @@ export async function GET(request: NextRequest) {
   const take = Number(searchParams.get('take')) || 10;
 
   try {
-    const totalPosts = await PostModel.countPosts();
-    const posts = await PostModel.getPaginatedPosts(skip, take);
+    const totalPosts = await PostRepo.countPosts();
+    const posts = await PostRepo.findMany({
+      skip,
+      take,
+      include: {
+        tags: true,
+        author: true,
+      },
+    });
 
     return NextResponse.json(
       {

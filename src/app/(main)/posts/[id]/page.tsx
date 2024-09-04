@@ -16,7 +16,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Prisma, Comment as TComment } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { PostModel } from '@/models/post.model';
+import { PostRepo } from '@/repository/post.repo';
 import { db } from '@/prisma/db';
 
 type PostFindUniqueResult = Prisma.Result<
@@ -40,9 +40,9 @@ type PostFindUniqueResult = Prisma.Result<
 
 const fetchPost = async (params: { id: string }) => {
   let post: PostFindUniqueResult;
-  
+
   try {
-    post = await PostModel.findUnique({
+    post = await PostRepo.findUnique({
       where: {
         id: params.id,
       },
