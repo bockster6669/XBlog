@@ -6,20 +6,9 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output        = "@prisma/client"
 }
 
 // prisma repo generator
-generator repo {
-  provider = "prisma-repo"
-  output   = "../repository"
-  query    = true
-  warn     = true
-  info     = true
-  error    = true
-}
-
-
 model User {
   id        String    @id @default(uuid())
   username  String    @unique
