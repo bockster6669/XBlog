@@ -4,18 +4,13 @@ import Post from '@/components/posts/id/Post'; // Преименувайте к�
 import { Separator } from '@/components/ui/separator';
 import {
   CompleteComment,
-  EnterNewCommentButton,
 } from '@/components/posts/id/CompleteComment';
-import {
-  Comment,
-  CommentContent,
-  CommentDescription,
-} from '@/components/shared/comment/Comment';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import {  Comment as TComment } from '@prisma/client';
+
+import { Comment as TComment } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { PostRepo } from '@/repository/post.repo';
+import NewComment from '@/components/posts/id/NewComment';
 
 const fetchPost = async (params: { id: string }) => {
   let post;
@@ -60,6 +55,7 @@ export default async function page({
   if ('error' in post) {
     return <div>Something went wrong while getting post: {post.error}</div>;
   }
+
   const parseDate = (dateString: string) => new Date(dateString);
 
   const sortedComments = post.comments.sort((a: TComment, b: TComment) => {
@@ -80,23 +76,7 @@ export default async function page({
           <section className="mt-5">
             <span className=" font-bold">{post.comments.length} Comments</span>
             {session && session.user ? (
-              <Comment isInEditMode={true} className="mt-4">
-                <Avatar className="w-10 h-10 border">
-                  <AvatarImage
-                    src={session.user.image || '/profile-not-found.jfif'}
-                    alt={`profile image of ${session.user.name}`}
-                  />
-                  <AvatarFallback>
-                    {session.user.name?.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <CommentContent>
-                  <CommentDescription className="border-b border-slate-500 focus:border-blue-500" />
-                  <div className="flex">
-                    <EnterNewCommentButton />
-                  </div>
-                </CommentContent>
-              </Comment>
+             <NewComment image={session.user.image} name={session.user.name}/>
             ) : (
               <div>You can not leave comment before signing in</div>
             )}

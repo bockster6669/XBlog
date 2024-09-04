@@ -1,6 +1,5 @@
 import { db } from '@/prisma/db';
-import { Post, Prisma } from '@prisma/client';
-
+import { Prisma } from '@prisma/client';
 export class PostRepo {
   static async findMany<T extends Prisma.PostFindManyArgs>(
     args?: Prisma.SelectSubset<T, Prisma.PostFindManyArgs>

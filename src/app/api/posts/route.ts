@@ -49,6 +49,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+     // await PostRepo.create(
+    //   createPostArgs(title, content, excerpt, tagIds, session.user.email)
+    // );
     await PostRepo.create({
       data: {
         title,

@@ -21,8 +21,9 @@ import {
   Comment,
   CommentContent,
   CommentDescription,
-  CommentController,
   useCommentContext,
+  CommentController,
+  CommentReplysSection
 } from '../../shared/comment/Comment';
 import {
   likeComment,
@@ -31,7 +32,7 @@ import {
   saveComment,
   createComment,
 } from '@/lib/actions/comment.actions';
-import { useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useToastContext } from '../../../contexts/toast.context';
 import { formatDistance } from 'date-fns';
 import { Comment as TComment, User } from '@prisma/client';
@@ -39,6 +40,10 @@ import { toast } from '@/components/ui/use-toast';
 import { CommentContext } from '../../shared/comment/types';
 import { useParams } from 'next/navigation';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import NewComment from './NewComment';
+import image from 'next/image';
+import { cn } from '@/lib/utils';
+import { createContext } from 'react';
 
 type CommentProps = {
   comment: TComment & {
@@ -73,78 +78,115 @@ export const CompleteComment = ({ comment }: CommentProps) => {
       });
     }
   };
+
   return (
     <Comment>
-      <Avatar className="w-10 h-10 border">
-        <AvatarImage
-          src={comment.author.image || ''}
-          alt={`profile image of ${comment.author.username}`}
+      <div className="flex gap-4">
+        <Avatar className="w-10 h-10 border">
+          <AvatarImage
+            src={comment.author.image || ''}
+            alt={`profile image of ${comment.author.username}`}
+          />
+          <AvatarFallback>
+            {comment.author.username.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <CommentContent>
+          <div className="flex items-center gap-2">
+            <div className="font-medium">{comment.author.username}</div>
+            <div className="text-xs text-muted-foreground">{creationDate}</div>
+          </div>
+          <CommentDescription>{comment.content}</CommentDescription>
+          <div className="flex items-center gap-2">
+            <CommentFeedbackButtons comment={comment} />
+            <CommentController
+              render={({
+                setEditMode,
+                editMode,
+                descriptionFieldRef,
+              }: CommentContext) =>
+                editMode && (
+                  <>
+                    <Button
+                      className="ml-auto"
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        setEditMode(false);
+                      }}
+                    >
+                      <span>Cancel</span>
+                    </Button>
+                    <Button
+                      className="mx-1"
+                      size="sm"
+                      onClick={() => {
+                        setEditMode(false);
+                        handleSave(descriptionFieldRef);
+                      }}
+                    >
+                      <span>Save</span>
+                    </Button>
+                  </>
+                )
+              }
+            />
+            <Button className="rounded-full" variant="outline">
+              Answers
+            </Button>
+          </div>
+        </CommentContent>
+        <CommentController
+          render={({ editMode, setEditMode }) => (
+            <CommentOptions
+              editMode={editMode}
+              setEditMode={setEditMode}
+              commentId={comment.id}
+            />
+          )}
         />
-        <AvatarFallback>
-          {comment.author.username.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-      <CommentContent>
-        <div className="flex items-center gap-2">
-          <div className="font-medium">{comment.author.username}</div>
-          <div className="text-xs text-muted-foreground">{creationDate}</div>
-        </div>
-        <CommentDescription>{comment.content}</CommentDescription>
-        <div className="flex items-center gap-2">
-          <CommentFeedbackButtons comment={comment} />
-          <CommentController
-            render={({
-              setEditMode,
-              editMode,
-              descriptionFieldRef,
-            }: CommentContext) =>
-              editMode && (
-                <>
-                  <Button
-                    className="ml-auto"
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => {
-                      setEditMode(false);
-                    }}
-                  >
-                    <span>Cancel</span>
-                  </Button>
-                  <Button
-                    className="mx-1"
-                    size="sm"
-                    onClick={() => {
-                      setEditMode(false);
-                      handleSave(descriptionFieldRef);
-                    }}
-                  >
-                    <span>Save</span>
-                  </Button>
-                </>
-              )
-            }
-          />
-        </div>
-      </CommentContent>
-      <CommentController
-        render={({ editMode, setEditMode }) => (
-          <CommentOptions
-            editMode={editMode}
-            setEditMode={setEditMode}
-            commentId={comment.id}
-          />
-        )}
-      />
+      </div>
+      <CommentReplysSection>
+        <Comment isInEditMode={true} className="mt-4">
+          <div className="flex gap-4">
+            <Avatar className="w-10 h-10 border">
+              <AvatarImage
+                src={comment.author.image || '/profile-not-found.jfif'}
+                alt={`profile image of ${name}`}
+              />
+              <AvatarFallback>
+                {comment.author.username.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <CommentContent>
+              <CommentDescription className="border-b border-slate-500 focus:border-blue-500" />
+              <div className="flex">
+                <EnterNewCommentButton
+                  handleCancelCallback={(setReplyMode: any, replyMode: any) => {
+                    console.log('zdr')
+                    console.log(setReplyMode)
+                    console.log(replyMode)
+
+                    setReplyMode(false);
+                  }}
+                />
+              </div>
+            </CommentContent>
+          </div>
+        </Comment>
+      </CommentReplysSection>
     </Comment>
   );
 };
+
+
 const CommentFeedbackButtons = ({ comment }: { comment: TComment }) => {
   const [userReaction, setUserReaction] = useState<'none' | 'like' | 'dislike'>(
     'none'
   );
   const [likes, setLikes] = useState(comment.likes);
   const [disLikes, setDisLikes] = useState(comment.disLikes);
-
+  const { setReplyMode } = useCommentContext();
   const handleLike = async () => {
     if (userReaction === 'like') return;
 
@@ -201,7 +243,7 @@ const CommentFeedbackButtons = ({ comment }: { comment: TComment }) => {
         <ThumbsDown className="size-4" />
         <span className="ml-2 text-sm text-muted-foreground">{disLikes}</span>
       </Button>
-      <Button variant="ghost">
+      <Button variant="ghost" onClick={() => setReplyMode(true)}>
         <span className="max-sm:hidden">Answer</span>
         <MessageSquareText className="hidden max-sm:block size-5" />
       </Button>
@@ -253,9 +295,10 @@ const CommentOptions = ({
   );
 };
 
-export const EnterNewCommentButton = () => {
+export const EnterNewCommentButton = ({ handleCancelCallback }: any) => {
   const params = useParams<{ id: string }>();
-  const { descriptionFieldRef, editMode } = useCommentContext();
+  const { descriptionFieldRef, editMode, setReplyMode, replyMode } =
+    useCommentContext();
   const [canPost, setCanPost] = useState(false);
 
   const handlePost = async () => {
@@ -280,8 +323,9 @@ export const EnterNewCommentButton = () => {
   const handleCancel = () => {
     if (descriptionFieldRef.current?.textContent) {
       descriptionFieldRef.current.textContent = '';
-      setCanPost(false);
     }
+    setCanPost(false);
+    handleCancelCallback(setReplyMode, replyMode)
   };
 
   const checkCanPost = useCallback(() => {

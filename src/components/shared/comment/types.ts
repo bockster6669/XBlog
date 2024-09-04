@@ -15,6 +15,8 @@ export type CommentContext = {
   editMode: boolean;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
   descriptionFieldRef: React.MutableRefObject<HTMLParagraphElement | null>;
+  replyMode: boolean;
+  setReplyMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type CommentControllerProps = {
@@ -25,3 +27,7 @@ export type CommentControllerProps = {
   }: CommentContext) => ReactNode;
 };
 
+export type CommentReplysSectionContextProps = {
+  replyMode: boolean,
+  setReplyMode: React.Dispatch<React.SetStateAction<boolean>>
+}

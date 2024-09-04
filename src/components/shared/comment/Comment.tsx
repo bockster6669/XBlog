@@ -17,9 +17,13 @@ import {
   CommentProps,
   CommentContentProps,
   CommentControllerProps,
+  CommentReplysSectionContextProps,
 } from './types';
+import { Button } from '@/components/ui/button';
 
 const commentContext = createContext<CommentContext | null>(null);
+const CommentReplysSectionContext =
+  createContext<CommentReplysSectionContextProps | null>(null);
 
 function CommentContextProvider({
   children,
@@ -29,14 +33,42 @@ function CommentContextProvider({
   isInEditMode?: boolean;
 }) {
   const [editMode, setEditMode] = useState(isInEditMode || false);
+  const [replyMode, setReplyMode] = useState(false);
   const descriptionFieldRef = useRef<HTMLParagraphElement | null>(null);
 
   return (
     <commentContext.Provider
-      value={{ editMode, setEditMode, descriptionFieldRef }}
+      value={{
+        editMode,
+        setEditMode,
+
+        replyMode,
+        setReplyMode,
+
+        descriptionFieldRef,
+      }}
     >
       {children}
     </commentContext.Provider>
+  );
+}
+
+function CommentReplysSectionContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [replyMode, setReplyMode] = useState(false);
+
+  return (
+    <CommentReplysSectionContext.Provider
+      value={{
+        replyMode,
+        setReplyMode,
+      }}
+    >
+      {children}
+    </CommentReplysSectionContext.Provider>
   );
 }
 
@@ -49,10 +81,19 @@ export function useCommentContext() {
   return context;
 }
 
+export function useCommentReplysSectionContext() {
+  const context = useContext(CommentReplysSectionContext);
+  if (!context)
+    throw new Error(
+      'useContext(commentContext) should be used in CommentContextProvider'
+    );
+  return context;
+}
+
 export function Comment({ className, children, isInEditMode }: CommentProps) {
   return (
     <CommentContextProvider isInEditMode={isInEditMode}>
-      <div className={cn('flex gap-4', className)}>{children}</div>
+      {children}
     </CommentContextProvider>
   );
 }
@@ -106,7 +147,28 @@ export function CommentDescription({
 }
 
 export function CommentController({ render }: CommentControllerProps) {
-  const { editMode, setEditMode, descriptionFieldRef } = useCommentContext();
+  const {
+    editMode,
+    setEditMode,
+    descriptionFieldRef,
+    replyMode,
+    setReplyMode,
+  } = useCommentContext();
 
-  return render({ setEditMode, editMode, descriptionFieldRef });
+  return render({
+    setEditMode,
+    editMode,
+    descriptionFieldRef,
+    replyMode,
+    setReplyMode,
+  });
 }
+
+export function CommentAnswers() {
+  return <Button></Button>;
+}
+
+export const CommentReplysSection = ({ children }: { children: ReactNode }) => {
+  const { replyMode } = useCommentReplysSectionContext();
+  return replyMode && <div>{children}</div>;
+};

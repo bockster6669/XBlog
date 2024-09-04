@@ -1,5 +1,5 @@
-import { db } from '@/prisma/db';
 import { Prisma } from '@prisma/client';
+import { db } from '@/prisma/db';
 
 export class CommentRepo {
   static async update<T extends Prisma.CommentUpdateArgs>(
