@@ -5,20 +5,18 @@ import PostPreview from '@/components/posts/PostPreview';
 import { PostRepo } from '@/repository/post.repo';
 import { TagRepo } from '@/repository/tag.repo';
 
-export const options = {
-  include: {
-    author: true,
-    tags: true,
-    comments: {
-      include: {
-        author: true,
+export default async function PostsPage() {
+  const posts = await PostRepo.findMany({
+    include: {
+      author: true,
+      tags: true,
+      comments: {
+        include: {
+          author: true,
+        },
       },
     },
-  },
-};
-
-export default async function PostsPage() {
-  const posts = await PostRepo.findMany(options);
+  });
   const tags = await TagRepo.findMany();
 
   return (
