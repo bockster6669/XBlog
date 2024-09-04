@@ -1,5 +1,5 @@
+import { tags, users } from '@/constants/prisma-seed.constants';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { tags, users } from '../src/constants/prisma-seed.constants';
 const prisma = new PrismaClient();
 
 async function seedTags() {
@@ -39,7 +39,6 @@ async function seedUsers() {
 async function seedPosts() {
   try {
     const [user1, user2] = await prisma.user.findMany({ take: 2 });
-    const [tag1, tag2] = await prisma.tag.findMany({ take: 2 });
     const tags = await prisma.tag.findMany();
     const posts: Prisma.PostCreateInput[] = [
       {
