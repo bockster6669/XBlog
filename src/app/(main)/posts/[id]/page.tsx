@@ -2,7 +2,6 @@ import React from 'react';
 import { getErrorMessage } from '@/lib/utils';
 import Post from '@/components/posts/id/Post'; // Преименувайте компонента
 import { Separator } from '@/components/ui/separator';
-import { Params } from 'next/dist/shared/lib/router/utils/route-matcher';
 import {
   CompleteComment,
   EnterNewCommentButton,
@@ -13,33 +12,13 @@ import {
   CommentDescription,
 } from '@/components/shared/comment/Comment';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Prisma, Comment as TComment } from '@prisma/client';
+import {  Comment as TComment } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { PostRepo } from '@/repository/post.repo';
-import { db } from '@/prisma/db';
-
-type PostFindUniqueResult = Prisma.Result<
-  typeof db.post,
-  {
-    where: {
-      id: string;
-    };
-    include: {
-      author: true;
-      tags: true;
-      comments: {
-        include: {
-          author: true;
-        };
-      };
-    };
-  },
-  'findUnique'
->;
 
 const fetchPost = async (params: { id: string }) => {
-  let post: PostFindUniqueResult;
+  let post;
 
   try {
     post = await PostRepo.findUnique({

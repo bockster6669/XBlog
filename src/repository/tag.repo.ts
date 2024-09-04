@@ -10,7 +10,7 @@ export class TagRepo {
 
   static async upsert<T extends Prisma.TagUpsertArgs>(
     args: Prisma.SelectSubset<T, Prisma.TagUpsertArgs>
-  ): Promise<Tag> {
+  ): Promise<Prisma.TagGetPayload<T>> {
     return await db.tag.upsert(args);
   }
 }

@@ -10,13 +10,13 @@ export class PostRepo {
 
   static async findUnique<T extends Prisma.PostFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.PostFindUniqueArgs>
-  ): Promise<Post | null> {
+  ): Promise<Prisma.PostGetPayload<T> | null> {
     return await db.post.findUnique(args);
   }
 
   static async create<T extends Prisma.PostCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.PostCreateArgs>
-  ): Promise<Post> {
+  ): Promise<Prisma.PostGetPayload<T>> {
     return await db.post.create(args);
   }
 
