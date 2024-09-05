@@ -26,7 +26,7 @@ export const getErrorMessage = (error: unknown): string => {
 };
 
 
-export const setCursorToEnd = (element: HTMLParagraphElement) => {
+export const setCursorToEnd = (element: HTMLElement) => {
   const range = document.createRange();
   const selection = window.getSelection();
 
