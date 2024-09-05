@@ -16,6 +16,7 @@ export class PostRepo {
   static async create<T extends Prisma.PostCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.PostCreateArgs>
   ): Promise<Prisma.PostGetPayload<T>> {
+    
     return await db.post.create(args);
   }
 
