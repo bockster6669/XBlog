@@ -142,6 +142,24 @@ export async function createReplyOnComment(
   }
 }
 
+export async function getCommentReplys(commentId: string) {
+  try {
+    const replies = await CommentRepo.findMany({
+      where: {
+        parentId: commentId,
+      },
+      include: {
+        author: true,
+        replies: true
+      }
+    });
+    return replies;
+  } catch (error) {
+    const message = getErrorMessage(error);
+    return { error: message };
+  }
+}
+
 export async function createComment(content: string, postId: string) {
   try {
     const trimContent = content.trim();

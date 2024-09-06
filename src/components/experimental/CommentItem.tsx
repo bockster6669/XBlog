@@ -1,11 +1,10 @@
 'use client';
 
-import { Comment as TComment } from '@prisma/client';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import {
   CommentContext,
   CommentItemProps,
-  CommentWithRelations,
+  CommentWithRepiesAndAuthor,
 } from './types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '../ui/button';
@@ -31,7 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { setCursorToEnd } from '@/lib/utils';
+import { cn, setCursorToEnd } from '@/lib/utils';
 import {
   CommentAnswers,
   CommentAnswersContent,
@@ -128,7 +127,11 @@ function CommentOptions({ commentId }: { commentId: string }) {
   );
 }
 
-const CommentFeedbackButtons = ({ comment }: { comment: TComment }) => {
+function CommentFeedbackButtons({
+  comment,
+}: {
+  comment: CommentWithRepiesAndAuthor;
+}) {
   const [userReaction, setUserReaction] = useState<'none' | 'like' | 'dislike'>(
     'none'
   );
@@ -200,18 +203,20 @@ const CommentFeedbackButtons = ({ comment }: { comment: TComment }) => {
       </div>
     )
   );
-};
+}
 
 function ReplyForm({ parentId, postId }: { parentId: string; postId: string }) {
   const { replyMode, setReplyMode } = useCommentContext();
 
   return (
     replyMode && (
-      <CommentForm
-        handleCancel={() => setReplyMode(false)}
-        autoFocus={true}
-        handlePost={(value) => createReplyOnComment(parentId, postId, value)}
-      />
+      <div className=" box-border pl-4">
+        <CommentForm
+          handleCancel={() => setReplyMode(false)}
+          autoFocus={true}
+          handlePost={(value) => createReplyOnComment(parentId, postId, value)}
+        />
+      </div>
     )
   );
 }
@@ -244,12 +249,12 @@ function EditModeActions() {
     )
   );
 }
+//micro-components ends
 
-export default function CommentItem({ comment, postId }: any) {
-    console.log(comment)
+export default function CommentItem({ comment, postId, className }: CommentItemProps) {
   return (
     <Comment>
-      <div className="flex gap-4 items-start w-full">
+      <div className={cn(" box-border px-3 py-1 flex gap-4 items-start w-full",className)}>
         <Avatar>
           <AvatarImage src={comment.author?.image || undefined} />
           <AvatarFallback>BC</AvatarFallback>
@@ -267,19 +272,15 @@ export default function CommentItem({ comment, postId }: any) {
       </div>
       <ReplyForm parentId={comment.id} postId={postId} />
       {comment.replies.length > 0 && (
-        <CommentAnswers>
-          <CommentAnswersTrigger>
+        <CommentAnswers postId={postId}>
+          <CommentAnswersTrigger commentId={comment.id}>
             {comment.replies.length} Answers
           </CommentAnswersTrigger>
-          <CommentAnswersContent>
-            {comment.replies.map((reply) => (
-              <CommentItem key={reply.id} comment={reply} />
-            ))}
-          </CommentAnswersContent>
+          <div className="pl-4">
+            <CommentAnswersContent />
+          </div>
         </CommentAnswers>
       )}
-      {/* {comment.replies.length > 0 &&
-        comment.replies.map((comment) => <CommentItem key={comment.id} comment={comment} />)} */}
     </Comment>
   );
 }

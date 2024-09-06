@@ -19,4 +19,10 @@ export class CommentRepo {
   ): Promise<Prisma.CommentGetPayload<T>> {
     return await db.comment.create(args);
   }
+
+  static async findMany<T extends Prisma.CommentFindManyArgs>(
+    args?: Prisma.SelectSubset<T, Prisma.CommentFindManyArgs>
+  ): Promise<Array<Prisma.CommentGetPayload<T>>> {
+    return await db.comment.findMany(args);
+  }
 }

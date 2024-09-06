@@ -7,6 +7,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { PostRepo } from '@/repository/post.repo';
 import CommentForm from '@/components/experimental/CommentForm';
 import CommentsList from '@/components/experimental/CommentsList';
+import { Prisma } from '@prisma/client';
 
 const fetchPost = async (params: { id: string }) => {
   try {
@@ -19,8 +20,8 @@ const fetchPost = async (params: { id: string }) => {
         tags: true,
         comments: {
           include: {
-            replies: true,
             author: true,
+            replies: true
           },
         },
       },
@@ -31,7 +32,6 @@ const fetchPost = async (params: { id: string }) => {
     return { error: message };
   }
 };
-
 export default async function page({
   params,
 }: {

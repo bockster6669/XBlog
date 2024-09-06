@@ -4,11 +4,11 @@ import { parseDate } from '@/lib/utils';
 import React from 'react';
 import CommentItem from './CommentItem';
 import { Comment } from '@prisma/client';
-import { CommentWithRelations } from './types';
+import { CommentWithRepiesAndAuthor } from './types';
 
 type CommentsListProps = {
-  comments: CommentWithRelations[];
-  postId: string
+  comments: CommentWithRepiesAndAuthor[];
+  postId: string;
 };
 
 export default function CommentsList({ comments, postId }: CommentsListProps) {
@@ -21,7 +21,7 @@ export default function CommentsList({ comments, postId }: CommentsListProps) {
   });
 
   return (
-    <div className='mt-5'>
+    <div className="mt-5 space-y-6">
       {sortedComments.map((comment) => (
         <CommentItem key={comment.id} comment={comment} postId={postId} />
       ))}
