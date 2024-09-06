@@ -82,6 +82,66 @@ export const deleteComment = async (id: string) => {
   }
 };
 
+export async function createReplyOnComment(
+  parentId: string,
+  postId: string,
+  content: string
+) {
+  try {
+    const trimContent = content.trim();
+    if (!trimContent) {
+      return {
+        error: 'Can not create comment with empty text',
+      };
+    }
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user || !session.user.email)
+      return {
+        error:
+          'User tried to create post, but its coresponding profile was not found',
+      };
+
+    const user = await UserRepo.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      console.log(
+        'User tried to create post, but its coresponding profile was not found'
+      );
+      return {
+        error:
+          'User tried to create post, but its coresponding profile was not found',
+      };
+    }
+
+    const newReply = await CommentRepo.create({
+      data: {
+        content: trimContent,
+        author: {
+          connect: { id: user.id },
+        },
+        post: {
+          connect: { id: postId },
+        },
+        parent: {
+          connect: {
+            id: parentId,
+          },
+        },
+      },
+    });
+
+    console.log('Comment created:', newReply);
+  } catch (error) {
+    const message = getErrorMessage(error);
+    return { error: message };
+  } finally {
+    revalidatePath(`/posts/${postId}`);
+  }
+}
+
 export async function createComment(content: string, postId: string) {
   try {
     const trimContent = content.trim();

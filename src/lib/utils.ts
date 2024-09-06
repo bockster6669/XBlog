@@ -25,16 +25,11 @@ export const getErrorMessage = (error: unknown): string => {
   return message;
 };
 
-
-export const setCursorToEnd = (element: HTMLElement) => {
-  const range = document.createRange();
-  const selection = window.getSelection();
-
-  if (selection && element) {
-    range.selectNodeContents(element);
-    range.collapse(false);
-    selection.removeAllRanges();
-    selection.addRange(range);
+export const setCursorToEnd = (element: HTMLTextAreaElement) => {
+  const textarea = element;
+  if (textarea) {
+    textarea.focus();
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
   }
 };
 
@@ -49,3 +44,5 @@ export const isAsyncThunkConditionError = (error: unknown) => {
   }
   return false;
 };
+
+export const parseDate = (dateString: string) => new Date(dateString);
