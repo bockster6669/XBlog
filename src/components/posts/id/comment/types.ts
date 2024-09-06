@@ -11,15 +11,10 @@ export type CommentWithRepiesAndAuthor = Prisma.CommentGetPayload<
   typeof commentWithRepiesAndAuthor
 >;
 
-// const CommentWithRepiesAndAuthor =
-//   Prisma.validator<Prisma.CommentDefaultArgs>()({
-//     include: {
-//       author: true,
-//     },
-//   });
-// export type CommentWithRepiesAndAuthor = Prisma.CommentGetPayload<
-//   typeof CommentWithRepiesAndAuthor
-// >;
+export type CommentsListProps = {
+  comments: CommentWithRepiesAndAuthor[];
+  postId: string;
+};
 
 export type CommentItemProps = {
   comment: CommentWithRepiesAndAuthor;
@@ -37,11 +32,5 @@ export type CommentContext = {
 export type CommentAnswersContext = {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isLoading: boolean;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  data: CommentWithRepiesAndAuthor[] | null;
-  setData: React.Dispatch<
-    React.SetStateAction<CommentWithRepiesAndAuthor[] | null>
-  >;
   postId: string;
 };

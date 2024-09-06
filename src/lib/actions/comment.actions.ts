@@ -142,7 +142,7 @@ export async function createReplyOnComment(
   }
 }
 
-export async function getCommentReplys(commentId: string) {
+export async function getCommentReplies(commentId: string) {
   try {
     const replies = await CommentRepo.findMany({
       where: {
@@ -150,13 +150,13 @@ export async function getCommentReplys(commentId: string) {
       },
       include: {
         author: true,
-        replies: true
-      }
+        replies: true,
+      },
     });
     return replies;
   } catch (error) {
     const message = getErrorMessage(error);
-    return { error: message };
+    throw new Error(message);
   }
 }
 

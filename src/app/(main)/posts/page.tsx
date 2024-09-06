@@ -4,19 +4,12 @@ import { SearchIcon } from 'lucide-react';
 import PostPreview from '@/components/posts/PostPreview';
 import { PostRepo } from '@/repository/post.repo';
 import { TagRepo } from '@/repository/tag.repo';
+import { wait } from '@/lib/utils';
+import PostsList from '@/components/posts/PostsList';
+import { Suspense } from 'react';
+import PostsListSkeleton from '@/components/posts/PostPreviewSkeleton';
 
 export default async function PostsPage() {
-  const posts = await PostRepo.findMany({
-    include: {
-      author: true,
-      tags: true,
-      comments: {
-        include: {
-          author: true,
-        },
-      },
-    },
-  });
   const tags = await TagRepo.findMany();
 
   return (
@@ -42,15 +35,9 @@ export default async function PostsPage() {
           ))}
         </div>
       </div>
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.length > 0 ? (
-          posts.map((post) => {
-            return <PostPreview key={post.id} post={post} />;
-          })
-        ) : (
-          <p className="text-xl text-muted-foreground">No posts were found</p>
-        )}
-      </div>
+      <Suspense fallback={<PostsListSkeleton />}>
+        <PostsList />
+      </Suspense>
     </main>
   );
 }

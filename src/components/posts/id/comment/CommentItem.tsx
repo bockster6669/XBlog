@@ -7,10 +7,12 @@ import {
   CommentWithRepiesAndAuthor,
 } from './types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '../ui/button';
+import { Button } from '../../../ui/button';
 import {
   createReplyOnComment,
   deleteComment,
+  disLikeComment,
+  likeComment,
 } from '@/lib/actions/comment.actions';
 import {
   ThumbsUp,
@@ -36,6 +38,9 @@ import {
   CommentAnswersContent,
   CommentAnswersTrigger,
 } from './Answers';
+import useAutoResizeHeight from '@/hooks/useAutoResizeHeight';
+import { toast } from '@/components/ui/use-toast';
+import { formatDistance } from 'date-fns';
 
 const commentContext = createContext<CommentContext | null>(null);
 
@@ -70,26 +75,70 @@ function Comment({ children }: { children: ReactNode }) {
 }
 // Context ends
 
-function CommentContent({ content }: { content: string }) {
-  const { editMode } = useCommentContext();
-  const [value, setValue] = useState(content);
+function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
+  const { editMode, setEditMode } = useCommentContext();
+  const [value, setValue] = useState(comment.content);
+  const textarea = useAutoResizeHeight(value);
+  const creationDate = formatDistance(comment.createdAt, new Date(), {
+    addSuffix: true,
+  });
+
+  function _handleSubmit() {}
+
+  function _handleCancel() {
+    setEditMode(false);
+  }
+
   return editMode ? (
-    <textarea
-      rows={1}
-      className="resize-none overflow-hidden text-muted-foreground outline-none comment-placeholder border-b-2 border-slate-600 focus:border-blue-500"
-      autoFocus={true}
-      onChange={(e) => setValue(e.target.value)}
-      value={value}
-      onFocus={(e) => setCursorToEnd(e.target)}
-    />
+    <form className="flex flex-col flex-1">
+      <textarea
+        ref={textarea}
+        rows={1}
+        className="resize-none overflow-hidden text-muted-foreground outline-none comment-placeholder border-b-2 border-slate-600 focus:border-blue-500"
+        autoFocus={true}
+        onChange={(e) => setValue(e.target.value)}
+        value={value}
+        onFocus={(e) => setCursorToEnd(e.target)}
+      />
+      <div className="flex mt-2">
+        <Button
+          className="ml-auto rounded-full px-5"
+          size="sm"
+          variant="secondary"
+          onClick={_handleCancel}
+          type="button"
+        >
+          Cancel
+        </Button>
+        <Button
+          className="mx-2 rounded-full px-5"
+          size="sm"
+          onClick={_handleSubmit}
+          disabled={!value.trim()}
+          type="submit"
+        >
+          Save
+        </Button>
+      </div>
+    </form>
   ) : (
-    <p>{content}</p>
+    <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex items-center gap-2">
+        <div className="font-medium">{comment.author.username}</div>
+        <div className="text-xs text-muted-foreground">{creationDate}</div>
+      </div>
+      <p className="break-words">{comment.content}</p>
+      <div className="flex mt-2">
+        <CommentFeedbackButtons comment={comment} />
+      </div>
+    </div>
   );
 }
 
 function CommentOptions({ commentId }: { commentId: string }) {
   const toast = useToastContext();
   const { setEditMode, editMode } = useCommentContext();
+
   const handleEdit = () => {
     setEditMode(true);
   };
@@ -143,19 +192,19 @@ function CommentFeedbackButtons({
 
     if (userReaction === 'dislike') {
       setDisLikes((prev) => prev - 1);
-      //   await disLikeComment(comment.id, 'decrement');
+      await disLikeComment(comment.id, 'decrement');
     }
 
     setLikes((prev) => prev + 1);
     setUserReaction('like');
-    // const result = await likeComment(comment.id, 'increment');
-    // if (result?.error) {
-    //   toast({
-    //     variant: 'destructive',
-    //     title: 'Uh oh! Something went wrong with reactions.',
-    //     description: result.error,
-    //   });
-    // }
+    const result = await likeComment(comment.id, 'increment');
+    if (result?.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong with reactions.',
+        description: result.error,
+      });
+    }
   };
 
   const handleDisLike = async () => {
@@ -163,19 +212,19 @@ function CommentFeedbackButtons({
 
     if (userReaction === 'like') {
       setLikes((prev) => prev - 1);
-      //   await likeComment(comment.id, 'decrement');
+      await likeComment(comment.id, 'decrement');
     }
 
     setDisLikes((prev) => prev + 1);
     setUserReaction('dislike');
-    // const result = await disLikeComment(comment.id, 'increment');
-    // if (result?.error) {
-    //   toast({
-    //     variant: 'destructive',
-    //     title: 'Uh oh! Something went wrong with reactions.',
-    //     description: result.error,
-    //   });
-    // }
+    const result = await disLikeComment(comment.id, 'increment');
+    if (result?.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong with reactions.',
+        description: result.error,
+      });
+    }
   };
 
   return (
@@ -196,7 +245,6 @@ function CommentFeedbackButtons({
           <span className="ml-2 text-sm text-muted-foreground">{disLikes}</span>
         </Button>
         <Button variant="ghost" onClick={() => setReplyMode(true)}>
-          {/* onClick={() => setIsReplying(true)} */}
           <span className="max-sm:hidden">Answer</span>
           <MessageSquareText className="hidden max-sm:block size-5" />
         </Button>
@@ -210,62 +258,36 @@ function ReplyForm({ parentId, postId }: { parentId: string; postId: string }) {
 
   return (
     replyMode && (
-      <div className=" box-border pl-4">
+      <div className="border-l box-border pl-4">
         <CommentForm
           handleCancel={() => setReplyMode(false)}
           autoFocus={true}
-          handlePost={(value) => createReplyOnComment(parentId, postId, value)}
+          handleSubmit={async (value) => {
+            await createReplyOnComment(parentId, postId, value);
+            setReplyMode(false);
+          }}
         />
-      </div>
-    )
-  );
-}
-
-function EditModeActions() {
-  const { setEditMode, editMode } = useCommentContext();
-  return (
-    editMode && (
-      <div>
-        <Button
-          className="ml-auto"
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            setEditMode(false);
-          }}
-        >
-          <span>Cancel</span>
-        </Button>
-        <Button
-          className="mx-1"
-          size="sm"
-          onClick={() => {
-            setEditMode(false);
-          }}
-        >
-          <span>Save</span>
-        </Button>
       </div>
     )
   );
 }
 //micro-components ends
 
-export default function CommentItem({ comment, postId, className }: CommentItemProps) {
+export default function CommentItem({
+  comment,
+  postId,
+  className,
+}: CommentItemProps) {
   return (
     <Comment>
-      <div className={cn(" box-border px-3 py-1 flex gap-4 items-start w-full",className)}>
+      <div className={cn(' box-border py-1 flex gap-4 items-start', className)}>
         <Avatar>
           <AvatarImage src={comment.author?.image || undefined} />
           <AvatarFallback>BC</AvatarFallback>
         </Avatar>
-        <div className="flex flex-col flex-1">
-          <CommentContent content={comment.content} />
-          <div className="flex mt-2">
-            <CommentFeedbackButtons comment={comment} />
-            <EditModeActions />
-          </div>
-        </div>
+
+        <CommentContent comment={comment} />
+
         <div>
           <CommentOptions commentId={comment.id} />
         </div>
@@ -273,11 +295,11 @@ export default function CommentItem({ comment, postId, className }: CommentItemP
       <ReplyForm parentId={comment.id} postId={postId} />
       {comment.replies.length > 0 && (
         <CommentAnswers postId={postId}>
-          <CommentAnswersTrigger commentId={comment.id}>
+          <CommentAnswersTrigger>
             {comment.replies.length} Answers
           </CommentAnswersTrigger>
           <div className="pl-4">
-            <CommentAnswersContent />
+            <CommentAnswersContent commentId={comment.id} />
           </div>
         </CommentAnswers>
       )}

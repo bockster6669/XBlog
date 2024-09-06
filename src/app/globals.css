@@ -66,8 +66,5 @@
   body {
     @apply bg-background text-foreground;
   }
-  .comment-placeholder:empty:not(:focus)::before {
-    content: 'Add comment...';
-    cursor: text;
-  }
+ 
 }

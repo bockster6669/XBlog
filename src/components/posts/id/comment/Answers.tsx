@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { CommentAnswersContext, CommentWithRepiesAndAuthor } from './types';
-import { Button, ButtonProps } from '../ui/button';
-import { cn } from '@/lib/utils';
+import { Button } from '../../../ui/button';
 import { ArrowUp, ArrowDown } from 'lucide-react';
-import { getCommentReplys } from '@/lib/actions/comment.actions';
 import CommentItem from './CommentItem';
+import { getCommentReplies } from '@/lib/actions/comment.actions';
+import useReplies from '@/hooks/useReplies';
 
 const commentAnswersContext = createContext<CommentAnswersContext | null>(null);
 
@@ -16,18 +16,12 @@ function CommentAnswersProvider({
   postId: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<CommentWithRepiesAndAuthor[] | null>(null);
 
   return (
     <commentAnswersContext.Provider
       value={{
         isOpen,
         setIsOpen,
-        isLoading,
-        setIsLoading,
-        data,
-        setData,
         postId,
       }}
     >
@@ -57,33 +51,20 @@ export function CommentAnswers({
   );
 }
 
-export function CommentAnswersTrigger({
-  children,
-  commentId,
-}: {
-  children: ReactNode;
-  commentId: string;
-}) {
-  const { isOpen, setIsOpen, setIsLoading, setData, data } =
-    useCommentAnswersContext();
+export function CommentAnswersTrigger({ children }: { children: ReactNode }) {
+  const { isOpen, setIsOpen } = useCommentAnswersContext();
 
   async function handleOnClick() {
     if (isOpen) {
       setIsOpen(false);
     } else {
-      console.log('otvori se');
       setIsOpen(true);
-      setIsLoading(true);
-      const replies = await getCommentReplys(commentId);
-      if ('error' in replies) return;
-      setData(replies);
-      setIsLoading(false);
     }
   }
 
   return (
     <Button
-      className={'rounded-full hover:bg-blue-500/15 text-blue-500'}
+      className={' hover:bg-blue-500/15'}
       variant="ghost"
       size="sm"
       onClick={handleOnClick}
@@ -98,21 +79,27 @@ export function CommentAnswersTrigger({
   );
 }
 
-export function CommentAnswersContent() {
-  const { isOpen, data, postId, isLoading } = useCommentAnswersContext();
+export function CommentAnswersContent({ commentId }: { commentId: string }) {
+  const { isOpen, postId } = useCommentAnswersContext();
+  const { error, loading, data } = useReplies<CommentWithRepiesAndAuthor[]>(
+    () => getCommentReplies(commentId)
+  );
+  console.log({ data });
 
   if (!data) return;
 
+  if (error) return <div>Sorry, can not get replies</div>;
+
   return (
     isOpen &&
-    (isLoading
+    (loading
       ? 'Loading...'
       : data.map((reply) => (
-          <div className='pl-5' key={reply.id}>
+          <div className=" ml-5" key={reply.id}>
             <CommentItem
               comment={reply}
               postId={postId}
-              className="border-l border-black"
+              className="border-l pl-5 border-slate-200"
             />
           </div>
         )))

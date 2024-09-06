@@ -4,16 +4,12 @@ import { parseDate } from '@/lib/utils';
 import React from 'react';
 import CommentItem from './CommentItem';
 import { Comment } from '@prisma/client';
-import { CommentWithRepiesAndAuthor } from './types';
-
-type CommentsListProps = {
-  comments: CommentWithRepiesAndAuthor[];
-  postId: string;
-};
+import { CommentsListProps } from './types';
 
 export default function CommentsList({ comments, postId }: CommentsListProps) {
-  console.log(comments);
-  const sortedComments = comments.sort((a: Comment, b: Comment) => {
+  const mainComments = comments.filter((comment) => !comment.parentId);
+
+  const sortedComments = mainComments.sort((a: Comment, b: Comment) => {
     return (
       parseDate(b.createdAt.toISOString()).getTime() -
       parseDate(a.createdAt.toISOString()).getTime()

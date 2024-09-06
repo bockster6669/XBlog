@@ -5,9 +5,10 @@ import { Separator } from '@/components/ui/separator';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { PostRepo } from '@/repository/post.repo';
-import CommentForm from '@/components/experimental/CommentForm';
-import CommentsList from '@/components/experimental/CommentsList';
+import CommentForm from '@/components/posts/id/comment/CommentForm';
+import CommentsList from '@/components/posts/id/comment/CommentsList';
 import { Prisma } from '@prisma/client';
+import { createComment } from '@/lib/actions/comment.actions';
 
 const fetchPost = async (params: { id: string }) => {
   try {
@@ -21,7 +22,7 @@ const fetchPost = async (params: { id: string }) => {
         comments: {
           include: {
             author: true,
-            replies: true
+            replies: true,
           },
         },
       },
@@ -61,12 +62,17 @@ export default async function page({
           <section className="mt-5">
             <span className=" font-bold">{post.comments.length} Comments</span>
             {session && session.user ? (
-              <CommentForm />
+              <CommentForm
+                handleSubmit={async (value) => {
+                  'use server';
+                  return createComment(value, post.id);
+                }}
+              />
             ) : (
               <div>You can not leave comment before signing in</div>
             )}
 
-            <CommentsList comments={post.comments} postId={post.id}/>
+            <CommentsList comments={post.comments} postId={post.id} />
           </section>
         </div>
       }
