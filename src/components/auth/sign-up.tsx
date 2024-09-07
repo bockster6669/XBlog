@@ -36,11 +36,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { registerUser } from '@/lib/actions/register.actions';
 
-type AxiosPostRegisterResponse = Exclude<
-  PostRegisterResponse,
-  { error: string }
->;
-
 export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
