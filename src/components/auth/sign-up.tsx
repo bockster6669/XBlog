@@ -19,8 +19,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios, { isAxiosError } from 'axios';
 import { signIn } from 'next-auth/react';
 import {
-  SignUpFormSchemaValues,
-  SignUpFormSchema,
+  SignUpValues,
+  SignUpSchema,
 } from '../../resolvers/sign-up-form.resolver';
 import { PostRegisterResponse } from '@/app/api/register/route';
 import {
@@ -35,6 +35,7 @@ import ErrorMessage from './error-message';
 import SuccessMessage from './success-message';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { registerUser } from '@/lib/actions/register.actions';
 
 type AxiosPostRegisterResponse = Exclude<
   PostRegisterResponse,
@@ -45,32 +46,32 @@ export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
-  const form = useForm<SignUpFormSchemaValues>({
+  const form = useForm<SignUpValues>({
     mode: 'onTouched',
     defaultValues: {
       email: '',
       password: '',
       username: '',
     },
-    resolver: zodResolver(SignUpFormSchema),
+    resolver: zodResolver(SignUpSchema),
   });
   const { isSubmitting } = form.formState;
   const router = useRouter();
 
-  const handleSubmit: SubmitHandler<SignUpFormSchemaValues> = async (
-    formData
-  ) => {
+  const handleSubmit: SubmitHandler<SignUpValues> = async (formData) => {
     setError(null);
     setSuccess(null);
     const { email, password, username } = formData;
     try {
-      await axios
-        .post<AxiosPostRegisterResponse>('/api/register', {
-          email,
-          password,
-          username,
-        })
-        .then((res) => console.log({ res }));
+      const user = await registerUser({
+        email,
+        password,
+        username,
+      });
+
+      if (user && 'error' in user) {
+        return setError(user.error);
+      }
 
       const result = await signIn('credentials', {
         email,
@@ -79,7 +80,6 @@ export default function SignUpForm() {
       });
 
       if (result?.error) {
-        console.log('imashe erorche', result);
         throw new Error(result?.error);
       }
 
@@ -87,12 +87,7 @@ export default function SignUpForm() {
       router.push('/');
     } catch (err) {
       console.log(err);
-
-      if (isAxiosError(err)) {
-        setError(err.response?.data.message);
-      } else {
-        setError('Unsuccess registration');
-      }
+      setError('Unsuccess registration');
     }
   };
 

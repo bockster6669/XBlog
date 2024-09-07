@@ -14,7 +14,7 @@ export default function Navbar() {
 
           {/* Middle: Brand name */}
           <div className="flex-1 flex justify-center">
-            <span className="font-bold text-xl text-primary">BrandName</span>
+            <span className="font-bold text-xl text-primary">XBlog</span>
           </div>
 
           {/* Right side: User actions */}

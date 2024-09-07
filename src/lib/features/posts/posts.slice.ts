@@ -5,7 +5,7 @@ import { RootState } from '@/lib/store';
 import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
 import {
   createPostAsyncFunc,
-  fetchPaginatedPostsAsyncFunc,
+  // fetchPaginatedPostsAsyncFunc,
 } from './posts-async-funcs';
 
 const initialState: initialState = {
@@ -35,34 +35,34 @@ export const postsSlice = createAppSlice({
         },
       },
     }),
-    fetchPaginatedPosts: create.asyncThunk(fetchPaginatedPostsAsyncFunc, {
-      options: {
-        condition(arg, thunkApi) {
-          const { posts } = thunkApi.getState() as RootState;
-          const status = posts.status;
-          if (status !== 'idle') {
-            return false;
-          }
-        },
-      },
-      pending: (state) => {
-        state.status = 'pending';
-      },
-      fulfilled: (state, action) => {
-        state.status = 'fulfield';
-        if ('error' in action.payload) {
-          return;
-        }
-        state.totalPosts = action.payload.totalPosts;
-        state.posts = action.payload.posts;
-      },
-      rejected: (state, action) => {
-        state.status = 'rejected';
-        state.error = action.error.message || 'Something went wrong'
-      },
-    }),
+    // fetchPaginatedPosts: create.asyncThunk(fetchPaginatedPostsAsyncFunc, {
+    //   options: {
+    //     condition(arg, thunkApi) {
+    //       const { posts } = thunkApi.getState() as RootState;
+    //       const status = posts.status;
+    //       if (status !== 'idle') {
+    //         return false;
+    //       }
+    //     },
+    //   },
+    //   pending: (state) => {
+    //     state.status = 'pending';
+    //   },
+    //   fulfilled: (state, action) => {
+    //     state.status = 'fulfield';
+    //     if ('error' in action.payload) {
+    //       return;
+    //     }
+    //     state.totalPosts = action.payload.totalPosts;
+    //     state.posts = action.payload.posts;
+    //   },
+    //   rejected: (state, action) => {
+    //     state.status = 'rejected';
+    //     state.error = action.error.message || 'Something went wrong'
+    //   },
+    // }),
   }),
 });
 
-export const { createPost, fetchPaginatedPosts } = postsSlice.actions;
+export const { createPost } = postsSlice.actions;
 export const postsReducer = postsSlice.reducer;

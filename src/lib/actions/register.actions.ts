@@ -1,17 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { SignUpFormSchema } from '../../../resolvers/sign-up-form.resolver';
-import bcrypt from 'bcryptjs';
-import { UserRepo } from '@/repository/user.repo';
+'use server';
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const validatedFields = SignUpFormSchema.safeParse(body);
+import { POST } from '@/app/api/posts/route';
+import { UserRepo } from '@/repository/user.repo';
+import { SignUpSchema, SignUpValues } from '@/resolvers/sign-up-form.resolver';
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+
+export async function registerUser(body: SignUpValues) {
+  const validatedFields = SignUpSchema.safeParse(body);
 
   if (!validatedFields.success) {
-    return NextResponse.json(
-      { message: 'invalid credentials' },
-      { status: 401 }
-    );
+    return {
+      error: 'invalid credentials',
+    };
   }
 
   const validatedFieldsData = validatedFields.data;
@@ -24,10 +25,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existsUser) {
-      return NextResponse.json(
-        { message: 'This user already exists' },
-        { status: 401 }
-      );
+      return { error: 'This user already exists' };
     }
     const hashedPass = await bcrypt.hash(validatedFieldsData.password, 10);
 
@@ -38,14 +36,9 @@ export async function POST(req: NextRequest) {
         username: validatedFieldsData.username,
       },
     });
-
-    return NextResponse.json({ message: 'Success login' }, { status: 200 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { message: 'Error accured while creating user' },
-      { status: 500 }
-    );
+    return { error: 'Error accured while creating user' };
   }
 }
 

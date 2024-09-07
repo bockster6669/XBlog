@@ -156,7 +156,7 @@ export async function getCommentReplies(commentId: string) {
     return replies;
   } catch (error) {
     const message = getErrorMessage(error);
-    throw new Error(message);
+    return { error: message };
   }
 }
 

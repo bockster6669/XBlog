@@ -1,7 +1,7 @@
 import { GetPostsResponse, PostPostsResponse } from '@/app/api/posts/route';
 import { Tag, Post, User } from '@prisma/client';
 
-export type FetchPaginatedPosts = { postPerPage: number; currentPage: number };
+// export type FetchPaginatedPosts = { postPerPage: number; currentPage: number };
 
 export type AxiosGetPostsResponse = Exclude<
   GetPostsResponse,

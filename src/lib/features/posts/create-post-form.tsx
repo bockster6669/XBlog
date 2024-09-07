@@ -14,13 +14,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
-  CreatePostFormValues,
+  CreatePostValues,
   CreatePostSchema,
 } from '../../../resolvers/create-post-form.resolver';
 import { useAppDispatch } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
-import { createPost } from './posts.slice';
 import { useToastContext } from '../../../contexts/toast.context';
 import ErrorMessage from '@/components/auth/error-message';
 import SuccessMessage from '@/components/auth/success-message';
@@ -35,6 +34,7 @@ import {
 import { Delete, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useGetTags } from '../tags/hooks';
+import { createPost } from '@/lib/actions/post.actions';
 
 export default function CreatePostForm() {
   const toast = useToastContext();
@@ -44,7 +44,7 @@ export default function CreatePostForm() {
   const { tagsList, tagsError, tagsStatus } = useGetTags();
   const istagsListLoading = tagsStatus === 'pending';
 
-  const form = useForm<CreatePostFormValues>({
+  const form = useForm<CreatePostValues>({
     mode: 'onTouched',
     defaultValues: {
       tag: '',
@@ -75,14 +75,19 @@ export default function CreatePostForm() {
   };
   const { isSubmitting } = form.formState;
 
-  const handleSuccessSubmit: SubmitHandler<CreatePostFormValues> = async (
+  const handleSuccessSubmit: SubmitHandler<CreatePostValues> = async (
     formData
   ) => {
     setError(null);
     setSuccess(null);
 
     try {
-      await dispatch(createPost(formData)).unwrap();
+      const result = await createPost(formData);
+
+      if ('error' in result) {
+        return setError(result.error);
+      }
+      
       setSuccess('Success created post');
     } catch (error) {
       const message = getErrorMessage(error);

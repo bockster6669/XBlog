@@ -15,4 +15,4 @@ export const CreatePostSchema = z.object({
 
   tags: z.array(z.object({ name: z.string().min(1) })).min(1),
 });
-export type CreatePostFormValues = z.infer<typeof CreatePostSchema>;
+export type CreatePostValues = z.infer<typeof CreatePostSchema>;

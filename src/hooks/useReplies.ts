@@ -2,7 +2,7 @@ import { getCommentReplies } from '@/lib/actions/comment.actions';
 import { getErrorMessage } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
-export default function useReplies<T>(callback: () => Promise<T>) {
+export default function useReplies<T extends object>(callback: () => Promise<T>) {
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<T | undefined>(undefined);
@@ -16,8 +16,11 @@ export default function useReplies<T>(callback: () => Promise<T>) {
         setLoading(true);
 
         const result = await callback();
+        
+        if('error' in result) {
+          throw new Error(result.error as string)
+        }
 
-        console.log('result = ', result)
         setData(result);
         setLoading(false);
       } catch (error) {
