@@ -22,7 +22,6 @@ import {
   SignUpValues,
   SignUpSchema,
 } from '../../resolvers/sign-up-form.resolver';
-import { PostRegisterResponse } from '@/app/api/register/route';
 import {
   Form,
   FormControl,
