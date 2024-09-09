@@ -9,12 +9,6 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '../../../ui/button';
 import {
-  createReplyOnComment,
-  deleteComment,
-  disLikeComment,
-  likeComment,
-} from '@/lib/actions/comment.actions';
-import {
   ThumbsUp,
   ThumbsDown,
   MessageSquareText,
@@ -32,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { cn, setCursorToEnd } from '@/lib/utils';
+import { cn, getErrorMessage, setCursorToEnd } from '@/lib/utils';
 import {
   CommentAnswers,
   CommentAnswersContent,
@@ -41,6 +35,12 @@ import {
 import useAutoResizeHeight from '@/hooks/useAutoResizeHeight';
 import { toast } from '@/components/ui/use-toast';
 import { formatDistance } from 'date-fns';
+import {
+  useAddReplieMutation,
+  useDeleteCommentMutation,
+  useGetRepliesQuery,
+  useUpdateCommentMutation,
+} from '@/lib/features/comments/comment.slice';
 
 const commentContext = createContext<CommentContext | null>(null);
 
@@ -78,10 +78,10 @@ function Comment({ children }: { children: ReactNode }) {
 function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
   const { editMode, setEditMode } = useCommentContext();
   const [value, setValue] = useState(comment.content);
-  const textarea = useAutoResizeHeight(value);
   const creationDate = formatDistance(comment.createdAt, new Date(), {
     addSuffix: true,
   });
+  const textarea = useAutoResizeHeight(value);
 
   function _handleSubmit() {}
 
@@ -138,20 +138,23 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
 function CommentOptions({ commentId }: { commentId: string }) {
   const toast = useToastContext();
   const { setEditMode, editMode } = useCommentContext();
-
+  const [deleteComment] = useDeleteCommentMutation();
   const handleEdit = () => {
     setEditMode(true);
   };
 
   const handleDelete = async () => {
-    const result = await deleteComment(commentId);
-    if (result?.error) {
+    try {
+      await deleteComment(commentId);
+    } catch (error) {
+      const message = getErrorMessage(error);
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong with reactions.',
-        description: result.error,
+        description: message,
       });
     }
+    
   };
   return (
     !editMode && (
@@ -184,45 +187,100 @@ function CommentFeedbackButtons({
   const [userReaction, setUserReaction] = useState<'none' | 'like' | 'dislike'>(
     'none'
   );
+  const [updateComment, { isLoading }] = useUpdateCommentMutation();
   const [likes, setLikes] = useState(comment.likes);
   const [disLikes, setDisLikes] = useState(comment.disLikes);
   const { setReplyMode, editMode } = useCommentContext();
+
   const handleLike = async () => {
     if (userReaction === 'like') return;
 
     if (userReaction === 'dislike') {
       setDisLikes((prev) => prev - 1);
-      await disLikeComment(comment.id, 'decrement');
+
+      try {
+        await updateComment({
+          id: comment.id,
+          data: {
+            disLikes: {
+              decrement: 1,
+            },
+          },
+        });
+      } catch (error) {
+        const message = getErrorMessage(error);
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong with reactions.',
+          description: message,
+        });
+      }
     }
 
     setLikes((prev) => prev + 1);
     setUserReaction('like');
-    const result = await likeComment(comment.id, 'increment');
-    if (result?.error) {
+
+    try {
+      await updateComment({
+        id: comment.id,
+        data: {
+          likes: {
+            increment: 1,
+          },
+        },
+      }).unwrap();
+    } catch (error) {
+      const message = getErrorMessage(error);
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong with reactions.',
-        description: result.error,
+        description: message,
       });
     }
   };
-
+  // ако си го натиснал веднъж, да се махне, ако си бил до са на лайк, да се махне лайка и да се обнови дислайка
   const handleDisLike = async () => {
     if (userReaction === 'dislike') return;
 
     if (userReaction === 'like') {
       setLikes((prev) => prev - 1);
-      await likeComment(comment.id, 'decrement');
+      try {
+        await updateComment({
+          id: comment.id,
+          data: {
+            likes: {
+              decrement: 1,
+            },
+          },
+        });
+      } catch (error) {
+        const message = getErrorMessage(error);
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong with reactions.',
+          description: message,
+        });
+      }
     }
 
     setDisLikes((prev) => prev + 1);
     setUserReaction('dislike');
-    const result = await disLikeComment(comment.id, 'increment');
-    if (result?.error) {
+
+    try {
+      await updateComment({
+        id: comment.id,
+        data: {
+          disLikes: {
+            increment: 1,
+          },
+        },
+      }).unwrap();
+    } catch (error) {
+      const message = getErrorMessage(error);
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong with reactions.',
-        description: result.error,
+        description: message,
       });
     }
   };
@@ -233,6 +291,7 @@ function CommentFeedbackButtons({
         <Button
           variant={userReaction === 'like' ? 'secondary' : 'ghost'}
           onClick={handleLike}
+          disabled={isLoading}
         >
           <ThumbsUp className="size-4" />
           <span className="ml-2 text-sm text-muted-foreground">{likes}</span>
@@ -244,7 +303,11 @@ function CommentFeedbackButtons({
           <ThumbsDown className="size-4" />
           <span className="ml-2 text-sm text-muted-foreground">{disLikes}</span>
         </Button>
-        <Button variant="ghost" onClick={() => setReplyMode(true)}>
+        <Button
+          variant="ghost"
+          onClick={() => setReplyMode(true)}
+          disabled={isLoading}
+        >
           <span className="max-sm:hidden">Answer</span>
           <MessageSquareText className="hidden max-sm:block size-5" />
         </Button>
@@ -255,7 +318,7 @@ function CommentFeedbackButtons({
 
 function ReplyForm({ parentId, postId }: { parentId: string; postId: string }) {
   const { replyMode, setReplyMode } = useCommentContext();
-
+  const [createReplie, { isLoading }] = useAddReplieMutation();
   return (
     replyMode && (
       <div className="border-l box-border pl-4">
@@ -263,7 +326,7 @@ function ReplyForm({ parentId, postId }: { parentId: string; postId: string }) {
           handleCancel={() => setReplyMode(false)}
           autoFocus={true}
           handleSubmit={async (value) => {
-            await createReplyOnComment(parentId, postId, value);
+            await createReplie({ parentId, postId, content: value });
             setReplyMode(false);
           }}
         />
@@ -278,6 +341,8 @@ export default function CommentItem({
   postId,
   className,
 }: CommentItemProps) {
+  const { data } = useGetRepliesQuery(comment.id);
+
   return (
     <Comment>
       <div className={cn(' box-border py-1 flex gap-4 items-start', className)}>
@@ -293,13 +358,15 @@ export default function CommentItem({
         </div>
       </div>
       <ReplyForm parentId={comment.id} postId={postId} />
-      {comment.replies.length > 0 && (
+      {data && data.replies.length > 0 && (
         <CommentAnswers postId={postId}>
           <CommentAnswersTrigger>
-            {comment.replies.length} Answers
+            {data.replies.length} Answers
           </CommentAnswersTrigger>
           <div className="pl-4">
-            <CommentAnswersContent commentId={comment.id} />
+            {data.replies.map((reply) => (
+              <CommentAnswersContent key={reply.id} reply={reply} />
+            ))}
           </div>
         </CommentAnswers>
       )}

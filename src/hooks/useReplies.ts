@@ -2,6 +2,7 @@ import { getErrorMessage } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
 export default function useReplies<T extends object>(callback: () => Promise<T  | {error: string}>) {
+  console.log('useReplies render')
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<T | undefined>(undefined);

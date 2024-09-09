@@ -1,55 +1,31 @@
+'use client';
+
 import React from 'react';
-import { getErrorMessage } from '@/lib/utils';
 import Post from '@/components/posts/id/Post'; // Преименувайте компонента
 import { Separator } from '@/components/ui/separator';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { PostRepo } from '@/repository/post.repo';
 import CommentForm from '@/components/posts/id/comment/CommentForm';
 import CommentsList from '@/components/posts/id/comment/CommentsList';
-import { Prisma } from '@prisma/client';
-import { createComment } from '@/lib/actions/comment.actions';
+import { useSession } from 'next-auth/react';
+import { useAddCommentMutation } from '@/lib/features/comments/comment.slice';
+import { useParams } from 'next/navigation';
+import { useGetPostQuery } from '@/lib/features/posts/posts.slice';
+// import { createComment } from '@/lib/actions/comment.actions';
 
-const fetchPost = async (params: { id: string }) => {
-  try {
-    return await PostRepo.findUnique({
-      where: {
-        id: params.id,
-      },
-      include: {
-        author: true,
-        tags: true,
-        comments: {
-          include: {
-            author: true,
-            replies: true,
-          },
-        },
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    const message = getErrorMessage(error);
-    return { error: message };
-  }
-};
-export default async function page({
-  params,
-}: {
-  params: {
-    id: string;
-  };
-}) {
-  const post = await fetchPost(params);
-  const session = await getServerSession(authOptions);
 
-  if (!post) {
-    return <div>Post does not exist</div>;
+export default function Page() {
+  const params: { id: string } = useParams();
+  const session = useSession();
+  const [addComment] = useAddCommentMutation();
+  const { data, isLoading } = useGetPostQuery(params.id);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  if ('error' in post) {
-    return <div>Something went wrong while getting post: {post.error}</div>;
+  if(!data) {
+    return <div>Post not found...</div>
   }
+  const post = data.post;
 
   return (
     <main className="size-full mt-8 p-2">
@@ -61,11 +37,12 @@ export default async function page({
 
           <section className="mt-5">
             <span className=" font-bold">{post.comments.length} Comments</span>
-            {session && session.user ? (
+            {session.status === 'loading' ? (
+              <div>Loading...</div>
+            ) : session.data?.user ? (
               <CommentForm
                 handleSubmit={async (value) => {
-                  'use server';
-                  return createComment(value, post.id);
+                  return addComment({ content: value, postId: post.id });
                 }}
               />
             ) : (

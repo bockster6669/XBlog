@@ -9,17 +9,29 @@ export function cn(...inputs: ClassValue[]) {
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
+
 export const getErrorMessage = (error: unknown): string => {
   let message: string;
-
+  console.log('error=',error)
   if (axios.isAxiosError(error)) {
-    message = error.response?.data.error || 'Something went wrong';
+    message =
+      error.response?.data.error || 'Something went wrong with the request.';
+  } else if (
+    // Check for RTKQ errors
+    error &&
+    typeof error === 'object' &&
+    'data' in error &&
+    error.data !== null &&
+    typeof error.data === 'object' &&
+    'error' in error.data
+  ) {
+    message = String((error.data as { error: string }).error);
   } else if (error instanceof Error) {
     message = error.message;
   } else if (error && typeof error === 'object' && 'message' in error) {
-    message = String(error.message);
+    message = String((error as any).message);
   } else {
-    message = JSON.stringify(error);
+    message = 'Unknown error occurred.';
   }
 
   return message;

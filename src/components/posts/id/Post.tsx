@@ -1,7 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { PostWithAutorAndTags } from '@/lib/features/posts/types';
+import { type Post, Tag, User } from '@prisma/client';
+// import { PostWithAutorAndTags } from '@/lib/features/posts/types';
 import { formatDistance } from 'date-fns';
+
+type PostWithAutorAndTags = Post & {
+  author: User,
+  tags: Tag[]
+}
 
 export default function Post({ post }: { post: PostWithAutorAndTags }) {
   const creationDate = formatDistance(post.createdAt, new Date(), {

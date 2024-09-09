@@ -1,10 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SearchIcon } from 'lucide-react';
-import PostPreview from '@/components/posts/PostPreview';
-import { PostRepo } from '@/repository/post.repo';
 import { TagRepo } from '@/repository/tag.repo';
-import { wait } from '@/lib/utils';
 import PostsList from '@/components/posts/PostsList';
 import { Suspense } from 'react';
 import PostsListSkeleton from '@/components/posts/PostPreviewSkeleton';
@@ -35,9 +32,7 @@ export default async function PostsPage() {
           ))}
         </div>
       </div>
-      <Suspense fallback={<PostsListSkeleton />}>
         <PostsList />
-      </Suspense>
     </main>
   );
 }

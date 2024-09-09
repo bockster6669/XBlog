@@ -1,6 +1,5 @@
 'use client';
 
-import { parseDate } from '@/lib/utils';
 import React from 'react';
 import CommentItem from './CommentItem';
 import { Comment } from '@prisma/client';
@@ -10,10 +9,10 @@ export default function CommentsList({ comments, postId }: CommentsListProps) {
   const mainComments = comments.filter((comment) => !comment.parentId);
 
   const sortedComments = mainComments.sort((a: Comment, b: Comment) => {
-    return (
-      parseDate(b.createdAt.toISOString()).getTime() -
-      parseDate(a.createdAt.toISOString()).getTime()
-    );
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    
+    return dateB.getTime() - dateA.getTime();
   });
 
   return (

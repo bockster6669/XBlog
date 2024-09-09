@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/options';
 import { PostRepo } from '@/repository/post.repo';
 import { TagRepo } from '@/repository/tag.repo';
+import { getErrorMessage } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-     // await PostRepo.create(
+    // await PostRepo.create(
     //   createPostArgs(title, content, excerpt, tagIds, session.user.email)
     // );
     await PostRepo.create({
@@ -75,45 +76,68 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const skip = Number(searchParams.get('skip')) || 0;
-  const take = Number(searchParams.get('take')) || 10;
-
+export async function GET() {
   try {
-    const totalPosts = await PostRepo.countPosts();
     const posts = await PostRepo.findMany({
-      skip,
-      take,
       include: {
-        tags: true,
         author: true,
+        tags: true,
+        comments: {
+          include: {
+            author: true,
+          },
+        },
       },
     });
-
-    return NextResponse.json(
-      {
-        posts,
-        totalPosts,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({ posts }, { status: 200 });
   } catch (error) {
-    console.log(error);
+    const message = getErrorMessage(error);
     return NextResponse.json(
-      { error: 'Failed to retrieve posts' },
-      { status: 500 }
+      { error: 'Can not get posts' + message },
+      { status: 200 }
     );
   }
 }
 
-export type GetPostsResponse = Awaited<
-  ReturnType<typeof GET>
-> extends NextResponse<infer T>
-  ? T
-  : never;
-export type PostPostsResponse = Awaited<
-  ReturnType<typeof POST>
-> extends NextResponse<infer T>
-  ? T
-  : never;
+// export async function GET(request: NextRequest) {
+//   const searchParams = request.nextUrl.searchParams;
+//   const skip = Number(searchParams.get('skip')) || 0;
+//   const take = Number(searchParams.get('take')) || 10;
+
+//   try {
+//     const totalPosts = await PostRepo.countPosts();
+//     const posts = await PostRepo.findMany({
+//       skip,
+//       take,
+//       include: {
+//         tags: true,
+//         author: true,
+//       },
+//     });
+
+//     return NextResponse.json(
+//       {
+//         posts,
+//         totalPosts,
+//       },
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.log(error);
+//     return NextResponse.json(
+//       { error: 'Failed to retrieve posts' },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+// export type GetPostsResponse = Awaited<
+//   ReturnType<typeof GET>
+// > extends NextResponse<infer T>
+//   ? T
+//   : never;
+// export type PostPostsResponse = Awaited<
+//   ReturnType<typeof POST>
+// > extends NextResponse<infer T>
+//   ? T
+//   : never;

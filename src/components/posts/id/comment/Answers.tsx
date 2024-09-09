@@ -3,8 +3,6 @@ import { CommentAnswersContext, CommentWithRepiesAndAuthor } from './types';
 import { Button } from '../../../ui/button';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import CommentItem from './CommentItem';
-import { getCommentReplies } from '@/lib/actions/comment.actions';
-import useReplies from '@/hooks/useReplies';
 
 const commentAnswersContext = createContext<CommentAnswersContext | null>(null);
 
@@ -79,29 +77,18 @@ export function CommentAnswersTrigger({ children }: { children: ReactNode }) {
   );
 }
 
-export function CommentAnswersContent({ commentId }: { commentId: string }) {
+export function CommentAnswersContent({ reply }: { reply: any }) {
   const { isOpen, postId } = useCommentAnswersContext();
-  const { error, loading, data } = useReplies<CommentWithRepiesAndAuthor[]>(
-    () => getCommentReplies(commentId)
-  );
-  console.log({ data });
-
-  if (!data) return;
-
-  if (error) return <div>Sorry, can not get replies</div>;
 
   return (
-    isOpen &&
-    (loading
-      ? 'Loading...'
-      : data.map((reply) => (
-          <div className=" ml-5" key={reply.id}>
-            <CommentItem
-              comment={reply}
-              postId={postId}
-              className="border-l pl-5 border-slate-200"
-            />
-          </div>
-        )))
+    isOpen && (
+      <div className=" ml-5" key={reply.id}>
+        <CommentItem
+          comment={reply}
+          postId={postId}
+          className="border-l pl-5 border-slate-200"
+        />
+      </div>
+    )
   );
 }

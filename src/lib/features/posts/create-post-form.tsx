@@ -17,7 +17,6 @@ import {
   CreatePostValues,
   CreatePostSchema,
 } from '../../../resolvers/create-post-form.resolver';
-import { useAppDispatch } from '@/lib/hooks';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { useToastContext } from '../../../contexts/toast.context';
@@ -33,16 +32,21 @@ import {
 } from '@/components/ui/card';
 import { Delete, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useGetTags } from '../tags/hooks';
-import { createPost } from '@/lib/actions/post.actions';
+import { useGetTagsQuery } from '../tags/tags.slice';
+import { useAddPostMutation } from './posts.slice';
 
 export default function CreatePostForm() {
   const toast = useToastContext();
-  const dispatch = useAppDispatch();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { tagsList, tagsError, tagsStatus } = useGetTags();
-  const istagsListLoading = tagsStatus === 'pending';
+  const {
+    data,
+    isLoading,
+    isError,
+    error: queryError,
+  } = useGetTagsQuery();
+  const istagsListLoading = isLoading;
+  const tagsList = data?.tags;
 
   const form = useForm<CreatePostValues>({
     mode: 'onTouched',
@@ -60,6 +64,9 @@ export default function CreatePostForm() {
     control: form.control,
   });
 
+  const { isSubmitting } = form.formState;
+  const [addPost] = useAddPostMutation();
+
   const handleAddtag: () => void = async () => {
     const isValid = await form.trigger('tag');
     if (!isValid) return;
@@ -73,7 +80,6 @@ export default function CreatePostForm() {
       form.trigger('tag');
     }
   };
-  const { isSubmitting } = form.formState;
 
   const handleSuccessSubmit: SubmitHandler<CreatePostValues> = async (
     formData
@@ -82,13 +88,9 @@ export default function CreatePostForm() {
     setSuccess(null);
 
     try {
-      const result = await createPost(formData);
-
-      if ('error' in result) {
-        return setError(result.error);
-      }
-      
-      setSuccess('Success created post');
+      const result = await addPost(formData).unwrap();
+      console.log(result)
+      setSuccess(result.success);
     } catch (error) {
       const message = getErrorMessage(error);
       setError(message);
@@ -105,14 +107,20 @@ export default function CreatePostForm() {
   };
 
   useEffect(() => {
-    if (tagsError) {
+    if (isError && queryError && 'data' in queryError) {
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: tagsError,
+        description: (queryError.data as { error: string }).error,
+      });
+    } else if (isError) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'An unexpected error occurred.',
       });
     }
-  }, [tagsError, toast]);
+  }, [isError, queryError, toast]);
 
   return (
     <Card>
@@ -198,9 +206,10 @@ export default function CreatePostForm() {
                         }}
                       />
                       <datalist id="tag-suggestions">
-                        {tagsList.map((tag) => (
-                          <option value={tag.name} key={tag.id} />
-                        ))}
+                        {tagsList &&
+                          tagsList.map((tag) => (
+                            <option value={tag.name} key={tag.id} />
+                          ))}
                       </datalist>
                       <Button
                         type="button"

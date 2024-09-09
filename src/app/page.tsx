@@ -15,9 +15,9 @@ import { Badge } from '@/components/ui/badge';
 export default function BlogHomepage() {
   const categories = ['Technology', 'Travel', 'Food', 'Lifestyle', 'Health'];
   const authors = [
-    { name: 'Alice Johnson', avatar: '/placeholder.svg?height=40&width=40' },
-    { name: 'Bob Smith', avatar: '/placeholder.svg?height=40&width=40' },
-    { name: 'Carol Williams', avatar: '/placeholder.svg?height=40&width=40' },
+    { name: 'Alice Johnson', avatar: '' },
+    { name: 'Bob Smith', avatar: '' },
+    { name: 'Carol Williams', avatar: '' },
   ];
   return (
     <div className="min-h-screen bg-background">
@@ -85,7 +85,7 @@ export default function BlogHomepage() {
                   <Card key={i}>
                     <CardHeader>
                       <img
-                        src={`/placeholder.svg?height=200&width=400`}
+                        src={``}
                         alt={`Featured post ${i}`}
                         className="w-full h-48 object-cover rounded-t-lg"
                       />

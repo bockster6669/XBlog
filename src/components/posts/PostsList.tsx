@@ -1,23 +1,26 @@
+'use client';
+
 import React from 'react';
 import PostPreview from './PostPreview';
-import { getPosts } from '@/lib/actions/post.actions';
+import { useGetPostsQuery } from '@/lib/features/posts/posts.slice';
+import PostsListSkeleton from './PostPreviewSkeleton';
 
-export default async function PostsList() {
-  const posts = await getPosts();
+export default function PostsList() {
+  const { isError, error, isLoading, data } = useGetPostsQuery();
 
-  if ('error' in posts) {
+  if (isError) {
+    console.log(error);
     return <div>Error while getting posts</div>;
   }
 
-  return (
+  return isLoading ? (
+    <PostsListSkeleton />
+  ) : (
     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      {posts.length > 0 ? (
-        posts.map((post) => {
+      {data &&
+        data.posts.map((post) => {
           return <PostPreview key={post.id} post={post} />;
-        })
-      ) : (
-        <p className="text-xl text-muted-foreground">No posts were found</p>
-      )}
+        })}
     </div>
   );
 }

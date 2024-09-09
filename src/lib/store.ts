@@ -1,13 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { postsReducer } from './features/posts/posts.slice';
-import { tagsReducer } from './features/tags/tags.slice';
+import { apiSlice } from './features/api/apiSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      posts: postsReducer,
-      tags: tagsReducer,
+      [apiSlice.reducerPath]: apiSlice.reducer,
     },
+    middleware: (getDefauldMiddlewre)=> getDefauldMiddlewre().concat(apiSlice.middleware)
   });
 };
 

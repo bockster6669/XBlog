@@ -41,9 +41,3 @@ export async function registerUser(body: SignUpValues) {
     return { error: 'Error accured while creating user' };
   }
 }
-
-export type PostRegisterResponse = Awaited<
-  ReturnType<typeof POST>
-> extends NextResponse<infer T>
-  ? T
-  : never;

@@ -1,68 +1,58 @@
-import {
-  type initialState,
-} from './types';
-import { RootState } from '@/lib/store';
-import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
-import {
-  createPostAsyncFunc,
-  // fetchPaginatedPostsAsyncFunc,
-} from './posts-async-funcs';
+import { Prisma } from '@prisma/client';
+import { apiSlice } from '../api/apiSlice';
+import { CreatePostValues } from '@/resolvers/create-post-form.resolver';
 
-const initialState: initialState = {
-  posts: [],
-  totalPosts: 0,
-  status: 'idle',
-  createPostStatus: 'idle',
-  error: null,
-};
-
-export const createAppSlice = buildCreateSlice({
-  creators: { asyncThunk: asyncThunkCreator },
-});
-
-export const postsSlice = createAppSlice({
-  name: 'posts',
-  initialState,
-  reducers: (create) => ({
-    createPost: create.asyncThunk(createPostAsyncFunc, {
-      options: {
-        condition(arg, thunkApi) {
-          const { posts } = thunkApi.getState() as RootState;
-          const status = posts.createPostStatus;
-          if (status !== 'idle') {
-            return false;
-          }
-        },
+const postsData = Prisma.validator<Prisma.PostFindManyArgs>()({
+  include: {
+    author: true,
+    tags: true,
+    comments: {
+      include: {
+        author: true,
       },
+    },
+  },
+});
+type PostsData = Prisma.PostGetPayload<typeof postsData>
+
+const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
+  where: {
+    id: 'a',
+  },
+  include: {
+    author: true,
+    tags: true,
+    comments: {
+      include: {
+        author: true,
+        replies: true,
+      },
+    },
+  },
+});
+type PostData = Prisma.PostGetPayload<typeof postData>
+
+
+export const apiSliceWithPosts = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    getPosts: builder.query<{ posts: PostsData[] }, void>({
+      query: () => '/posts',
+      providesTags: ['PostsList'],
     }),
-    // fetchPaginatedPosts: create.asyncThunk(fetchPaginatedPostsAsyncFunc, {
-    //   options: {
-    //     condition(arg, thunkApi) {
-    //       const { posts } = thunkApi.getState() as RootState;
-    //       const status = posts.status;
-    //       if (status !== 'idle') {
-    //         return false;
-    //       }
-    //     },
-    //   },
-    //   pending: (state) => {
-    //     state.status = 'pending';
-    //   },
-    //   fulfilled: (state, action) => {
-    //     state.status = 'fulfield';
-    //     if ('error' in action.payload) {
-    //       return;
-    //     }
-    //     state.totalPosts = action.payload.totalPosts;
-    //     state.posts = action.payload.posts;
-    //   },
-    //   rejected: (state, action) => {
-    //     state.status = 'rejected';
-    //     state.error = action.error.message || 'Something went wrong'
-    //   },
-    // }),
+    getPost: builder.query<{ post: PostData }, string>({
+      query: (postId) => `/posts/${postId}`,
+      // providesTags: ['PostsList'],
+    }),
+    addPost: builder.mutation<{ success: string }, CreatePostValues>({
+      query: (newPost) => ({
+        url: '/posts',
+        method: 'POST',
+        body: newPost,
+      }),
+      invalidatesTags: ['PostsList'],
+    }),
   }),
 });
 
-export const { createPost } = postsSlice.actions;
-export const postsReducer = postsSlice.reducer;
+export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery } =
+  apiSliceWithPosts;
