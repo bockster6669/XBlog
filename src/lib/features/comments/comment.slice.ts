@@ -18,56 +18,76 @@ type newReplie = {
   parentId: string;
 };
 
-export const apiSliceWithComments = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getComments: builder.query<CommentWithRepliesAndAuthor[], string>({
-      query: (postId) => `comments?postId=${postId}`,
-      // providesTags: (result) =>
-      //   result
-      //     ? [...result.comments.map(({ id }) => ({ type: 'Comment' as const, id })), 'Comment']
-      //     : ['Comment'],
-      // providesTags: ()=>['Comments']
-    }),
-    updateComment: builder.mutation<
-      Comment,
-      { id: string; data: Prisma.CommentUpdateInput }
-    >({
-      query: (obj) => ({
-        url: `/comments/${obj.id}`,
-        method: 'PATCH',
-        body: obj,
+export const apiSliceWithComments = apiSlice
+  .enhanceEndpoints({ addTagTypes: ['Replies', 'Comment'] })
+  .injectEndpoints({
+    endpoints: (builder) => ({
+      getComments: builder.query<{comments:CommentWithRepliesAndAuthor[], commentsCount: number}, string>({
+        query: (postId) => `comments?postId=${postId}`,
+        providesTags: (result, error, arg) =>
+          result
+            ? [
+                ...result.comments.map(({ id }) => ({ type: 'Comment' as const, id })),
+                'Comment',
+              ]
+            : [{ type: 'Comment', id: arg }],
       }),
-      // invalidatesTags: [{ type: 'Comment', id: 1 }],
-    }),
-    deleteComment: builder.mutation<Comment, string>({
-      query: (commentId) => ({
-        url: `/comments/${commentId}`,
-        method: 'DELETE',
+      updateComment: builder.mutation<
+        Comment,
+        { id: string; data: Prisma.CommentUpdateInput }
+      >({
+        query: (obj) => ({
+          url: `/comments/${obj.id}`,
+          method: 'PATCH',
+          body: obj,
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Comment', id: result?.id },
+        ],
       }),
-      //   invalidatesTags: ['Replies']
-    }),
-    addComment: builder.mutation<Comment, { content: string; postId: string }>({
-      query: (body) => ({
-        url: `/comments`,
-        method: 'POST',
-        body,
+      deleteComment: builder.mutation<Comment, string>({
+        query: (commentId) => ({
+          url: `/comments/${commentId}`,
+          method: 'DELETE',
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Comment', id: result?.postId },
+        ],
       }),
-      //   invalidatesTags: ['Replies']
-    }),
-    getReplies: builder.query<CommentWithRepliesAndAuthor[], string>({
-      query: (commentId) => `/comments/${commentId}/replies`,
-      providesTags: ['Replies'],
-    }),
-    addReplie: builder.mutation<Tag[], newReplie>({
-      query: (newReplie) => ({
-        url: `/comments/${newReplie.parentId}/replies`,
-        method: 'POST',
-        body: newReplie,
+      addComment: builder.mutation<
+        Comment,
+        { content: string; postId: string }
+      >({
+        query: (body) => ({
+          url: `/comments`,
+          method: 'POST',
+          body,
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Comment', id: result?.postId },
+        ],
       }),
-      invalidatesTags: ['Replies'],
+      getReplies: builder.query<CommentWithRepliesAndAuthor[], string>({
+        query: (commentId) => `/comments/${commentId}/replies`,
+        providesTags: (result, error, arg) => [
+          {
+            type: 'Replies',
+            id: arg,
+          },
+        ],
+      }),
+      addReplie: builder.mutation<Comment, newReplie>({
+        query: (newReplie) => ({
+          url: `/comments/${newReplie.parentId}/replies`,
+          method: 'POST',
+          body: newReplie,
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Replies', id: result!.parentId! },
+        ],
+      }),
     }),
-  }),
-});
+  });
 
 export const {
   useGetCommentsQuery,

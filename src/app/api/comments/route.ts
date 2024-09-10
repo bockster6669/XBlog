@@ -97,6 +97,7 @@ export async function GET(req: NextRequest) {
         author: true,
       },
     });
+    const commentsCount = await CommentRepo.count()
 
     if (comments.length === 0) {
       return NextResponse.json(
@@ -105,7 +106,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json(comments, { status: 200 }); // 200 OK
+    return NextResponse.json({comments, commentsCount}, { status: 200 }); // 200 OK
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error fetching comments:', message); // Логиране на грешката за по-добро дебъгване

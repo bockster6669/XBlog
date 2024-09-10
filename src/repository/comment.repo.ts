@@ -25,4 +25,8 @@ export class CommentRepo {
   ): Promise<Array<Prisma.CommentGetPayload<T>>> {
     return await db.comment.findMany(args);
   }
+
+  static async count(): Promise<number> {
+    return await db.comment.count();
+  }
 }

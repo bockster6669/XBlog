@@ -13,7 +13,7 @@ const postsData = Prisma.validator<Prisma.PostFindManyArgs>()({
     },
   },
 });
-type PostsData = Prisma.PostGetPayload<typeof postsData>
+type PostsData = Prisma.PostGetPayload<typeof postsData>;
 
 const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
   where: {
@@ -24,28 +24,30 @@ const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
     tags: true,
   },
 });
-type PostData = Prisma.PostGetPayload<typeof postData>
+type PostData = Prisma.PostGetPayload<typeof postData>;
 
-
-export const apiSliceWithPosts = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getPosts: builder.query<PostsData[], void>({
-      query: () => '/posts',
-      providesTags: ['PostsList'],
-    }),
-    getPost: builder.query<PostData, string>({
-      query: (postId) => `/posts/${postId}`,
-    }),
-    addPost: builder.mutation<Post, CreatePostValues>({
-      query: (newPost) => ({
-        url: '/posts',
-        method: 'POST',
-        body: newPost,
+export const apiSliceWithPosts = apiSlice
+  .enhanceEndpoints({ addTagTypes: ['Post'] })
+  .injectEndpoints({
+    endpoints: (builder) => ({
+      getPosts: builder.query<PostsData[], void>({
+        query: () => '/posts',
+        providesTags: ['Post'],
       }),
-      invalidatesTags: ['PostsList'],
+      getPost: builder.query<PostData, string>({
+        query: (postId) => `/posts/${postId}`,
+        providesTags: (result, error, arg) => [{ type: 'Post', id: arg }],
+      }),
+      addPost: builder.mutation<Post, CreatePostValues>({
+        query: (newPost) => ({
+          url: '/posts',
+          method: 'POST',
+          body: newPost,
+        }),
+        invalidatesTags: ['Post'],
+      }),
     }),
-  }),
-});
+  });
 
 export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery } =
   apiSliceWithPosts;

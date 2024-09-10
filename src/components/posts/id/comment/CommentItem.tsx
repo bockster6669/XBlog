@@ -1,6 +1,12 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import {
   CommentContext,
   CommentItemProps,
@@ -85,7 +91,8 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
   const [updateComment] = useUpdateCommentMutation();
   const toast = useToastContext();
 
-  function _handleSubmit() {
+  function _handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     try {
       updateComment({
         id: comment.id,
@@ -101,6 +108,7 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
         description: message,
       });
     }
+    setEditMode(false);
   }
 
   function _handleCancel() {
@@ -108,7 +116,7 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
   }
 
   return editMode ? (
-    <form className="flex flex-col flex-1">
+    <form className="flex flex-col flex-1" onSubmit={_handleSubmit}>
       <textarea
         ref={textarea}
         rows={1}
@@ -131,7 +139,6 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
         <Button
           className="mx-2 rounded-full px-5"
           size="sm"
-          onClick={_handleSubmit}
           disabled={!value.trim()}
           type="submit"
         >
@@ -380,7 +387,7 @@ export default function CommentItem({
           <CommentAnswersTrigger>
             {replies.length} Answers
           </CommentAnswersTrigger>
-          <div className="pl-4">
+          <div className="pl-5">
             {replies.map((reply) => (
               <CommentAnswersContent key={reply.id} reply={reply} />
             ))}

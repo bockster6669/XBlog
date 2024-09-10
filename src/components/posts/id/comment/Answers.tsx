@@ -82,7 +82,7 @@ export function CommentAnswersContent({ reply }: { reply: any }) {
 
   return (
     isOpen && (
-      <div className=" ml-5" key={reply.id}>
+      <div key={reply.id}>
         <CommentItem
           comment={reply}
           postId={postId}

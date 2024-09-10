@@ -5,24 +5,61 @@ export const CreateCommentSchema = z.object({
   postId: z.string().min(1, 'postId cannot be empty or only spaces'),
 });
 
-export const UpdateCommentSchema = z.object({
-  data: z.object({
-    content: z
-      .string()
-      .trim()
-      .min(1, 'Content cannot be empty or only spaces')
-      .optional(),
-    likes: z
+const likesSchema = z.union([
+  z.object({
+    increment: z
       .number()
       .optional()
       .refine((val) => val === 1, {
-        message: 'Comment can not be updated with more than one like',
-      }),
-    disLikes: z
-      .number()
-      .optional()
-      .refine((val) => val === 1, {
-        message: 'Comment can not be updated with more than one disLike',
+        message: 'Like increment value must be exactly 1',
       }),
   }),
-});
+  z.object({
+    decrement: z
+      .number()
+      .optional()
+      .refine((val) => val === 1, {
+        message: 'Like decrement value must be exactly 1',
+      }),
+  }),
+]);
+
+const disLikesSchema = z.union([
+  z.object({
+    increment: z
+      .number()
+      .optional()
+      .refine((val) => val === 1, {
+        message: 'Dislike increment value must be exactly 1',
+      }),
+  }),
+  z.object({
+    decrement: z
+      .number()
+      .optional()
+      .refine((val) => val === 1, {
+        message: 'Dislike decrement value must be exactly 1',
+      }),
+  }),
+]);
+
+export const UpdateCommentSchema = z.union([
+  z.object({
+    data: z.object({
+      content: z
+        .string()
+        .trim()
+        .min(1, 'Content cannot be empty or only spaces'),
+    }),
+  }),
+  z.object({
+    data: z.object({
+      likes: likesSchema,
+    }),
+  }),
+  z.object({
+    data: z.object({
+      disLikes: disLikesSchema,
+    }),
+  }),
+]);

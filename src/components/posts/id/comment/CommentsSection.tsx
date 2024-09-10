@@ -12,7 +12,7 @@ import { useSession } from 'next-auth/react';
 export default function CommentsSection({ postId }: { postId: string }) {
   const session = useSession();
   const [addComment] = useAddCommentMutation();
-  const { isLoading, data: comments } = useGetCommentsQuery(postId);
+  const { isLoading, data } = useGetCommentsQuery(postId);
 
   if(isLoading) {
     return <div>Loading</div>
@@ -21,7 +21,7 @@ export default function CommentsSection({ postId }: { postId: string }) {
   return (
     <section className="mt-5">
       <span className=" font-bold">
-        {comments && `${comments.length} Comments`} 
+        {data?.commentsCount && `${data?.commentsCount} Comments`} 
       </span>
       {session.status === 'loading' ? (
         <div>Loading...</div>
@@ -36,7 +36,7 @@ export default function CommentsSection({ postId }: { postId: string }) {
         <div>You can not leave comment before signing in</div>
       )}
 
-      {comments && <CommentsList postId={postId} comments={comments} />}
+      {data?.comments && <CommentsList postId={postId} comments={data?.comments} />}
     </section>
   );
 }
