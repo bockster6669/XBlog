@@ -3,8 +3,6 @@ import { Button } from '@/components/ui/button';
 import { SearchIcon } from 'lucide-react';
 import { TagRepo } from '@/repository/tag.repo';
 import PostsList from '@/components/posts/PostsList';
-import { Suspense } from 'react';
-import PostsListSkeleton from '@/components/posts/PostPreviewSkeleton';
 
 export default async function PostsPage() {
   const tags = await TagRepo.findMany();

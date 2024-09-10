@@ -4,38 +4,50 @@ import { UserRepo } from '@/repository/user.repo';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '../auth/[...nextauth]/options';
+import { CreateCommentSchema } from '@/resolvers/comment.resolver';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { content, postId } = body;
+
+  const validatedFields = CreateCommentSchema.safeParse(body)
+
+  if (!validatedFields.success) {
+    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    return NextResponse.json(
+      { error: errorMessages },
+      { status: 400 } // 400 Bad Request
+    );
+  }
+
+  const { content, postId } = validatedFields.data;
+
   try {
     const trimContent = content.trim();
     if (!trimContent) {
-      return {
-        error: 'Can not create comment with empty text',
-      };
+      return NextResponse.json(
+        { error: 'Cannot create comment with empty text' },
+        { status: 400 } // 400 Bad Request
+      );
     }
 
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user || !session.user.email)
-      return {
-        error:
-          'User tried to create post, but its coresponding profile was not found',
-      };
+    if (!session || !session.user || !session.user.email) {
+      return NextResponse.json(
+        { error: 'User is not authenticated or session is invalid' },
+        { status: 401 } // 401 Unauthorized
+      );
+    }
 
     const user = await UserRepo.findUnique({
       where: { email: session.user.email },
     });
 
     if (!user) {
-      console.log(
-        'User tried to create post, but its coresponding profile was not found'
+      return NextResponse.json(
+        { error: 'User profile not found' },
+        { status: 404 } // 404 Not Found
       );
-      return {
-        error:
-          'User tried to create post, but its coresponding profile was not found',
-      };
     }
 
     const newComment = await CommentRepo.create({
@@ -49,10 +61,57 @@ export async function POST(req: NextRequest) {
         },
       },
     });
-    console.log('Comment created:', newComment);
-    return NextResponse.json({ newComment }, { status: 200 });
+
+    return NextResponse.json(newComment, { status: 201 }); // 201 Created
   } catch (error) {
     const message = getErrorMessage(error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Error creating a comment:', message); // Логиране на грешката за по-добро дебъгване
+    return NextResponse.json(
+      { error: 'Internal server error: ' + message },
+      { status: 500 } // 500 Internal Server Error
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const postId = searchParams.get('postId');
+
+  if (!postId) {
+    return NextResponse.json(
+      { error: 'You must provide postId as a search parameter' },
+      { status: 400 } // 400 Bad Request
+    );
+  }
+
+  try {
+    const comments = await CommentRepo.findMany({
+      where: {
+        AND: {
+          postId,
+          parentId: null,
+        },
+      },
+      include: {
+        replies: true,
+        author: true,
+      },
+    });
+
+    if (comments.length === 0) {
+      return NextResponse.json(
+        { message: 'No comments found for this post' },
+        { status: 404 } // 404 Not Found
+      );
+    }
+
+    return NextResponse.json(comments, { status: 200 }); // 200 OK
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error('Error fetching comments:', message); // Логиране на грешката за по-добро дебъгване
+    return NextResponse.json(
+      { error: 'Failed to fetch comments: ' + message },
+      { status: 500 } // 500 Internal Server Error
+    );
   }
 }

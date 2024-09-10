@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import {
   CommentContext,
   CommentItemProps,
@@ -82,8 +82,26 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
     addSuffix: true,
   });
   const textarea = useAutoResizeHeight(value);
+  const [updateComment] = useUpdateCommentMutation();
+  const toast = useToastContext();
 
-  function _handleSubmit() {}
+  function _handleSubmit() {
+    try {
+      updateComment({
+        id: comment.id,
+        data: {
+          content: value,
+        },
+      }).unwrap();
+    } catch (error) {
+      const message = getErrorMessage(error);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong with reactions.',
+        description: message,
+      });
+    }
+  }
 
   function _handleCancel() {
     setEditMode(false);
@@ -154,7 +172,6 @@ function CommentOptions({ commentId }: { commentId: string }) {
         description: message,
       });
     }
-    
   };
   return (
     !editMode && (
@@ -341,7 +358,7 @@ export default function CommentItem({
   postId,
   className,
 }: CommentItemProps) {
-  const { data } = useGetRepliesQuery(comment.id);
+  const { data: replies } = useGetRepliesQuery(comment.id);
 
   return (
     <Comment>
@@ -358,13 +375,13 @@ export default function CommentItem({
         </div>
       </div>
       <ReplyForm parentId={comment.id} postId={postId} />
-      {data && data.replies.length > 0 && (
+      {replies && replies.length > 0 && (
         <CommentAnswers postId={postId}>
           <CommentAnswersTrigger>
-            {data.replies.length} Answers
+            {replies.length} Answers
           </CommentAnswersTrigger>
           <div className="pl-4">
-            {data.replies.map((reply) => (
+            {replies.map((reply) => (
               <CommentAnswersContent key={reply.id} reply={reply} />
             ))}
           </div>

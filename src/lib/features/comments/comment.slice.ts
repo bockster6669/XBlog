@@ -20,6 +20,14 @@ type newReplie = {
 
 export const apiSliceWithComments = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getComments: builder.query<CommentWithRepliesAndAuthor[], string>({
+      query: (postId) => `comments?postId=${postId}`,
+      // providesTags: (result) =>
+      //   result
+      //     ? [...result.comments.map(({ id }) => ({ type: 'Comment' as const, id })), 'Comment']
+      //     : ['Comment'],
+      // providesTags: ()=>['Comments']
+    }),
     updateComment: builder.mutation<
       Comment,
       { id: string; data: Prisma.CommentUpdateInput }
@@ -29,7 +37,7 @@ export const apiSliceWithComments = apiSlice.injectEndpoints({
         method: 'PATCH',
         body: obj,
       }),
-      //   invalidatesTags: ['Replies']
+      // invalidatesTags: [{ type: 'Comment', id: 1 }],
     }),
     deleteComment: builder.mutation<Comment, string>({
       query: (commentId) => ({
@@ -46,14 +54,11 @@ export const apiSliceWithComments = apiSlice.injectEndpoints({
       }),
       //   invalidatesTags: ['Replies']
     }),
-    getReplies: builder.query<
-      { replies: CommentWithRepliesAndAuthor[] },
-      string
-    >({
+    getReplies: builder.query<CommentWithRepliesAndAuthor[], string>({
       query: (commentId) => `/comments/${commentId}/replies`,
       providesTags: ['Replies'],
     }),
-    addReplie: builder.mutation<{ tags: Tag[] }, newReplie>({
+    addReplie: builder.mutation<Tag[], newReplie>({
       query: (newReplie) => ({
         url: `/comments/${newReplie.parentId}/replies`,
         method: 'POST',
@@ -65,6 +70,7 @@ export const apiSliceWithComments = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetCommentsQuery,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useAddCommentMutation,

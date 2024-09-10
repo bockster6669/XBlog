@@ -17,7 +17,7 @@ export const apiAuthRegex = /^\/api\/auth(\/.*)?$|^\/api\/register$/;
  * These routes do not require authentication
  * @type {string[]}
  */
-export const publicRoutes = ['/', '/about', '/api/comments/1/replies'];
+export const publicRoutes = ['/', '/about'];
 
 /**
  * The default redirect path after logging in

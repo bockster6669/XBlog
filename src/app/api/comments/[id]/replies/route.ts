@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '../../../auth/[...nextauth]/options';
 import { UserRepo } from '@/repository/user.repo';
+import { CreateCommentSchema } from '@/resolvers/comment.resolver';
 
 export async function GET(
   req: NextRequest,
@@ -11,20 +12,29 @@ export async function GET(
 ) {
   const { id } = params;
 
+  if (!id) {
+    return NextResponse.json(
+      { error: 'ID parameter is missing.' },
+      { status: 400 }
+    );
+  }
+
   try {
     const replies = await CommentRepo.findMany({
-      where: {
-        parentId: id,
-      },
+      where: { parentId: id },
       include: {
         author: true,
         replies: true,
       },
     });
-    return NextResponse.json({ replies }, { status: 200 });
+    return NextResponse.json(replies, { status: 200 });
   } catch (error) {
     const message = getErrorMessage(error);
-    return NextResponse.json({ error: message }, { status: 400 });
+    console.error('Error while getting replies:', message);  // Log error for debugging
+    return NextResponse.json(
+      { error: `Error while getting replies: ${message}` },
+      { status: 500 }
+    );
   }
 }
 
@@ -34,79 +44,73 @@ export async function POST(
 ) {
   const { id } = params;
 
+  if (!id) {
+    return NextResponse.json(
+      { error: 'ID parameter is missing.' },
+      { status: 400 }
+    );
+  }
+
   const body = await req.json();
+  
+  const validatedFields = CreateCommentSchema.safeParse(body)
+
+  if (!validatedFields.success) {
+    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    return NextResponse.json(
+      { error: errorMessages },
+      { status: 400 } // 400 Bad Request
+    );
+  }
   const { content, postId } = body;
-  console.log({postId, id})
+
   try {
     const trimContent = content.trim();
     if (!trimContent) {
       return NextResponse.json(
-        {
-          error: 'You can not create a comment with empty content',
-        },
+        { error: 'Cannot create a comment with empty content.' },
         { status: 400 }
       );
     }
+
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user || !session.user.email)
+    if (!session || !session.user?.email) {
+      console.warn('User session is missing or invalid.');  // Log warning for debugging
       return NextResponse.json(
-        {
-          error:
-            'The user tried to create a comment, but the corresponding session was not found',
-        },
+        { error: 'User is not authenticated or session is invalid.' },
         { status: 401 }
       );
+    }
 
     const user = await UserRepo.findUnique({
       where: { email: session.user.email },
     });
 
     if (!user) {
-      console.log(
-        'The user tried to create a comment, but the corresponding profile was not found'
-      );
+      console.warn('User profile not found for email:', session.user.email);  // Log warning for debugging
       return NextResponse.json(
-        {
-          error:
-            'The user tried to create a comment, but the corresponding profile was not found',
-        },
+        { error: 'User profile not found.' },
         { status: 404 }
       );
     }
+
     const newReply = await CommentRepo.create({
       data: {
         content: trimContent,
-        author: {
-          connect: { id: user.id },
-        },
-        post: {
-          connect: { id: postId },
-        },
-        parent: {
-          connect: {
-            id: id,
-          },
-        },
+        author: { connect: { id: user.id } },
+        post: { connect: { id: postId } },
+        parent: { connect: { id: id } },
       },
     });
-    console.log('she go suzdade')
 
-    console.log('Replie was created:', newReply);
-    return NextResponse.json(
-      {
-        newReply,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json(newReply, { status: 201 });  // 201 Created
   } catch (error) {
-    console.log(error)
     const message = getErrorMessage(error);
+    console.error('Error while creating reply:', message);  // Log error for debugging
     return NextResponse.json(
-      {
-        error: message,
-      },
-      { status: 400 }
+      { error: `Error while creating reply: ${message}` },
+      { status: 500 }
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Post, Prisma } from '@prisma/client';
 import { apiSlice } from '../api/apiSlice';
 import { CreatePostValues } from '@/resolvers/create-post-form.resolver';
 
@@ -22,12 +22,6 @@ const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
   include: {
     author: true,
     tags: true,
-    comments: {
-      include: {
-        author: true,
-        replies: true,
-      },
-    },
   },
 });
 type PostData = Prisma.PostGetPayload<typeof postData>
@@ -35,15 +29,14 @@ type PostData = Prisma.PostGetPayload<typeof postData>
 
 export const apiSliceWithPosts = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getPosts: builder.query<{ posts: PostsData[] }, void>({
+    getPosts: builder.query<PostsData[], void>({
       query: () => '/posts',
       providesTags: ['PostsList'],
     }),
-    getPost: builder.query<{ post: PostData }, string>({
+    getPost: builder.query<PostData, string>({
       query: (postId) => `/posts/${postId}`,
-      // providesTags: ['PostsList'],
     }),
-    addPost: builder.mutation<{ success: string }, CreatePostValues>({
+    addPost: builder.mutation<Post, CreatePostValues>({
       query: (newPost) => ({
         url: '/posts',
         method: 'POST',

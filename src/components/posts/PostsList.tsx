@@ -18,7 +18,7 @@ export default function PostsList() {
   ) : (
     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {data &&
-        data.posts.map((post) => {
+        data.map((post) => {
           return <PostPreview key={post.id} post={post} />;
         })}
     </div>

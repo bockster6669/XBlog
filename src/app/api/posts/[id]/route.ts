@@ -10,8 +10,8 @@ export async function GET(
 
   if (!postId) {
     return NextResponse.json(
-      { message: 'No postId was found' },
-      { status: 400 }
+      { error: 'Post ID is required' },
+      { status: 400 } // 400 Bad Request
     );
   }
 
@@ -23,17 +23,23 @@ export async function GET(
       include: {
         author: true,
         tags: true,
-        comments: {
-          include: {
-            author: true,
-            replies: true,
-          },
-        },
       },
     });
-    return NextResponse.json({ post }, { status: 200 });
+
+    if (!post) {
+      return NextResponse.json(
+        { error: 'Post not found' },
+        { status: 404 } // 404 Not Found
+      );
+    }
+
+    return NextResponse.json(post, { status: 200 }); // 200 OK
   } catch (error) {
     const message = getErrorMessage(error);
-    return NextResponse.json({ error: message }, { status: 200 });
+    console.error('Error fetching the post:', message); // Логиране на грешката за по-добро дебъгване
+    return NextResponse.json(
+      { error: 'Internal server error: ' + message },
+      { status: 500 } // 500 Internal Server Error
+    );
   }
 }

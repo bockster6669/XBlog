@@ -3,7 +3,7 @@ import { apiSlice } from '../api/apiSlice';
 
 export const apiSliceWithTags = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getTags: builder.query<{ tags: Tag[] }, void>({
+    getTags: builder.query<Tag[], void>({
       query: () => '/tags',
     }),
   }),

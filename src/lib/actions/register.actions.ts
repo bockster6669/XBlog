@@ -1,6 +1,5 @@
 'use server';
 
-import { POST } from '@/app/api/posts/route';
 import { UserRepo } from '@/repository/user.repo';
 import { SignUpSchema, SignUpValues } from '@/resolvers/sign-up-form.resolver';
 import { NextResponse } from 'next/server';
@@ -10,30 +9,32 @@ export async function registerUser(body: SignUpValues) {
   const validatedFields = SignUpSchema.safeParse(body);
 
   if (!validatedFields.success) {
-    return {
-      error: 'invalid credentials',
-    };
+    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    return NextResponse.json(
+      { error: errorMessages },
+      { status: 400 } // 400 Bad Request
+    );
   }
 
-  const validatedFieldsData = validatedFields.data;
+  const {email, password, username} = validatedFields.data;
 
   try {
     const existsUser = await UserRepo.findUnique({
       where: {
-        email: validatedFieldsData.email,
+        email: email,
       },
     });
 
     if (existsUser) {
       return { error: 'This user already exists' };
     }
-    const hashedPass = await bcrypt.hash(validatedFieldsData.password, 10);
+    const hashedPass = await bcrypt.hash(password, 10);
 
     await UserRepo.create({
       data: {
-        email: validatedFieldsData.email,
-        password: hashedPass,
-        username: validatedFieldsData.username,
+        email,
+        password:hashedPass,
+        username,
       },
     });
   } catch (error) {

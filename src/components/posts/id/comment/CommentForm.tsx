@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../../../ui/avatar';
 import { Button } from '../../../ui/button';
 import useAutoResizeHeight from '@/hooks/useAutoResizeHeight';
-import { getErrorMessage } from '@/lib/utils';
+import { cn, getErrorMessage } from '@/lib/utils';
 import { useToastContext } from '@/contexts/toast.context';
 
 type CommentFormProps = {
   autoFocus?: boolean;
+  className?:string;
   handleCancel?: () => void;
   handleSubmit?: (value: string) => Promise<any>;
 };
@@ -17,6 +18,7 @@ export default function CommentForm({
   autoFocus = false,
   handleCancel,
   handleSubmit,
+  className
 }: CommentFormProps) {
   const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,7 +64,7 @@ export default function CommentForm({
   }
 
   return (
-    <form className="flex gap-4 items-start w-full" onSubmit={_handleSubmit}>
+    <form className={cn("flex gap-4 items-start w-full",className)} onSubmit={_handleSubmit} >
       <Avatar>
         <AvatarImage src="" />
         <AvatarFallback>BC</AvatarFallback>
@@ -89,7 +91,7 @@ export default function CommentForm({
           <Button
             className="rounded-full ml-2"
             type="submit"
-            disabled={loading}
+            disabled={loading || !value.trim()}
           >
             {loading ? 'Posting...' : 'Post'}{' '}
           </Button>

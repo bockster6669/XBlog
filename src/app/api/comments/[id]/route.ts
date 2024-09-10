@@ -1,131 +1,159 @@
 import { getErrorMessage, wait } from '@/lib/utils';
 import { CommentRepo } from '@/repository/comment.repo';
-import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { authOptions } from '../../auth/[...nextauth]/options';
-import { UserRepo } from '@/repository/user.repo';
+import {
+  UpdateCommentSchema,
+} from '@/resolvers/comment.resolver';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const commentId = params.id;
-  try {
-    const replies = await CommentRepo.findMany({
-      where: {
-        parentId: commentId,
-      },
-      include: {
-        author: true,
-        replies: true,
-      },
-    });
-    return NextResponse.json({ replies }, { status: 200 });
-  } catch (error) {
-    const message = getErrorMessage(error);
-    return NextResponse.json({ error: message }, { status: 400 });
-  }
-}
+// export async function GET(
+//   req: NextRequest,
+//   { params }: { params: { id: string } }
+// ) {
+//   const commentId = params.id;
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const parentId = params.id;
-  const body = await req.json();
-  const { content, postId } = body;
+//   if (!commentId) {
+//     return NextResponse.json(
+//       { error: 'commentId is missing in parameters.' },
+//       { status: 400 }  // Changed to 400 Bad Request
+//     );
+//   }
 
-  try {
-    const trimContent = content.trim();
-    if (!trimContent) {
-      return NextResponse.json(
-        {
-          error: 'Can not create comment with empty text',
-        },
-        { status: 400 }
-      );
-    }
-    const session = await getServerSession(authOptions);
+//   try {
+//     const replies = await CommentRepo.findMany({
+//       where: { parentId: commentId },
+//       include: {
+//         author: true,
+//         replies: true,
+//       },
+//     });
+//     return NextResponse.json(replies, { status: 200 });
+//   } catch (error) {
+//     const message = getErrorMessage(error);
+//     console.error('Error fetching replies:', message); // Log error for debugging
+//     return NextResponse.json({ error: message }, { status: 500 });
+//   }
+// }
 
-    if (!session || !session.user || !session.user.email)
-      return NextResponse.json(
-        {
-          error:
-            'User tried to create post, but its corresponding session was not found',
-        },
-        { status: 401 }
-      );
+// export async function POST(
+//   req: NextRequest,
+//   { params }: { params: { id: string } }
+// ) {
+//   const parentId = params.id;
 
-    const user = await UserRepo.findUnique({
-      where: { email: session.user.email },
-    });
+//   if (!parentId) {
+//     return NextResponse.json(
+//       { error: 'parentId is missing in parameters.' },
+//       { status: 400 }  // Changed to 400 Bad Request
+//     );
+//   }
 
-    if (!user) {
-      console.log(
-        'User tried to create post, but its corresponding profile was not found'
-      );
-      return NextResponse.json(
-        {
-          error:
-            'User tried to create post, but its corresponding profile was not found',
-        },
-        { status: 404 }
-      );
-    }
+//   const body = await req.json();
 
-    const newReply = await CommentRepo.create({
-      data: {
-        content: trimContent,
-        author: {
-          connect: { id: user.id },
-        },
-        post: {
-          connect: { id: postId },
-        },
-        parent: {
-          connect: {
-            id: parentId,
-          },
-        },
-      },
-    });
+//   const validatedFields = CreateCommentSchema.safeParse(body)
 
-    console.log('Comment created:', newReply);
-    return NextResponse.json(
-      {
-        newReply,
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    const message = getErrorMessage(error);
-    return NextResponse.json(
-      {
-        error: message,
-      },
-      { status: 400 }
-    );
-  }
-}
+//   if (!validatedFields.success) {
+//     const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+//     return NextResponse.json(
+//       { error: errorMessages },
+//       { status: 400 } // 400 Bad Request
+//     );
+//   }
+
+//   const { content, postId } = validatedFields.data;
+
+//   if (!content || !postId) {
+//     return NextResponse.json(
+//       { error: 'Content and postId are required.' },
+//       { status: 400 }  // Changed to 400 Bad Request
+//     );
+//   }
+
+//   try {
+//     const trimContent = content.trim();
+//     if (!trimContent) {
+//       return NextResponse.json(
+//         { error: 'Cannot create comment with empty text.' },
+//         { status: 400 } // 400 Bad Request
+//       );
+//     }
+
+//     const session = await getServerSession(authOptions);
+
+//     if (!session || !session.user || !session.user.email) {
+//       return NextResponse.json(
+//         { error: 'User is not authenticated or session is invalid.' },
+//         { status: 401 }  // Changed to 401 Unauthorized
+//       );
+//     }
+
+//     const user = await UserRepo.findUnique({
+//       where: { email: session.user.email },
+//     });
+
+//     if (!user) {
+//       return NextResponse.json(
+//         { error: 'User profile not found.' },
+//         { status: 404 }  // Changed to 404 Not Found
+//       );
+//     }
+
+//     const newComment = await CommentRepo.create({
+//       data: {
+//         content: trimContent,
+//         author: { connect: { id: user.id } },
+//         post: { connect: { id: postId } },
+//         parent: { connect: { id: parentId } },
+//       },
+//     });
+
+//     return NextResponse.json(newComment, { status: 201 });  // 201 Created
+//   } catch (error) {
+//     const message = getErrorMessage(error);
+//     console.error('Error creating a comment:', message);  // Log error for debugging
+//     return NextResponse.json({ error: 'Internal server error: ' + message }, { status: 500 });
+//   }
+// }
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const commentId = params.id;
+
+  if (!commentId) {
+    return NextResponse.json(
+      { error: 'commentId is missing in parameters.' },
+      { status: 400 } // Changed to 400 Bad Request
+    );
+  }
+
   const body = await req.json();
+  const validatedFields = UpdateCommentSchema.safeParse(body);
+
+  if (!validatedFields.success) {
+    const errorMessages = validatedFields.error.errors
+      .map((error) => error.message)
+      .join(', ');
+    return NextResponse.json(
+      { error: errorMessages },
+      { status: 400 } // 400 Bad Request
+    );
+  }
+  const { data } = validatedFields.data;
 
   try {
-    const newComment = await CommentRepo.update({
-      where: {
-        id: commentId,
-      },
-      data: body.data,
+    const updatedComment = await CommentRepo.update({
+      where: { id: commentId },
+      data,
     });
-    return NextResponse.json({ newComment }, { status: 200 });
+    return NextResponse.json(updatedComment, { status: 200 });
   } catch (error) {
     const message = getErrorMessage(error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Error updating a comment:', message); // Log error for debugging
+    return NextResponse.json(
+      { error: 'Failed to update comment: ' + message },
+      { status: 500 }
+    );
   }
 }
 
@@ -134,16 +162,25 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const commentId = params.id;
+
+  if (!commentId) {
+    return NextResponse.json(
+      { error: 'commentId is missing in parameters.' },
+      { status: 400 } // Changed to 400 Bad Request
+    );
+  }
+
   try {
     const deletedComment = await CommentRepo.delete({
-      where: {
-        id: commentId,
-      },
+      where: { id: commentId },
     });
-    console.log('deleted')
-    return NextResponse.json({ deletedComment }, { status: 200 });
+    return NextResponse.json(deletedComment, { status: 200 });
   } catch (error) {
     const message = getErrorMessage(error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Error deleting a comment:', message); // Log error for debugging
+    return NextResponse.json(
+      { error: 'Failed to delete comment: ' + message },
+      { status: 500 }
+    );
   }
 }

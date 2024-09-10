@@ -10,23 +10,28 @@ export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return NextResponse.json({ error: 'User not found' }, { status: 400 });
+    return NextResponse.json({ error: 'User authentication required' }, { status: 401 }); // 401 Unauthorized
   }
 
   const body = await request.json();
 
-  const validFields = CreatePostSchema.safeParse(body);
+  const validatedFields = CreatePostSchema.safeParse(body);
 
-  if (!validFields.success)
-    return NextResponse.json({ error: 'Not valid fields' }, { status: 400 });
+  if (!validatedFields.success) {
+    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    return NextResponse.json(
+      { error: errorMessages },
+      { status: 400 } // 400 Bad Request
+    );
+  }
 
-  const { title, content, excerpt, tags } = validFields.data;
+  const { title, content, excerpt, tags } = validatedFields.data;
 
-  let tagIds = null;
   try {
-    tagIds = await Promise.all(
+    // Прехвърляне на логиката за добавяне на тагове и създаване на пост в един try блок
+    const tagIds = await Promise.all(
       tags.map(async (tag) => {
-        const upsertedTag = await await TagRepo.upsert({
+        const upsertedTag = await TagRepo.upsert({
           where: { name: tag.name },
           update: {},
           create: { name: tag.name },
@@ -35,43 +40,34 @@ export async function POST(request: NextRequest) {
         return upsertedTag.id;
       })
     );
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Error accured while adding tags' },
-      { status: 400 }
-    );
-  }
 
-  if (!tagIds) {
-    return NextResponse.json(
-      { error: 'Can not create post without tags tags' },
-      { status: 400 }
-    );
-  }
+    if (!tagIds || tagIds.length === 0) {
+      return NextResponse.json(
+        { error: 'Cannot create post without tags' },
+        { status: 400 } // 400 Bad Request
+      );
+    }
 
-  try {
-    // await PostRepo.create(
-    //   createPostArgs(title, content, excerpt, tagIds, session.user.email)
-    // );
-    await PostRepo.create({
+    const newPost = await PostRepo.create({
       data: {
         title,
         content,
         excerpt,
         tags: {
-          connect: tagIds.map((id) => ({ id })), // Свързване на категориите
+          connect: tagIds.map((id) => ({ id })),
         },
         author: {
           connect: { email: session.user.email },
         },
       },
     });
-    return NextResponse.json({ success: 'Post created' }, { status: 200 });
+
+    return NextResponse.json(newPost, { status: 201 }); // 201 Created
   } catch (error) {
-    console.log('Error accured while creating a post', error);
+    console.error('Error occurred while processing the request:', error);
     return NextResponse.json(
-      { error: 'Error accured while creating a post' },
-      { status: 400 }
+      { error: 'Internal server error while processing the request' },
+      { status: 500 } // 500 Internal Server Error
     );
   }
 }
@@ -89,55 +85,21 @@ export async function GET() {
         },
       },
     });
-    return NextResponse.json({ posts }, { status: 200 });
+
+    if (posts.length === 0) {
+      return NextResponse.json(
+        { message: 'No posts found' },
+        { status: 404 } // 404 Not Found
+      );
+    }
+
+    return NextResponse.json(posts, { status: 200 }); // 200 OK
   } catch (error) {
     const message = getErrorMessage(error);
+    console.error('Error occurred while fetching posts:', error);
     return NextResponse.json(
-      { error: 'Can not get posts' + message },
-      { status: 200 }
+      { error: 'Failed to fetch posts: ' + message },
+      { status: 500 } // 500 Internal Server Error
     );
   }
 }
-
-// export async function GET(request: NextRequest) {
-//   const searchParams = request.nextUrl.searchParams;
-//   const skip = Number(searchParams.get('skip')) || 0;
-//   const take = Number(searchParams.get('take')) || 10;
-
-//   try {
-//     const totalPosts = await PostRepo.countPosts();
-//     const posts = await PostRepo.findMany({
-//       skip,
-//       take,
-//       include: {
-//         tags: true,
-//         author: true,
-//       },
-//     });
-
-//     return NextResponse.json(
-//       {
-//         posts,
-//         totalPosts,
-//       },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     console.log(error);
-//     return NextResponse.json(
-//       { error: 'Failed to retrieve posts' },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-// export type GetPostsResponse = Awaited<
-//   ReturnType<typeof GET>
-// > extends NextResponse<infer T>
-//   ? T
-//   : never;
-// export type PostPostsResponse = Awaited<
-//   ReturnType<typeof POST>
-// > extends NextResponse<infer T>
-//   ? T
-//   : never;

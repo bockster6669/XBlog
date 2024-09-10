@@ -44,14 +44,16 @@ export default function PostPreview({ post }: { post: PostWithTags }) {
             ))}
             {post.tags.length >= 3 && (
               <HoverCard>
-                <HoverCardTrigger asChild>
-                  <Badge variant="secondary" className='hover:bg-slate-300'>more</Badge>
+                <HoverCardTrigger>
+                  <Badge variant="secondary" className="hover:bg-slate-300">
+                    more
+                  </Badge>
                 </HoverCardTrigger>
                 <HoverCardContent className="">
                   <div className="flex justify-between space-x-4">
                     <div className="">
                       <h4 className="text-sm font-semibold">Remaining tags</h4>
-                      <div className='flex flex-wrap gap-1 mt-4'>
+                      <div className="flex flex-wrap gap-1 mt-4">
                         {post.tags.slice(3).map((tag) => (
                           <Badge key={tag.name} className="bg-[#FABC3F]">
                             {tag.name}

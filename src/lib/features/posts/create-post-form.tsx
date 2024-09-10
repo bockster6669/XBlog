@@ -40,13 +40,12 @@ export default function CreatePostForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const {
-    data,
+    data:tagsList,
     isLoading,
     isError,
     error: queryError,
   } = useGetTagsQuery();
   const istagsListLoading = isLoading;
-  const tagsList = data?.tags;
 
   const form = useForm<CreatePostValues>({
     mode: 'onTouched',
@@ -90,7 +89,7 @@ export default function CreatePostForm() {
     try {
       const result = await addPost(formData).unwrap();
       console.log(result)
-      setSuccess(result.success);
+      setSuccess('Post created successfully');
     } catch (error) {
       const message = getErrorMessage(error);
       setError(message);
