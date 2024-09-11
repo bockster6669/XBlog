@@ -26,13 +26,14 @@ export default function PostPreview({ post }: { post: PostWithTags }) {
         key={post.id}
         className=" h-[400px] flex flex-col group relative overflow-hidden rounded-lg border"
       >
-        <Image
-          src="/medium-thumbnail.png"
-          alt={post.title}
-          width={400}
-          height={255}
-          className="h-60 w-full object-cover transition-opacity group-hover:opacity-80"
-        />
+        <div className="relative w-full min-h-60 overflow-hidden">
+          <Image
+            src="/medium-thumbnail.png"
+            alt={post.title}
+            layout="fill"
+            className="object-cover w-full h-full transition-opacity group-hover:opacity-80"
+          />
+        </div>
         <div className="p-4 flex-1">
           <h3 className="text-lg font-semibold">{post.title}</h3>
           <p className="text-muted-foreground line-clamp-4">{post.excerpt}</p>
@@ -67,7 +68,7 @@ export default function PostPreview({ post }: { post: PostWithTags }) {
             )}
           </div>
         </div>
-        <p className="text-sm text-muted-foreground ml-auto pr-2 pb-2">
+        <p className="text-sm text-muted-foreground absolute bottom-2 right-2">
           {creationDate}
         </p>
       </div>

@@ -4,13 +4,50 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/options';
 import { PostRepo } from '@/repository/post.repo';
 import { TagRepo } from '@/repository/tag.repo';
-import { getErrorMessage } from '@/lib/utils';
+import { formatSearchQuery, getErrorMessage, wait } from '@/lib/utils';
+
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  let searchInput = searchParams.get('search');
+  const formattedQuery = formatSearchQuery(searchInput);
+
+  try {
+    const posts = await PostRepo.findMany({
+      where: {
+        title: {
+          search: formattedQuery,
+        },
+      },
+      include: {
+        author: true,
+        tags: true,
+        comments: {
+          include: {
+            author: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(posts, { status: 200 }); // 200 OK
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error('Error occurred while fetching posts:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch posts: ' + message },
+      { status: 500 } // 500 Internal Server Error
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return NextResponse.json({ error: 'User authentication required' }, { status: 401 }); // 401 Unauthorized
+    return NextResponse.json(
+      { error: 'User authentication required' },
+      { status: 401 }
+    ); // 401 Unauthorized
   }
 
   const body = await request.json();
@@ -18,7 +55,9 @@ export async function POST(request: NextRequest) {
   const validatedFields = CreatePostSchema.safeParse(body);
 
   if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    const errorMessages = validatedFields.error.errors
+      .map((error) => error.message)
+      .join(', ');
     return NextResponse.json(
       { error: errorMessages },
       { status: 400 } // 400 Bad Request
@@ -67,38 +106,6 @@ export async function POST(request: NextRequest) {
     console.error('Error occurred while processing the request:', error);
     return NextResponse.json(
       { error: 'Internal server error while processing the request' },
-      { status: 500 } // 500 Internal Server Error
-    );
-  }
-}
-
-export async function GET() {
-  try {
-    const posts = await PostRepo.findMany({
-      include: {
-        author: true,
-        tags: true,
-        comments: {
-          include: {
-            author: true,
-          },
-        },
-      },
-    });
-
-    if (posts.length === 0) {
-      return NextResponse.json(
-        { message: 'No posts found' },
-        { status: 404 } // 404 Not Found
-      );
-    }
-
-    return NextResponse.json(posts, { status: 200 }); // 200 OK
-  } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Error occurred while fetching posts:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch posts: ' + message },
       { status: 500 } // 500 Internal Server Error
     );
   }

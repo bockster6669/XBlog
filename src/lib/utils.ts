@@ -2,13 +2,17 @@ import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+export function formatSearchQuery(query: string | null): string | undefined {
+  if (!query) return undefined;
+  return query.split(' ').join(' &');
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
-
 
 export const getErrorMessage = (error: unknown): string => {
   let message: string;

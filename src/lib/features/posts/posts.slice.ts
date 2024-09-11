@@ -30,8 +30,8 @@ export const apiSliceWithPosts = apiSlice
   .enhanceEndpoints({ addTagTypes: ['Post'] })
   .injectEndpoints({
     endpoints: (builder) => ({
-      getPosts: builder.query<PostsData[], void>({
-        query: () => '/posts',
+      getPosts: builder.query<PostsData[], string>({
+        query: (searchInput) => `/posts?search=${searchInput}`,
         providesTags: ['Post'],
       }),
       getPost: builder.query<PostData, string>({
