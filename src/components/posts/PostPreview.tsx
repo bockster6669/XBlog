@@ -4,9 +4,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { calcDateToNow } from '@/lib/utils';
 import { Post, Tag } from '@prisma/client';
 
-import { formatDistance } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -16,9 +16,7 @@ type PostWithTags = Post & {
 };
 
 export default function PostPreview({ post }: { post: PostWithTags }) {
-  const creationDate = formatDistance(post.createdAt, new Date(), {
-    addSuffix: true,
-  });
+  const creationDate = calcDateToNow(post.createdAt)
 
   return (
     <Link href={`/posts/${post.id}`}>

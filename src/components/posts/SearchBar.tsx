@@ -7,11 +7,13 @@ import { Input } from '../ui/input';
 import { useRouter } from 'next/navigation';
 
 export default function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const router = useRouter();
-
+  
   useEffect(() => {
+    if (debouncedSearchTerm === undefined) return;
+
     router.push(`/posts?search=${debouncedSearchTerm}`);
   }, [debouncedSearchTerm, router]);
 

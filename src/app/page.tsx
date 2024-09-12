@@ -12,6 +12,9 @@ import { TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { useGetPostsQuery } from '@/lib/features/posts/posts.slice';
+import { calcDateToNow } from '@/lib/utils';
+import RecentPostPreviewList from '@/components/home/RecentPostPreviewList';
 export default function BlogHomepage() {
   const categories = ['Technology', 'Travel', 'Food', 'Lifestyle', 'Health'];
   const authors = [
@@ -21,22 +24,6 @@ export default function BlogHomepage() {
   ];
   return (
     <div className="min-h-screen bg-background">
-      {/* <header className="bg-primary text-primary-foreground py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-extrabold sm:text-5xl md:text-6xl">
-            Welcome to Our Writing Community
-          </h1>
-          <p className="mt-3 max-w-md mx-auto text-xl sm:text-2xl md:mt-5 md:max-w-3xl">
-            Share your thoughts, inspire others, and grow together.
-          </p>
-          <div className="mt-10">
-            <Button size="lg" asChild>
-              <Link href="/create-post">Start Writing</Link>
-            </Button>
-          </div>
-        </div>
-      </header> */}
-
       <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <section className="mb-16 text-center">
           <h2 className="text-4xl font-extrabold mb-4">Welcome to XBlog</h2>
@@ -54,27 +41,7 @@ export default function BlogHomepage() {
             <section>
               <h3 className="text-2xl font-bold mb-4">Recent Posts</h3>
               <div className="space-y-6">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <CardTitle>Latest Blog Post Title {i}</CardTitle>
-                      <CardDescription>
-                        Posted on May {10 + i}, 2023
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p>
-                        A brief excerpt from the latest blog post, enticing
-                        readers to click and read more...
-                      </p>
-                    </CardContent>
-                    <CardFooter>
-                      <Button variant="outline" asChild>
-                        <Link href={`/post/${i}`}>Read More</Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
+               <RecentPostPreviewList/>
               </div>
             </section>
 

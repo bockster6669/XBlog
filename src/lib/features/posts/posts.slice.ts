@@ -26,12 +26,27 @@ const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
 });
 type PostData = Prisma.PostGetPayload<typeof postData>;
 
+export type GetPostsArgs = {
+  search?: string;
+  orderBy?: string;
+};
+
 export const apiSliceWithPosts = apiSlice
   .enhanceEndpoints({ addTagTypes: ['Post'] })
   .injectEndpoints({
     endpoints: (builder) => ({
-      getPosts: builder.query<PostsData[], string>({
-        query: (searchInput) => `/posts?search=${searchInput}`,
+      getPosts: builder.query<PostsData[], Prisma.PostFindManyArgs>({
+        query: (params) => {
+          // const queryString = Object.entries(params)
+          //   .filter(([key, value]) => value !== undefined)
+          //   .map(
+          //     ([key, value]) =>
+          //       `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+          //   )
+          //   .join('&');
+
+          return `/posts?params=${params}`;
+        },
         providesTags: ['Post'],
       }),
       getPost: builder.query<PostData, string>({

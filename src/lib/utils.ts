@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
+import { formatDistance } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
-export function formatSearchQuery(query: string | null): string | undefined {
+export function formatSearchQuery(query: string | null) {
   if (!query) return undefined;
   return query.split(' ').join(' &');
 }
@@ -16,7 +17,7 @@ export const wait = (ms: number) =>
 
 export const getErrorMessage = (error: unknown): string => {
   let message: string;
-  console.log('error=',error)
+  console.log('error=', error);
   if (axios.isAxiosError(error)) {
     message =
       error.response?.data.error || 'Something went wrong with the request.';
@@ -62,3 +63,8 @@ export const isAsyncThunkConditionError = (error: unknown) => {
 };
 
 export const parseDate = (dateString: string) => new Date(dateString);
+
+export const calcDateToNow = (createdAt: Date) =>
+  formatDistance(createdAt, new Date(), {
+    addSuffix: true,
+  });

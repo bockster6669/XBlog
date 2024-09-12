@@ -8,8 +8,17 @@ import { formatSearchQuery, getErrorMessage, wait } from '@/lib/utils';
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  let searchInput = searchParams.get('search');
-  const formattedQuery = formatSearchQuery(searchInput);
+  const searchInputParam = searchParams.get('search');
+  const paramsParam = searchParams.get('params');
+
+  let orderByParam = searchParams.get('orderBy') as
+    | 'asc'
+    | 'desc'
+  const formattedQuery = formatSearchQuery(searchInputParam);
+  console.log('searchInputParam=',searchInputParam)
+  console.log('searchInputParam type=',typeof searchInputParam)
+  console.log('orderByParam=',orderByParam)
+  console.log('orderByParam type=',typeof orderByParam)
 
   try {
     const posts = await PostRepo.findMany({
@@ -27,8 +36,10 @@ export async function GET(req: NextRequest) {
           },
         },
       },
+      orderBy: {
+        createdAt: orderByParam ?? undefined,
+      },
     });
-
     return NextResponse.json(posts, { status: 200 }); // 200 OK
   } catch (error) {
     const message = getErrorMessage(error);

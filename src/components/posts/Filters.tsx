@@ -7,13 +7,38 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { FilterIcon } from 'lucide-react';
+import { CheckIcon, Command, FilterIcon } from 'lucide-react';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@radix-ui/react-popover';
+import {
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from 'cmdk';
 
 export default function Filters() {
-    
+  const [filters, setFilters] = useState({
+    categories: [],
+    authors: [],
+    tags: [],
+    publishDate: '',
+    popularity: '',
+    postLength: '',
+    contentType: [],
+    rating: '',
+    language: '',
+  });
+  const [value, setValue] = React.useState('');
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,7 +51,7 @@ export default function Filters() {
         <DialogHeader>
           <DialogTitle>Filters</DialogTitle>
           <DialogDescription>
-            
+          
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

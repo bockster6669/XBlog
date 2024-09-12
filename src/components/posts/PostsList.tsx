@@ -2,24 +2,21 @@
 
 import React from 'react';
 import PostPreview from './PostPreview';
-import { useGetPostsQuery } from '@/lib/features/posts/posts.slice';
+import {
+  GetPostsArgs,
+  useGetPostsQuery,
+} from '@/lib/features/posts/posts.slice';
 import PostsListSkeleton from './PostPreviewSkeleton';
-import { useSearchParams } from 'next/navigation';
 
-export default function PostsList() {
-  console.log('PostsList rerun');
-  const searchParams = useSearchParams();
-  const searchInput = searchParams.get('search');
-  const { isError, error, isLoading, data, isFetching } = useGetPostsQuery(
-    searchInput || ''
-  );
-
+export default function PostsList({ search, orderBy }: GetPostsArgs) {
+  const { isError, error, isLoading, data, isFetching } = useGetPostsQuery({
+    search,
+    orderBy,
+  });
   if (isError) {
     console.log(error);
     return <div>Error while getting posts</div>;
   }
-  
-
 
   return isLoading || isFetching ? (
     <PostsListSkeleton />
