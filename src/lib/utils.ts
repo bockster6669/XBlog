@@ -3,7 +3,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { formatDistance } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
-export function formatSearchQuery(query: string | null) {
+export function formatSearchQuery(query: string | null | undefined) {
   if (!query) return undefined;
   return query.split(' ').join(' &');
 }

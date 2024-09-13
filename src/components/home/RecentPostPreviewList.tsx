@@ -1,7 +1,7 @@
 'use client';
 
 import { calcDateToNow } from '@/lib/utils';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import {
   Card,
@@ -15,8 +15,7 @@ import { useGetPostsQuery } from '@/lib/features/posts/posts.slice';
 import Link from 'next/link';
 
 export default function RecentPostPreviewList() {
-  const { data } = useGetPostsQuery({ orderBy: { createdAt: 'asc' } });
-
+  const { data } = useGetPostsQuery({ orderBy: { createdAt: 'desc' } });
   return (
     data &&
     data.map((post) => (

@@ -1,4 +1,5 @@
 'use client';
+import { formatSearchQuery } from '@/lib/utils';
 
 import React from 'react';
 import PostPreview from './PostPreview';
@@ -10,8 +11,14 @@ import PostsListSkeleton from './PostPreviewSkeleton';
 
 export default function PostsList({ search, orderBy }: GetPostsArgs) {
   const { isError, error, isLoading, data, isFetching } = useGetPostsQuery({
-    search,
-    orderBy,
+    where: {
+      title: {
+        search: formatSearchQuery(search),
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
   if (isError) {
     console.log(error);

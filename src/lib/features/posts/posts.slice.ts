@@ -37,15 +37,10 @@ export const apiSliceWithPosts = apiSlice
     endpoints: (builder) => ({
       getPosts: builder.query<PostsData[], Prisma.PostFindManyArgs>({
         query: (params) => {
-          // const queryString = Object.entries(params)
-          //   .filter(([key, value]) => value !== undefined)
-          //   .map(
-          //     ([key, value]) =>
-          //       `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
-          //   )
-          //   .join('&');
+          const serializedParams = JSON.stringify(params);
+          const encodedParams = encodeURIComponent(serializedParams);
 
-          return `/posts?params=${params}`;
+          return `/posts?query=${encodedParams}`;
         },
         providesTags: ['Post'],
       }),
