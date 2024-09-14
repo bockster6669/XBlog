@@ -11,23 +11,14 @@ import { PostDTO, PostDTOProps } from '@/dto/post.dto';
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
-  const query = searchParams.get('query');
+  const query = PostDTO.fromSearchParams(searchParams);
+
   if (!query) {
     return NextResponse.json(
       { error: 'You have to provide query searchParams' },
       { status: 401 }
     );
   }
-
-  const getPosts = (query: PostDTOProps) => {
-    return Prisma.validator<Prisma.PostFindManyArgs>()(
-      new PostDTO({
-        search: query.search,
-        orderBy: query.orderBy,
-        take: query.take,
-      }).MapToPrisma()
-    );
-  };
 
   try {
     const posts = await PostRepo.findMany({
@@ -40,7 +31,11 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      ...getPosts(JSON.parse(query)),
+      ...PostDTO.MapToPrisma({
+        search: query.search,
+        orderBy: query.orderBy,
+        take: query.take,
+      }),
     });
     return NextResponse.json(posts, { status: 200 }); // 200 OK
   } catch (error) {

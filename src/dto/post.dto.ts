@@ -5,27 +5,42 @@ export type PostDTOProps = {
   take?: number;
   orderBy?: Prisma.PostOrderByWithRelationInput;
 };
-
 export class PostDTO {
-  private _search?: string;
-  private _take?: number;
-  private _orderBy?: Prisma.PostOrderByWithRelationInput;
 
-  constructor({ search, take, orderBy }: PostDTOProps) {
-    this._search = search;
-    this._take = take;
-    this._orderBy = orderBy;
-  }
-
-  public MapToPrisma(): Prisma.PostFindManyArgs {
+  public static MapToPrisma({
+    search,
+    take,
+    orderBy,
+  }: PostDTOProps): Prisma.PostFindManyArgs {
     return {
       where: {
         title: {
-          search: this._search,
+          search,
         },
       },
-      take: this._take,
-      orderBy: this._orderBy,
+      take,
+      orderBy,
+    };
+  }
+
+  public static toQueryString({ search, take, orderBy }: PostDTOProps): string {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (take) params.append('take', take.toString());
+    if (orderBy) params.append('orderBy', JSON.stringify(orderBy));
+
+    return params.toString();
+  }
+
+  public static fromSearchParams(params: URLSearchParams): PostDTOProps {
+    const search = params.get('search') || undefined;
+    const take = params.get('take') ? parseInt(params.get('take') as string, 10) : undefined;
+    const orderBy = params.get('orderBy') as Prisma.PostOrderByWithRelationInput | undefined;
+
+    return {
+      search,
+      take,
+      orderBy,
     };
   }
 }

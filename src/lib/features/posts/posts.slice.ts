@@ -1,7 +1,7 @@
 import { Post, Prisma } from '@prisma/client';
 import { apiSlice } from '../api/apiSlice';
 import { CreatePostValues } from '@/resolvers/forms/create-post-form.resolver';
-import { PostDTOProps } from '@/dto/post.dto';
+import { PostDTO, PostDTOProps } from '@/dto/post.dto';
 
 const postsData = Prisma.validator<Prisma.PostFindManyArgs>()({
   include: {
@@ -38,10 +38,11 @@ export const apiSliceWithPosts = apiSlice
     endpoints: (builder) => ({
       getPosts: builder.query<PostsData[], PostDTOProps>({
         query: (params) => {
-          const serializedParams = JSON.stringify(params);
-          const encodedParams = encodeURIComponent(serializedParams);
-
-          return `/posts?query=${encodedParams}`;
+          return `/posts?${PostDTO.toQueryString({
+            search: params.search,
+            orderBy: params.orderBy,
+            take: params.take,
+          })}`;
         },
         providesTags: (result, error, arg) => {
           console.log({ result, error });
