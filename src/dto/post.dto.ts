@@ -6,7 +6,6 @@ export type PostDTOProps = {
   orderBy?: Prisma.PostOrderByWithRelationInput;
 };
 export class PostDTO {
-
   public static MapToPrisma({
     search,
     take,
@@ -34,8 +33,16 @@ export class PostDTO {
 
   public static fromSearchParams(params: URLSearchParams): PostDTOProps {
     const search = params.get('search') || undefined;
-    const take = params.get('take') ? parseInt(params.get('take') as string, 10) : undefined;
-    const orderBy = params.get('orderBy') as Prisma.PostOrderByWithRelationInput | undefined;
+    const take = params.get('take')
+      ? parseInt(params.get('take') as string, 10)
+      : undefined;
+    const orderByStr = params.get('orderBy');
+
+    let orderBy: Prisma.PostOrderByWithRelationInput | undefined = undefined;
+
+    if (orderByStr) {
+      orderBy = JSON.parse(orderByStr);
+    }
 
     return {
       search,

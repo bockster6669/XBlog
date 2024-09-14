@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
   const query = PostDTO.fromSearchParams(searchParams);
-
+  console.log('query=',query)
   if (!query) {
     return NextResponse.json(
       { error: 'You have to provide query searchParams' },
