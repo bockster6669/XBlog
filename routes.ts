@@ -6,18 +6,18 @@
 export const authRoutes = ['/signin', '/signup'];
 
 /**
- * Prefix for api authentication routes.
- * Routes that start with this type of prefix are used for API authentication purposes
- * @type {string[]}
- */
-export const apiAuthRegex = /^\/api\/auth(\/.*)?$|^\/api\/register$/;
-
-/**
- * An array of routes that are accessible to the public.
+ * An array of static routes that are accessible to the public.
  * These routes do not require authentication
  * @type {string[]}
  */
-export const publicRoutes = ['/', '/about'];
+export const publicStaticRoutes = ['/', '/about'];
+
+/**
+ * An array of dynamic routes that are accessible to the public.
+ * These routes do not require authentication
+ * @type {string[]}
+ */
+export const publicDynamicRoutes = ['/posts'];
 
 /**
  * The default redirect path after logging in

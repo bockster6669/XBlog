@@ -28,7 +28,7 @@ import {
 import {
   SignInFormSchemaValues,
   SignInFormSchema,
-} from '../../resolvers/sign-in-form.resolver';
+} from '../../resolvers/forms/sign-in-form.resolver';
 import ErrorMessage from './error-message';
 import SuccessMessage from './success-message';
 import Link from 'next/link';
@@ -54,6 +54,7 @@ export default function SignInForm() {
   const handleSubmit: SubmitHandler<SignInFormSchemaValues> = async (
     formData
   ) => {
+    console.log('handleSubmit');
     setError(null);
     setSuccess(null);
 
@@ -61,6 +62,7 @@ export default function SignInForm() {
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
+        rememberMe,
         redirect: false,
       });
 
@@ -102,7 +104,9 @@ export default function SignInForm() {
         <Form {...form}>
           <form
             className="space-y-4"
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={form.handleSubmit(handleSubmit, (err) => {
+              console.log('err=', err);
+            })}
           >
             <FormField
               control={form.control}

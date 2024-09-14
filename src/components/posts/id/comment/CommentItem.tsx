@@ -47,6 +47,7 @@ import {
   useGetRepliesQuery,
   useUpdateCommentMutation,
 } from '@/lib/features/comments/comment.slice';
+import { useSession } from 'next-auth/react';
 
 const commentContext = createContext<CommentContext | null>(null);
 
@@ -160,13 +161,20 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
   );
 }
 
-function CommentOptions({ commentId }: { commentId: string }) {
+function CommentOptions({
+  commentId,
+  commentAuthorEmail,
+}: {
+  commentId: string;
+  commentAuthorEmail: string;
+}) {
   const toast = useToastContext();
   const { setEditMode, editMode } = useCommentContext();
   const [deleteComment] = useDeleteCommentMutation();
   const handleEdit = () => {
     setEditMode(true);
   };
+  const { data } = useSession();
 
   const handleDelete = async () => {
     try {
@@ -180,27 +188,26 @@ function CommentOptions({ commentId }: { commentId: string }) {
       });
     }
   };
-  return (
-    !editMode && (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="my-auto">
-          <EllipsisVertical />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleEdit}>
-            <Pencil className="size-4 mr-2" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleDelete}>
-            <Trash2 className="size-4 mr-2" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
-  );
+
+  return !editMode && data?.user?.email === commentAuthorEmail ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="my-auto">
+        <EllipsisVertical />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleEdit}>
+          <Pencil className="size-4 mr-2" />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDelete}>
+          <Trash2 className="size-4 mr-2" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : null;
 }
 
 function CommentFeedbackButtons({
@@ -378,7 +385,10 @@ export default function CommentItem({
         <CommentContent comment={comment} />
 
         <div>
-          <CommentOptions commentId={comment.id} />
+          <CommentOptions
+            commentId={comment.id}
+            commentAuthorEmail={comment.author.email}
+          />
         </div>
       </div>
       <ReplyForm parentId={comment.id} postId={postId} />

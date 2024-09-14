@@ -22,13 +22,19 @@ export const apiSliceWithComments = apiSlice
   .enhanceEndpoints({ addTagTypes: ['Replies', 'Comment'] })
   .injectEndpoints({
     endpoints: (builder) => ({
-      getComments: builder.query<{comments:CommentWithRepliesAndAuthor[], commentsCount: number}, string>({
+      getComments: builder.query<
+        { comments: CommentWithRepliesAndAuthor[]; commentsCount: number },
+        string
+      >({
         query: (postId) => `comments?postId=${postId}`,
         providesTags: (result, error, arg) =>
           result
             ? [
-                ...result.comments.map(({ id }) => ({ type: 'Comment' as const, id })),
-                'Comment',
+                ...result.comments.map(({ id }) => ({
+                  type: 'Comment' as const,
+                  id,
+                })),
+                { type: 'Comment', id: arg },
               ]
             : [{ type: 'Comment', id: arg }],
       }),

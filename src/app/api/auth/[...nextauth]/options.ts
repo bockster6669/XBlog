@@ -2,13 +2,16 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GitHubProvider from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
-import { SignInFormSchema } from '../../../../resolvers/sign-in-form.resolver';
+import { SignInFormSchema } from '../../../../resolvers/forms/sign-in-form.resolver';
 import { UserRepo } from '@/repository/user.repo';
+import { boolean } from 'zod';
+import { Prisma, User as PrismaUser } from '@prisma/client';
 
 export const authOptions: NextAuthOptions = {
   debug: true,
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60,
   },
   providers: [
     CredentialsProvider({
@@ -23,14 +26,15 @@ export const authOptions: NextAuthOptions = {
         if (!validatedFields.success) {
           throw new Error('Credentials are not in valid format');
         }
-        const { email, password } = validatedFields.data;
+        const { email, password, rememberMe } = validatedFields.data;
 
         let user = null;
 
         try {
-          user = await UserRepo.findUnique({ where: { email } });
+          user = (await UserRepo.findUnique({
+            where: { email },
+          })) as PrismaUser & { rememberMe: boolean };
         } catch (error) {
-          console.log(error);
           throw new Error('Error occured while searching for a user');
         }
 
@@ -42,6 +46,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!isTheSamePass) throw new Error('Wrong credentials');
 
+        user.rememberMe = rememberMe;
         return user;
       },
     }),
@@ -50,8 +55,32 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_SECRET as string,
     }),
   ],
-  callbacks: {},
+  callbacks: {
+    async jwt({ token, user, trigger }) {
+      if (trigger === 'signIn') {
+        token.rememberMe = user?.rememberMe || false;
+      }
+
+      if (token.rememberMe) {
+        token.exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+      } else {
+        token.exp = Math.floor(Date.now() / 1000) + 24 * 60;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      // session.user = token;
+      return session;
+    },
+  },
   pages: {
     signIn: '/signin',
   },
 };
+
+declare module 'next-auth' {
+  interface User {
+    rememberMe: boolean;
+  }
+}

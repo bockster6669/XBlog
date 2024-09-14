@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
@@ -45,13 +45,15 @@ model Comment {
   disLikes  Int       @default(0)
   authorId  String
   createdAt DateTime  @default(now())
-  parentId  String? // Field for parent comment ID (optional)
-  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id]) // Self-referential relation
-  replies   Comment[] @relation("CommentToComment") // Field for child comments (replies)
+  parentId  String? 
+  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade) 
+  replies   Comment[] @relation("CommentToComment")
 }
 
+
 model Tag {
-  id    String @id @default(uuid())
-  name  String @unique
-  posts Post[] @relation("PostTags")
+  id         String @id @default(uuid())
+  name       String @unique
+  posts      Post[] @relation("PostTags")
+  popularity Int    @default(0)
 }

@@ -1,7 +1,10 @@
 'use server';
 
 import { UserRepo } from '@/repository/user.repo';
-import { SignUpSchema, SignUpValues } from '@/resolvers/sign-up-form.resolver';
+import {
+  SignUpSchema,
+  SignUpValues,
+} from '@/resolvers/forms/sign-up-form.resolver';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 
@@ -9,14 +12,16 @@ export async function registerUser(body: SignUpValues) {
   const validatedFields = SignUpSchema.safeParse(body);
 
   if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    const errorMessages = validatedFields.error.errors
+      .map((error) => error.message)
+      .join(', ');
     return NextResponse.json(
       { error: errorMessages },
       { status: 400 } // 400 Bad Request
     );
   }
 
-  const {email, password, username} = validatedFields.data;
+  const { email, password, username } = validatedFields.data;
 
   try {
     const existsUser = await UserRepo.findUnique({
@@ -33,7 +38,7 @@ export async function registerUser(body: SignUpValues) {
     await UserRepo.create({
       data: {
         email,
-        password:hashedPass,
+        password: hashedPass,
         username,
       },
     });

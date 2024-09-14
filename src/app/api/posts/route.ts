@@ -1,15 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreatePostSchema } from '../../../resolvers/create-post-form.resolver';
+import { CreatePostSchema } from '../../../resolvers/forms/create-post-form.resolver';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/options';
 import { PostRepo } from '@/repository/post.repo';
 import { TagRepo } from '@/repository/tag.repo';
 import { getErrorMessage } from '@/lib/utils';
+import { Prisma } from '@prisma/client';
+import { PostDTO, PostDTOProps } from '@/dto/post.dto';
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
   const query = searchParams.get('query');
+  if (!query) {
+    return NextResponse.json(
+      { error: 'You have to provide query searchParams' },
+      { status: 401 }
+    );
+  }
+
+  const getPosts = (query: PostDTOProps) => {
+    return Prisma.validator<Prisma.PostFindManyArgs>()(
+      new PostDTO({
+        search: query.search,
+        orderBy: query.orderBy,
+        take: query.take,
+      }).MapToPrisma()
+    );
+  };
 
   try {
     const posts = await PostRepo.findMany({
@@ -22,7 +40,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      ...(query ? JSON.parse(query) : {}),
+      ...getPosts(JSON.parse(query)),
     });
     return NextResponse.json(posts, { status: 200 }); // 200 OK
   } catch (error) {
@@ -30,7 +48,7 @@ export async function GET(req: NextRequest) {
     console.error('Error occurred while fetching posts:', error);
     return NextResponse.json(
       { error: 'Failed to fetch posts: ' + message },
-      { status: 500 } // 500 Internal Server Error
+      { status: 500 }
     );
   }
 }
@@ -62,13 +80,12 @@ export async function POST(request: NextRequest) {
   const { title, content, excerpt, tags } = validatedFields.data;
 
   try {
-    // Прехвърляне на логиката за добавяне на тагове и създаване на пост в един try блок
     const tagIds = await Promise.all(
       tags.map(async (tag) => {
         const upsertedTag = await TagRepo.upsert({
           where: { name: tag.name },
-          update: {},
-          create: { name: tag.name },
+          update: { popularity: { increment: 1 } },
+          create: { name: tag.name, popularity: 1 },
         });
 
         return upsertedTag.id;

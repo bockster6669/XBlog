@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, wait } from '@/lib/utils';
 import { PostRepo } from '@/repository/post.repo';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -7,7 +7,6 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const postId = params.id;
-
   if (!postId) {
     return NextResponse.json(
       { error: 'Post ID is required' },

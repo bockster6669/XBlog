@@ -6,10 +6,11 @@ import { Button } from '../../../ui/button';
 import useAutoResizeHeight from '@/hooks/useAutoResizeHeight';
 import { cn, getErrorMessage } from '@/lib/utils';
 import { useToastContext } from '@/contexts/toast.context';
+import Spinner from '@/components/shared/Spinner';
 
 type CommentFormProps = {
   autoFocus?: boolean;
-  className?:string;
+  className?: string;
   handleCancel?: () => void;
   handleSubmit?: (value: string) => Promise<any>;
 };
@@ -18,7 +19,7 @@ export default function CommentForm({
   autoFocus = false,
   handleCancel,
   handleSubmit,
-  className
+  className,
 }: CommentFormProps) {
   const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
@@ -64,7 +65,10 @@ export default function CommentForm({
   }
 
   return (
-    <form className={cn("flex gap-4 items-start w-full",className)} onSubmit={_handleSubmit} >
+    <form
+      className={cn('flex gap-4 items-start w-full', className)}
+      onSubmit={_handleSubmit}
+    >
       <Avatar>
         <AvatarImage src="" />
         <AvatarFallback>BC</AvatarFallback>
@@ -93,7 +97,14 @@ export default function CommentForm({
             type="submit"
             disabled={loading || !value.trim()}
           >
-            {loading ? 'Posting...' : 'Post'}{' '}
+            {loading ? (
+              <div className="flex items-center gap-1">
+                <Spinner className='size-3'/>
+                Posting...
+              </div>
+            ) : (
+              'Post'
+            )}
           </Button>
         </div>
       </div>

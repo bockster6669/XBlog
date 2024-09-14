@@ -11,15 +11,12 @@ import PostsListSkeleton from './PostPreviewSkeleton';
 
 export default function PostsList({ search, orderBy }: GetPostsArgs) {
   const { isError, error, isLoading, data, isFetching } = useGetPostsQuery({
-    where: {
-      title: {
-        search: formatSearchQuery(search),
-      },
-    },
+    search: formatSearchQuery(search),
     orderBy: {
       createdAt: 'desc',
     },
   });
+
   if (isError) {
     console.log(error);
     return <div>Error while getting posts</div>;

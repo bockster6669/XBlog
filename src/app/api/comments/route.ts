@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, wait } from '@/lib/utils';
 import { CommentRepo } from '@/repository/comment.repo';
 import { UserRepo } from '@/repository/user.repo';
 import { getServerSession } from 'next-auth';
@@ -9,10 +9,12 @@ import { CreateCommentSchema } from '@/resolvers/comment.resolver';
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const validatedFields = CreateCommentSchema.safeParse(body)
+  const validatedFields = CreateCommentSchema.safeParse(body);
 
   if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    const errorMessages = validatedFields.error.errors
+      .map((error) => error.message)
+      .join(', ');
     return NextResponse.json(
       { error: errorMessages },
       { status: 400 } // 400 Bad Request
@@ -97,16 +99,9 @@ export async function GET(req: NextRequest) {
         author: true,
       },
     });
-    const commentsCount = await CommentRepo.count()
+    const commentsCount = await CommentRepo.count(postId);
 
-    if (comments.length === 0) {
-      return NextResponse.json(
-        { message: 'No comments found for this post' },
-        { status: 404 } // 404 Not Found
-      );
-    }
-
-    return NextResponse.json({comments, commentsCount}, { status: 200 }); // 200 OK
+    return NextResponse.json({ comments, commentsCount }, { status: 200 }); // 200 OK
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error fetching comments:', message); // Логиране на грешката за по-добро дебъгване

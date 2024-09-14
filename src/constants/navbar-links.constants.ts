@@ -32,12 +32,4 @@ export const profileLinks: ProfileLink[] = [
     href: '/profile',
     label: 'settings',
   },
-  {
-    href: '/profile',
-    label: 'change profile',
-  },
-  {
-    href: '/profile',
-    label: 'language',
-  },
 ];

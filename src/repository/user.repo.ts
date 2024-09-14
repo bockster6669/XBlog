@@ -4,7 +4,7 @@ import { Prisma, User } from '@prisma/client';
 export class UserRepo {
   static async findUnique<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
-  ):Promise<Prisma.UserGetPayload<T> | null> {
+  ): Promise<Prisma.UserGetPayload<T> | null> {
     return await db.user.findUnique(args);
   }
 
@@ -12,5 +12,11 @@ export class UserRepo {
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<Prisma.UserGetPayload<T>> {
     return await db.user.create(args);
+  }
+
+  static async delete<T extends Prisma.UserDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
+  ): Promise<Prisma.UserGetPayload<T>> {
+    return await db.user.delete(args);
   }
 }

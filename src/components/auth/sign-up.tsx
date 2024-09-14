@@ -21,7 +21,7 @@ import { signIn } from 'next-auth/react';
 import {
   SignUpValues,
   SignUpSchema,
-} from '../../resolvers/sign-up-form.resolver';
+} from '../../resolvers/forms/sign-up-form.resolver';
 import {
   Form,
   FormControl,
@@ -35,6 +35,7 @@ import SuccessMessage from './success-message';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { registerUser } from '@/lib/actions/register.actions';
+import { getErrorMessage } from '@/lib/utils';
 
 export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +71,7 @@ export default function SignUpForm() {
       const result = await signIn('credentials', {
         email,
         password,
+        rememberMe,
         redirect: false,
       });
 
@@ -81,7 +83,8 @@ export default function SignUpForm() {
       router.push('/');
     } catch (err) {
       console.log(err);
-      setError('Unsuccess registration');
+      const message = getErrorMessage(error);
+      setError(message);
     }
   };
 

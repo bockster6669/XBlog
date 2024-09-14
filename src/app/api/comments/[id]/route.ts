@@ -1,9 +1,9 @@
 import { getErrorMessage } from '@/lib/utils';
 import { CommentRepo } from '@/repository/comment.repo';
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  UpdateCommentSchema,
-} from '@/resolvers/comment.resolver';
+import { UpdateCommentSchema } from '@/resolvers/comment.resolver';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/options';
 
 export async function PATCH(
   req: NextRequest,
@@ -53,6 +53,21 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const commentId = params.id;
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json(
+      { error: 'session not found.' },
+      { status: 400 } // Changed to 400 Bad Request
+    );
+  }
+
+  if (!session.user.email) {
+    return NextResponse.json(
+      { error: 'user email not found.' },
+      { status: 400 } // Changed to 400 Bad Request
+    );
+  }
 
   if (!commentId) {
     return NextResponse.json(
@@ -60,10 +75,12 @@ export async function DELETE(
       { status: 400 } // Changed to 400 Bad Request
     );
   }
-
   try {
     const deletedComment = await CommentRepo.delete({
-      where: { id: commentId },
+      where: {
+        id: commentId,
+        author: { email: session.user.email },
+      },
     });
     return NextResponse.json(deletedComment, { status: 200 });
   } catch (error) {

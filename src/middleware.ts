@@ -1,24 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import {
-  apiAuthRegex,
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
-  publicRoutes,
+  publicDynamicRoutes,
+  publicStaticRoutes,
 } from '../routes';
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const pathname = req.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathname);
-  const isPublicRoute = publicRoutes.includes(pathname);
-  const isApiAuthRoute = apiAuthRegex.test(pathname);
+  const isPublicRoute =
+    publicStaticRoutes.includes(pathname) ||
+    publicDynamicRoutes.some((route) => pathname.startsWith(route));
 
   console.log({ token });
-
-  if (isApiAuthRoute) {
-    return NextResponse.next();
-  }
 
   if (isAuthRoute) {
     if (token) {
@@ -38,7 +35,14 @@ export default async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    '/(api|trpc)(.*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     */
+
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 };

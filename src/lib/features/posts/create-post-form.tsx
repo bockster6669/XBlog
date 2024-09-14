@@ -16,7 +16,7 @@ import {
 import {
   CreatePostValues,
   CreatePostSchema,
-} from '../../../resolvers/create-post-form.resolver';
+} from '../../../resolvers/forms/create-post-form.resolver';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { useToastContext } from '../../../contexts/toast.context';
@@ -34,13 +34,14 @@ import { Delete, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useGetTagsQuery } from '../tags/tags.slice';
 import { useAddPostMutation } from './posts.slice';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function CreatePostForm() {
   const toast = useToastContext();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const {
-    data:tagsList,
+    data: tagsList,
     isLoading,
     isError,
     error: queryError,
@@ -88,7 +89,7 @@ export default function CreatePostForm() {
 
     try {
       const result = await addPost(formData).unwrap();
-      console.log(result)
+      console.log(result);
       setSuccess('Post created successfully');
     } catch (error) {
       const message = getErrorMessage(error);
@@ -155,7 +156,7 @@ export default function CreatePostForm() {
                 <FormItem>
                   <FormLabel>Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="content..." {...field} />
+                    <Textarea placeholder="content..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -168,7 +169,7 @@ export default function CreatePostForm() {
                 <FormItem>
                   <FormLabel>Excerpt</FormLabel>
                   <FormControl>
-                    <Input placeholder="excerpt..." {...field} />
+                    <Textarea placeholder="excerpt..." {...field} />
                   </FormControl>
                   <FormDescription>
                     Shor summary of the content. Its used like a preview of the

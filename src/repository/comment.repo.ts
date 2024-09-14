@@ -26,7 +26,11 @@ export class CommentRepo {
     return await db.comment.findMany(args);
   }
 
-  static async count(): Promise<number> {
-    return await db.comment.count();
+  static async count(postId: string): Promise<number> {
+    return await db.comment.count({
+      where: {
+        postId,
+      },
+    });
   }
 }
