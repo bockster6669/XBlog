@@ -1,4 +1,4 @@
-import AdditionalOptionsPage from '@/components/profile/AdditionalOptionsPage';
+import ProfileAdditionalOptions from '@/components/profile/ProfileAdditionalOptions';
 import ProfileTabs from '@/components/profile/ProfileTabs';
 
 export default function ProfileManager() {
@@ -8,7 +8,7 @@ export default function ProfileManager() {
       <ProfileTabs />
 
       <div className="mt-8 space-y-4">
-        <AdditionalOptionsPage />
+        <ProfileAdditionalOptions />
       </div>
     </div>
   );

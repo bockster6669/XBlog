@@ -27,8 +27,8 @@ model Post {
   title     String
   content   String
   excerpt   String
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  String
+  author    User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId  String?
   comments  Comment[]
   tags      Tag[]     @relation("PostTags")
   createdAt DateTime  @default(now())
@@ -40,16 +40,15 @@ model Comment {
   content   String
   post      Post      @relation(fields: [postId], references: [id])
   postId    String
-  author    User      @relation(fields: [authorId], references: [id])
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
   likes     Int       @default(0)
   disLikes  Int       @default(0)
-  authorId  String
   createdAt DateTime  @default(now())
-  parentId  String? 
-  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade) 
+  parentId  String?
+  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Comment[] @relation("CommentToComment")
 }
-
 
 model Tag {
   id         String @id @default(uuid())

@@ -1,15 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { type Post, Tag, User } from '@prisma/client';
-// import { PostWithAutorAndTags } from '@/lib/features/posts/types';
+import { type Post, Prisma } from '@prisma/client';
 import { formatDistance } from 'date-fns';
 
-type PostWithAutorAndTags = Post & {
-  author: User,
-  tags: Tag[]
-}
+type PostWithAuthorAndTags = Prisma.PostGetPayload<{
+  include: {
+    author: true;
+    tags: true;
+  };
+}>;
 
-export default function Post({ post }: { post: PostWithAutorAndTags }) {
+export default function Post({ post }: { post: PostWithAuthorAndTags }) {
   const creationDate = formatDistance(post.createdAt, new Date(), {
     addSuffix: true,
   });
@@ -23,21 +24,28 @@ export default function Post({ post }: { post: PostWithAutorAndTags }) {
           {post.title}
         </h1>
         <div className="flex items-end gap-4">
-          <div className="flex items-end gap-2">
-            <Avatar className="w-10 h-10 border">
-              <AvatarImage
-                src={post.author.image ?? undefined}
-                alt={`profile image of ${post.author.username}`}
-              />
-              <AvatarFallback>{post.author.username.slice(0,2).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="text-sm font-medium">{post.author.username}</h3>
-              <p className="text-xs text-muted-foreground">
-                {post.author.email}
-              </p>
+          {post.author ? (
+            <div className="flex items-end gap-2">
+              <Avatar className="w-10 h-10 border">
+                <AvatarImage
+                  src={post.author.image ?? undefined}
+                  alt={`profile image of ${post.author.username}`}
+                />
+                <AvatarFallback>
+                  {post.author.username.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="text-sm font-medium">{post.author.username}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {post.author.email}
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <span className=' text-muted-foreground'>Author not found</span>
+          )}
+
           <p className="text-sm text-muted-foreground">{creationDate}</p>
         </div>
       </div>
@@ -46,11 +54,7 @@ export default function Post({ post }: { post: PostWithAutorAndTags }) {
 
       <div className="flex flex-wrap gap-2 mt-10">
         {post.tags.map((tag) => (
-          <Badge
-            variant="secondary"
-            key={tag.name}
-            className="mr-1 px-2 py-1"
-          >
+          <Badge variant="secondary" key={tag.name} className="mr-1 px-2 py-1">
             {tag.name}
           </Badge>
         ))}

@@ -10,6 +10,7 @@ import {
 import { useSession } from 'next-auth/react';
 import Spinner from '@/components/shared/Spinner';
 import ErrorMessage from '@/components/auth/error-message';
+
 export default function CommentsSection({ postId }: { postId: string }) {
   const session = useSession();
   const [addComment] = useAddCommentMutation();
@@ -28,7 +29,9 @@ export default function CommentsSection({ postId }: { postId: string }) {
         />
       );
     } else {
-      return <ErrorMessage message='You can not leave a comment before signing in'/>;
+      return (
+        <ErrorMessage message="You can not leave a comment before signing in" />
+      );
     }
   };
 
@@ -42,7 +45,9 @@ export default function CommentsSection({ postId }: { postId: string }) {
         <>
           <span className="font-semibold">{`${data?.commentsCount} Comments`}</span>
           {renderCommentsForm()}
-          {data?.comments && <CommentsList postId={postId} comments={data.comments} />}
+          {data?.comments && (
+            <CommentsList postId={postId} comments={data.comments} />
+          )}
         </>
       )}
     </section>

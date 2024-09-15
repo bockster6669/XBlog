@@ -55,17 +55,10 @@ export async function DELETE(
   const commentId = params.id;
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.email) {
     return NextResponse.json(
-      { error: 'session not found.' },
-      { status: 400 } // Changed to 400 Bad Request
-    );
-  }
-
-  if (!session.user.email) {
-    return NextResponse.json(
-      { error: 'user email not found.' },
-      { status: 400 } // Changed to 400 Bad Request
+      { error: 'User is not authenticated or session is invalid' },
+      { status: 401 } // 401 Unauthorized
     );
   }
 

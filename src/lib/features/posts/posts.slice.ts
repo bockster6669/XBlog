@@ -1,7 +1,6 @@
 import { Post, Prisma } from '@prisma/client';
 import { apiSlice } from '../api/apiSlice';
 import { CreatePostValues } from '@/resolvers/forms/create-post-form.resolver';
-import { PostDTO, PostDTOProps } from '@/dto/post.dto';
 
 const postsData = Prisma.validator<Prisma.PostFindManyArgs>()({
   include: {
@@ -27,6 +26,12 @@ const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
 });
 type PostData = Prisma.PostGetPayload<typeof postData>;
 
+type GETPostsSearchParams = {
+  search?: string;
+  take?: number;
+  orderBy?: Prisma.PostOrderByWithRelationInput;
+}
+
 export type GetPostsArgs = {
   search?: string;
   orderBy?: string;
@@ -36,9 +41,17 @@ export const apiSliceWithPosts = apiSlice
   .enhanceEndpoints({ addTagTypes: ['Post'] })
   .injectEndpoints({
     endpoints: (builder) => ({
-      getPosts: builder.query<PostsData[], PostDTOProps>({
+      getPosts: builder.query<PostsData[], GETPostsSearchParams>({
         query: (params) => {
-          return `/posts?${PostDTO.toQueryString({
+          function toQueryString({ search, take, orderBy }: GETPostsSearchParams) {
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (take) params.append('take', take.toString());
+            if (orderBy) params.append('orderBy', JSON.stringify(orderBy));
+        
+            return params.toString();
+          }
+          return `/posts?${toQueryString({
             search: params.search,
             orderBy: params.orderBy,
             take: params.take,

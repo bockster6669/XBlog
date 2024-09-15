@@ -6,19 +6,49 @@ import { PostRepo } from '@/repository/post.repo';
 import { TagRepo } from '@/repository/tag.repo';
 import { getErrorMessage } from '@/lib/utils';
 import { Prisma } from '@prisma/client';
-import { PostDTO, PostDTOProps } from '@/dto/post.dto';
+import { GETPostsSchema } from '@/resolvers/post.resolver';
+
+const fromSearchParamsToObj = (params: URLSearchParams) => {
+  const search = params.get('search') || undefined;
+  const take = params.get('take')
+    ? parseInt(params.get('take') as string, 10)
+    : undefined;
+  const orderByStr = params.get('orderBy');
+
+  let orderBy: Prisma.PostOrderByWithRelationInput | undefined = undefined;
+
+  if (orderByStr) {
+    orderBy = JSON.parse(orderByStr);
+  }
+
+  return {
+    search,
+    take,
+    orderBy,
+  };
+}
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
+  
+  const query = fromSearchParamsToObj(searchParams);
 
-  const query = PostDTO.fromSearchParams(searchParams);
-  console.log('query=',query)
   if (!query) {
     return NextResponse.json(
       { error: 'You have to provide query searchParams' },
       { status: 401 }
     );
   }
+  const validatedFields = GETPostsSchema.safeParse(query)
+
+  if(!validatedFields.success) {
+    console.log(validatedFields.error)
+    return NextResponse.json(
+      { error: 'Search params was not in valid format' },
+      { status: 401 }
+    );
+  }
+  console.log('query=',query)
 
   try {
     const posts = await PostRepo.findMany({
@@ -31,11 +61,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      ...PostDTO.MapToPrisma({
-        search: query.search,
-        orderBy: query.orderBy,
-        take: query.take,
-      }),
+      ...validatedFields.data
     });
     return NextResponse.json(posts, { status: 200 }); // 200 OK
   } catch (error) {
@@ -51,11 +77,11 @@ export async function GET(req: NextRequest) {
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
+  if (!session || !session.user || !session.user.email) {
     return NextResponse.json(
-      { error: 'User authentication required' },
-      { status: 401 }
-    ); // 401 Unauthorized
+      { error: 'User is not authenticated or session is invalid' },
+      { status: 401 } // 401 Unauthorized
+    );
   }
 
   const body = await request.json();

@@ -75,11 +75,10 @@ export async function POST(
 
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user?.email) {
-      console.warn('User session is missing or invalid.');  // Log warning for debugging
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
-        { error: 'User is not authenticated or session is invalid.' },
-        { status: 401 }
+        { error: 'User is not authenticated or session is invalid' },
+        { status: 401 } // 401 Unauthorized
       );
     }
 
