@@ -15,8 +15,6 @@ export default async function middleware(req: NextRequest) {
     publicStaticRoutes.includes(pathname) ||
     publicDynamicRoutes.some((route) => pathname.startsWith(route));
 
-  console.log({ token });
-
   if (isAuthRoute) {
     if (token) {
       return NextResponse.redirect(

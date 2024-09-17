@@ -56,16 +56,19 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger }) {
-      if (trigger === 'signIn') {
-        token.rememberMe = user?.rememberMe || false;
-      }
+    async jwt({ token, user, trigger, account, profile, session }) {
+      token.rememberMe = user?.rememberMe || false;
+
+      // if (user) {
+      //   token.userId = user.id;
+      // }
 
       if (token.rememberMe) {
         token.exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
       } else {
         token.exp = Math.floor(Date.now() / 1000) + 24 * 60;
       }
+      console.log({ token });
 
       return token;
     },
@@ -78,9 +81,8 @@ export const authOptions: NextAuthOptions = {
     signIn: '/signin',
   },
 };
-
 declare module 'next-auth' {
-  interface User {
+  interface User extends PrismaUser {
     rememberMe: boolean;
   }
 }

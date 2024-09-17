@@ -28,7 +28,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`sm:flex sm:justify-center box-border h-screen ${inter.className} dark:bg-[#0D1117]`}
+        className={`sm:flex sm:justify-center box-border min-h-screen ${inter.className} dark:bg-[#0D1117]`}
       >
         <NextTopLoader />
         <StoreProvider>

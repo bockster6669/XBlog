@@ -41,6 +41,15 @@ import {
   CommandItem,
 } from '../ui/command';
 
+/*
+
+session -> 
+* firstname
+* lastname
+* 
+
+*/
+
 export default function PersonalInfoForm() {
   const { data, status } = useSession();
   const form = useForm<PersonalInfoValues>({
