@@ -22,15 +22,19 @@ const fromSearchParamsToObj = (params: URLSearchParams) => {
   }
 
   return {
-    search,
+    where: {
+      title: {
+        search,
+      },
+    },
     take,
     orderBy,
   };
-}
+};
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  
+
   const query = fromSearchParamsToObj(searchParams);
 
   if (!query) {
@@ -39,16 +43,16 @@ export async function GET(req: NextRequest) {
       { status: 401 }
     );
   }
-  const validatedFields = GETPostsSchema.safeParse(query)
 
-  if(!validatedFields.success) {
-    console.log(validatedFields.error)
+  const validatedFields = GETPostsSchema.safeParse(query);
+  
+  if (!validatedFields.success) {
+    console.log(validatedFields.error);
     return NextResponse.json(
       { error: 'Search params was not in valid format' },
       { status: 401 }
     );
   }
-  console.log('query=',query)
 
   try {
     const posts = await PostRepo.findMany({
@@ -61,7 +65,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      ...validatedFields.data
+      ...validatedFields.data,
     });
     return NextResponse.json(posts, { status: 200 }); // 200 OK
   } catch (error) {

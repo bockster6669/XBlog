@@ -123,18 +123,18 @@ export default function CreatePostForm() {
   }, [isError, queryError, toast]);
 
   return (
-    <Card>
+    <Card className='w-full'>
       <CardHeader>
         <CardTitle>Create New Post</CardTitle>
         <CardDescription>
           Fill out the form to create a new blog post.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent >
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSuccessSubmit, handleErrorSubmit)}
-            className="space-y-4 w-[400px]"
+            className="space-y-4 w-full"
           >
             <FormField
               control={form.control}

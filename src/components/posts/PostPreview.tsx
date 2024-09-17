@@ -6,7 +6,6 @@ import {
 } from '@/components/ui/hover-card';
 import { calcDateToNow } from '@/lib/utils';
 import { Post, Tag } from '@prisma/client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -22,7 +21,7 @@ export default function PostPreview({ post }: { post: PostWithTags }) {
     <Link href={`/posts/${post.id}`}>
       <div
         key={post.id}
-        className=" h-[400px] flex flex-col group relative overflow-hidden rounded-lg border"
+        className="h-[400px] flex flex-col group relative overflow-hidden rounded-lg border"
       >
         <div className="relative w-full min-h-60 overflow-hidden">
           <Image
@@ -43,7 +42,7 @@ export default function PostPreview({ post }: { post: PostWithTags }) {
             ))}
             {post.tags.length >= 3 && (
               <HoverCard>
-                <HoverCardTrigger>
+                <HoverCardTrigger asChild>
                   <Badge variant="secondary" className="hover:bg-slate-300">
                     more
                   </Badge>

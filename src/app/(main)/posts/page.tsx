@@ -9,7 +9,6 @@ type PostsPageProps = {
 }
 
 export default async function PostsPage({ searchParams }: PostsPageProps) {
-  console.log('searchParams', searchParams)
   return (
     <main className="2-full mt-8">
       <div className="mb-8 grid gap-4 md:mb-12 md:grid-cols-[1fr_auto]">

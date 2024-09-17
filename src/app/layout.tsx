@@ -9,8 +9,7 @@ import { SessionWrapper } from '../contexts/auth.context';
 import Navbar from '@/components/shared/navbar/Navbar';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]/options';
-import { cn } from '@/lib/utils';
-
+import NextTopLoader from 'nextjs-toploader';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -29,8 +28,9 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`flex h-screen justify-center ${inter.className} dark:bg-[#0D1117]`}
+        className={`sm:flex sm:justify-center box-border h-screen ${inter.className} dark:bg-[#0D1117]`}
       >
+        <NextTopLoader />
         <StoreProvider>
           <SessionWrapper session={session}>
             <ToastContextProvider>
@@ -39,7 +39,7 @@ export default async function RootLayout({
                 defaultTheme="system"
                 enableSystem={true}
               >
-                <div className="w-[1100px] h-full flex flex-col">
+                <div className=" h-full flex flex-col sm:w-[1100px]">
                   <Navbar />
                   {children}
                   <Toaster />
