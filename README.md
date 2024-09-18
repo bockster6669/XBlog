@@ -52,9 +52,6 @@ git push origin feature/your-feature-name
 ### Issues and Feature Requests
 If you find a bug or have an idea for a new feature, please check the issues section first to see if it's already being discussed. If not, feel free to open a new issue.
 
-## Tasks list
-- [ ] create the profile page
-
 ## Getting Started
 To run the project locally, follow these steps:
 
