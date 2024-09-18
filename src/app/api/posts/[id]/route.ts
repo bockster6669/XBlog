@@ -9,8 +9,8 @@ export async function GET(
   const postId = params.id;
   if (!postId) {
     return NextResponse.json(
-      { error: 'Post Id is required' },
-      { status: 400 } // 400 Bad Request
+      { error: 'Missing parameter: Post ID is required' },
+      { status: 400 }
     );
   }
 
@@ -20,7 +20,11 @@ export async function GET(
         id: postId,
       },
       include: {
-        author: true,
+        author: {
+          select: {
+            
+          }
+        },
         tags: true,
       },
     });

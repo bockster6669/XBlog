@@ -10,8 +10,8 @@ export async function GET(
   const userId = params.id;
   if (!userId) {
     return NextResponse.json(
-      { error: 'User Id is required' },
-      { status: 400 } // 400 Bad Request
+      { error: 'Missing parameter: User ID is required' },
+      { status: 400 }
     );
   }
 
@@ -54,8 +54,8 @@ export async function PATCH(
 
   if (!userId) {
     return NextResponse.json(
-      { error: 'User Id is required' },
-      { status: 400 } // 400 Bad Request
+      { error: 'Missing parameter: User ID is required for update' },
+      { status: 400 }
     );
   }
 

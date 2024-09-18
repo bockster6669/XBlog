@@ -4,14 +4,14 @@ import React from 'react';
 import Post from '@/components/posts/id/Post';
 import { Separator } from '@/components/ui/separator';
 import { useParams } from 'next/navigation';
-import { useGetPostQuery } from '@/lib/features/posts/posts.slice';
+import { useGetPostByIdQuery } from '@/lib/features/posts/posts.slice';
 import CommentsSection from '@/components/posts/id/comment/CommentsSection';
 import Spinner from '@/components/shared/Spinner';
 
 export default function Page() {
   const params: { id: string } = useParams();
 
-  const { data: post, isLoading } = useGetPostQuery(params.id);
+  const { data: post, isLoading } = useGetPostByIdQuery(params.id);
 
   return (
     <main className="size-full mt-8 p-2">

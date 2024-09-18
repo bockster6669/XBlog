@@ -12,8 +12,6 @@ import { TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { useGetPostsQuery } from '@/lib/features/posts/posts.slice';
-import { calcDateToNow } from '@/lib/utils';
 import RecentPostPreviewList from '@/components/home/RecentPostPreviewList';
 export default function BlogHomepage() {
   const categories = ['Technology', 'Travel', 'Food', 'Lifestyle', 'Health'];

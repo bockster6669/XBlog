@@ -1,73 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreatePostSchema } from '../../../resolvers/forms/create-post-form.resolver';
+import { PostRepo } from '@/repository/post.repo';
+import { getErrorMessage } from '@/lib/utils';
+import { GETPostsSchema } from '@/resolvers/post.resolver';
+import { TagRepo } from '@/repository/tag.repo';
+import { CreatePostSchema } from '@/resolvers/forms/create-post-form.resolver';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/options';
-import { PostRepo } from '@/repository/post.repo';
-import { TagRepo } from '@/repository/tag.repo';
-import { getErrorMessage } from '@/lib/utils';
-import { Prisma } from '@prisma/client';
-import { GETPostsSchema } from '@/resolvers/post.resolver';
-
-const fromSearchParamsToObj = (params: URLSearchParams) => {
-  const search = params.get('search') || undefined;
-  const take = params.get('take')
-    ? parseInt(params.get('take') as string, 10)
-    : undefined;
-  const orderByStr = params.get('orderBy');
-
-  let orderBy: Prisma.PostOrderByWithRelationInput | undefined = undefined;
-
-  if (orderByStr) {
-    orderBy = JSON.parse(orderByStr);
-  }
-
-  return {
-    where: {
-      title: {
-        search,
-      },
-    },
-    take,
-    orderBy,
-  };
-};
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
+  const search = searchParams.get('search') || undefined;
+  const take = searchParams.get('take')
+    ? parseInt(searchParams.get('take') as string, 10)
+    : undefined;
+  const orderBy = searchParams.get('orderBy')
+    ? JSON.parse(searchParams.get('orderBy') as string)
+    : undefined;
 
-  const query = fromSearchParamsToObj(searchParams);
+  const query = {
+    search,
+    take,
+    orderBy,
+  };
 
-  if (!query) {
-    return NextResponse.json(
-      { error: 'You have to provide query searchParams' },
-      { status: 401 }
-    );
-  }
-
+  console.log(query);
   const validatedFields = GETPostsSchema.safeParse(query);
 
   if (!validatedFields.success) {
     console.log(validatedFields.error);
     return NextResponse.json(
-      { error: 'Search params was not in valid format' },
-      { status: 401 }
+      {
+        error:
+          'Invalid search parameters: Please check your input and try again',
+      },
+      { status: 400 }
     );
   }
 
   try {
     const posts = await PostRepo.findMany({
+      where: search
+        ? {
+            title: {
+              search,
+            },
+          }
+        : undefined,
+      take,
+      orderBy,
       include: {
-        author: true,
-        tags: true,
-        comments: {
-          include: {
-            author: true,
+        author: {
+          select: {
+            username: true,
           },
         },
+        tags: true,
       },
-      ...validatedFields.data,
     });
-    return NextResponse.json(posts, { status: 200 }); // 200 OK
+    return NextResponse.json(posts, { status: 200 });
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error occurred while fetching posts:', error);
@@ -83,7 +73,7 @@ export async function POST(request: NextRequest) {
 
   if (!session || !session.user || !session.user.sub) {
     return NextResponse.json(
-      { error: 'User is not authenticated or session is invalid' },
+      { error: 'Authentication required: Please log in to create a post' },
       { status: 401 } // 401 Unauthorized
     );
   }

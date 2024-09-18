@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     if (!session || !session.user || !session.user.sub) {
       return NextResponse.json(
-        { error: 'User is not authenticated or session is invalid' },
+        { error: 'Authentication required: Please log in to post a comment' },
         { status: 401 } // 401 Unauthorized
       );
     }
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
 
   if (!postId) {
     return NextResponse.json(
-      { error: 'You must provide postId as a search parameter' },
+      { error: 'Missing parameter: postId is required to fetch comments' },
       { status: 400 } // 400 Bad Request
     );
   }

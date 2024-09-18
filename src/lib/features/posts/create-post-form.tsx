@@ -42,11 +42,10 @@ export default function CreatePostForm() {
   const [success, setSuccess] = useState<string | null>(null);
   const {
     data: tagsList,
-    isLoading,
+    isLoading: isTagsListLoading,
     isError,
     error: queryError,
   } = useGetTagsQuery();
-  const istagsListLoading = isLoading;
 
   const form = useForm<CreatePostValues>({
     mode: 'onTouched',
@@ -121,7 +120,7 @@ export default function CreatePostForm() {
       });
     }
   }, [isError, queryError, toast]);
-
+  console.log(tagsList)
   return (
     <Card className='w-full'>
       <CardHeader>
@@ -193,11 +192,11 @@ export default function CreatePostForm() {
                         id="tagInput"
                         list="tag-suggestions"
                         placeholder={
-                          istagsListLoading
+                          isTagsListLoading
                             ? 'tag list is loading...'
                             : 'Select tag'
                         }
-                        disabled={istagsListLoading}
+                        disabled={isTagsListLoading}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault(); // предотвратява стандартното поведение на формата при Enter
@@ -250,7 +249,7 @@ export default function CreatePostForm() {
             <ErrorMessage message={error} />
             <Button
               type="submit"
-              disabled={isSubmitting || istagsListLoading}
+              disabled={isSubmitting || isTagsListLoading}
               className="bg-[#4070F4] w-full"
             >
               Submit

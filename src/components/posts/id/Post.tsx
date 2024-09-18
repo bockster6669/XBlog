@@ -5,7 +5,12 @@ import { formatDistance } from 'date-fns';
 
 type PostWithAuthorAndTags = Prisma.PostGetPayload<{
   include: {
-    author: true;
+    author: {
+      select: {
+        username: true,
+        email: true
+      }
+    };
     tags: true;
   };
 }>;
@@ -28,7 +33,7 @@ export default function Post({ post }: { post: PostWithAuthorAndTags }) {
             <div className="flex items-end gap-2">
               <Avatar className="w-10 h-10 border">
                 <AvatarImage
-                  src={post.author.image ?? undefined}
+                  src={undefined} // I have to manage how to store images
                   alt={`profile image of ${post.author.username}`}
                 />
                 <AvatarFallback>

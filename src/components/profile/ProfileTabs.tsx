@@ -1,6 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import React from 'react';
-import ActivityPage from './Activity';
 import NotificationsForm from './NotificationsForm';
 import PersonalInfoForm from './PersonalInfoForm';
 import SecurityForm from './SecurityForm';
@@ -12,7 +11,6 @@ export default function ProfileTabs() {
         <TabsTrigger value="personal">Personal Information</TabsTrigger>
         <TabsTrigger value="security">Security</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="activity">Activity</TabsTrigger>
       </TabsList>
 
       <TabsContent value="personal">
@@ -27,9 +25,6 @@ export default function ProfileTabs() {
         <NotificationsForm />
       </TabsContent>
 
-      <TabsContent value="activity">
-        <ActivityPage />
-      </TabsContent>
     </Tabs>
   );
 }

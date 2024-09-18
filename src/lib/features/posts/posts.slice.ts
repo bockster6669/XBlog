@@ -4,13 +4,12 @@ import { CreatePostValues } from '@/resolvers/forms/create-post-form.resolver';
 
 const postData = Prisma.validator<Prisma.PostFindManyArgs>()({
   include: {
-    author: true,
-    tags: true,
-    comments: {
-      include: {
-        author: true,
+    author: {
+      select: {
+        username: true,
       },
     },
+    tags: true,
   },
 });
 export type PostData = Prisma.PostGetPayload<typeof postData>;
@@ -73,7 +72,7 @@ export const apiSliceWithPosts = apiSlice
             : ['Post'];
         },
       }),
-      getPost: builder.query<PostById, string>({
+      getPostById: builder.query<PostById, string>({
         query: (postId) => `/posts/${postId}`,
         providesTags: (result, error, arg) => [{ type: 'Post', id: arg }],
       }),
@@ -88,5 +87,5 @@ export const apiSliceWithPosts = apiSlice
     }),
   });
 
-export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery } =
+export const { useGetPostsQuery, useAddPostMutation, useGetPostByIdQuery } =
   apiSliceWithPosts;
