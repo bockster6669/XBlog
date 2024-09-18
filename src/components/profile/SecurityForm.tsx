@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   FormField,
   FormItem,
@@ -19,11 +19,22 @@ import {
   Form,
 } from '../ui/form';
 import Spinner from '../shared/Spinner';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
-import { SecurityValues } from '@/resolvers/forms/security-form.resolver';
+import {
+  SecuritySchema,
+  SecurityValues,
+} from '@/resolvers/forms/security-form.resolver';
+import { zodResolver } from '@hookform/resolvers/zod';
+import ErrorMessage from '../auth/error-message';
+import SuccessMessage from '../auth/success-message';
+import { getErrorMessage } from '@/lib/utils';
+import { useUpdateUserPassMutation } from '@/lib/features/users/users.slice';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function SecurityForm() {
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const { data, status } = useSession();
   const form = useForm<SecurityValues>({
     defaultValues: {
@@ -31,8 +42,16 @@ export default function SecurityForm() {
       currentPassword: '',
       newPassword: '',
     },
+    mode: 'onTouched',
+    resolver: zodResolver(SecuritySchema),
   });
-
+  const [fieldsVisibility, setFieldsVisibility] = useState({
+    confirmPassword: false,
+    currentPassword: false,
+    newPassword: false,
+  });
+  const [updateUserPass, { isLoading: isUpdateUserDataLoading }] =
+    useUpdateUserPassMutation();
   const user = data?.user;
 
   if (status === 'loading') {
@@ -43,7 +62,25 @@ export default function SecurityForm() {
     return <div>Can not find your session</div>;
   }
 
-  const onSubmit = () => {};
+  const onSubmit: SubmitHandler<SecurityValues> = async (formValue) => {
+    setSuccess(null);
+    setError(null);
+
+    try {
+      await updateUserPass({
+        userId: data!.user.sub!,
+        data: {
+          currentPassword: formValue.currentPassword,
+          newPassword: formValue.newPassword,
+          confirmPassword: formValue.confirmPassword,
+        },
+      }).unwrap();
+      setSuccess('Successfully updated profile information');
+    } catch (error) {
+      const message = getErrorMessage(error);
+      setError(message);
+    }
+  };
 
   return (
     <Card>
@@ -61,11 +98,29 @@ export default function SecurityForm() {
                 <FormItem className="space-y-2">
                   <FormLabel>Current Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="currentPassword" {...field} />
+                    <div className="relative">
+                      <Input
+                        placeholder="currentPassword"
+                        {...field}
+                        type={
+                          fieldsVisibility[field.name] ? 'text' : 'password'
+                        }
+                        className="pr-10" // добави пространство отдясно за иконата
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFieldsVisibility((prev) => ({
+                            ...prev,
+                            [field.name]: !prev[field.name],
+                          }))
+                        }
+                        className="absolute right-5 top-1/2 transform -translate-y-1/2"
+                      >
+                        {fieldsVisibility[field.name] ? <Eye /> : <EyeOff />}
+                      </button>
+                    </div>
                   </FormControl>
-                  {/* <FormDescription>
-                    This is your public display name.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -77,11 +132,28 @@ export default function SecurityForm() {
                 <FormItem className="space-y-2">
                   <FormLabel>New Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="newPassword" {...field} />
+                    <div className="relative">
+                      <Input
+                        placeholder="newPassword"
+                        {...field}
+                        type={
+                          fieldsVisibility[field.name] ? 'text' : 'password'
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFieldsVisibility((prev) => ({
+                            ...prev,
+                            [field.name]: !prev[field.name],
+                          }))
+                        }
+                        className="absolute right-5 top-1/2 transform -translate-y-1/2"
+                      >
+                        {fieldsVisibility[field.name] ? <Eye /> : <EyeOff />}
+                      </button>
+                    </div>
                   </FormControl>
-                  {/* <FormDescription>
-                    This is your public display name.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -93,16 +165,43 @@ export default function SecurityForm() {
                 <FormItem className="space-y-2">
                   <FormLabel>Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="confirmPassword" {...field} />
+                    <div className="relative">
+                      <Input
+                        placeholder="confirmPassword"
+                        {...field}
+                        type={
+                          fieldsVisibility[field.name] ? 'text' : 'password'
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFieldsVisibility((prev) => ({
+                            ...prev,
+                            [field.name]: !prev[field.name],
+                          }))
+                        }
+                        className="absolute right-5 top-1/2 transform -translate-y-1/2"
+                      >
+                        {fieldsVisibility[field.name] ? <Eye /> : <EyeOff />}
+                      </button>
+                    </div>
                   </FormControl>
-                  {/* <FormDescription>
-                    This is your public display name.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Update Security Settings</Button>
+            <Button
+              type="submit"
+              disabled={isUpdateUserDataLoading}
+              className="gap-3 w-full"
+            >
+              {isUpdateUserDataLoading
+                ? 'Updating...'
+                : 'Update Security Credentials'}
+            </Button>
+            {success && <SuccessMessage message={success} className="mt-3" />}
+            {error && <ErrorMessage message={error} className="mt-3" />}
           </form>
         </Form>
       </CardContent>

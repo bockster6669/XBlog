@@ -4,24 +4,20 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { PostData } from '@/lib/features/posts/posts.slice';
 import { calcDateToNow } from '@/lib/utils';
 import { Post, Tag } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-type PostWithTags = Post & {
-  tags: Omit<Tag, 'id'>[];
-};
-
-export default function PostPreview({ post }: { post: PostWithTags }) {
-  const creationDate = calcDateToNow(post.createdAt)
-
+export default function PostPreview({ post }: { post: PostData }) {
+  const creationDate = calcDateToNow(post.createdAt);
   return (
     <Link href={`/posts/${post.id}`}>
       <div
         key={post.id}
-        className="h-[400px] flex flex-col group relative overflow-hidden rounded-lg border"
+        className="h-[450px] flex flex-col group relative overflow-hidden rounded-lg border"
       >
         <div className="relative w-full min-h-60 overflow-hidden">
           <Image
@@ -65,9 +61,12 @@ export default function PostPreview({ post }: { post: PostWithTags }) {
             )}
           </div>
         </div>
-        <p className="text-sm text-muted-foreground absolute bottom-2 right-2">
-          {creationDate}
-        </p>
+        <div className="flex justify-between px-3 py-1">
+          <span className='text-sm font-normal text-muted-foreground'>By {post.author?.username ?? 'unknown'}</span>
+          <p className="text-sm text-muted-foreground">
+            {creationDate}
+          </p>
+        </div>
       </div>
     </Link>
   );

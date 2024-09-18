@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
   }
 
   const validatedFields = GETPostsSchema.safeParse(query);
-  
+
   if (!validatedFields.success) {
     console.log(validatedFields.error);
     return NextResponse.json(
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user || !session.user.email) {
+  if (!session || !session.user || !session.user.sub) {
     return NextResponse.json(
       { error: 'User is not authenticated or session is invalid' },
       { status: 401 } // 401 Unauthorized
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
           connect: tagIds.map((id) => ({ id })),
         },
         author: {
-          connect: { email: session.user.email },
+          connect: { id: session.user.sub },
         },
       },
     });

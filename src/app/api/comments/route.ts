@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user || !session.user.email) {
+    if (!session || !session.user || !session.user.sub) {
       return NextResponse.json(
         { error: 'User is not authenticated or session is invalid' },
         { status: 401 } // 401 Unauthorized
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await UserRepo.findUnique({
-      where: { email: session.user.email },
+      where: { id: session.user.sub },
     });
 
     if (!user) {

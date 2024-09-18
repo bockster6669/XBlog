@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth';
+import { DefaultSession, NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GitHubProvider from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
@@ -59,10 +59,6 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, account, profile, session }) {
       token.rememberMe = user?.rememberMe || false;
 
-      // if (user) {
-      //   token.userId = user.id;
-      // }
-
       if (token.rememberMe) {
         token.exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
       } else {
@@ -73,7 +69,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // session.user = token;
+      session.user.sub = token.sub;
       return session;
     },
   },
@@ -84,5 +80,11 @@ export const authOptions: NextAuthOptions = {
 declare module 'next-auth' {
   interface User extends PrismaUser {
     rememberMe: boolean;
+  }
+
+  interface Session extends DefaultSession {
+    user: {
+      sub?: string;
+    };
   }
 }

@@ -2,7 +2,7 @@ import { Post, Prisma } from '@prisma/client';
 import { apiSlice } from '../api/apiSlice';
 import { CreatePostValues } from '@/resolvers/forms/create-post-form.resolver';
 
-const postsData = Prisma.validator<Prisma.PostFindManyArgs>()({
+const postData = Prisma.validator<Prisma.PostFindManyArgs>()({
   include: {
     author: true,
     tags: true,
@@ -13,9 +13,9 @@ const postsData = Prisma.validator<Prisma.PostFindManyArgs>()({
     },
   },
 });
-type PostsData = Prisma.PostGetPayload<typeof postsData>;
+export type PostData = Prisma.PostGetPayload<typeof postData>;
 
-const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
+const postById = Prisma.validator<Prisma.PostFindUniqueArgs>()({
   where: {
     id: 'a',
   },
@@ -24,13 +24,13 @@ const postData = Prisma.validator<Prisma.PostFindUniqueArgs>()({
     tags: true,
   },
 });
-type PostData = Prisma.PostGetPayload<typeof postData>;
+type PostById = Prisma.PostGetPayload<typeof postById>;
 
 type GETPostsSearchParams = {
   search?: string;
   take?: number;
   orderBy?: Prisma.PostOrderByWithRelationInput;
-}
+};
 
 export type GetPostsArgs = {
   search?: string;
@@ -41,14 +41,18 @@ export const apiSliceWithPosts = apiSlice
   .enhanceEndpoints({ addTagTypes: ['Post'] })
   .injectEndpoints({
     endpoints: (builder) => ({
-      getPosts: builder.query<PostsData[], GETPostsSearchParams>({
+      getPosts: builder.query<PostData[], GETPostsSearchParams>({
         query: (params) => {
-          function toQueryString({ search, take, orderBy }: GETPostsSearchParams) {
+          function toQueryString({
+            search,
+            take,
+            orderBy,
+          }: GETPostsSearchParams) {
             const params = new URLSearchParams();
             if (search) params.append('search', search);
             if (take) params.append('take', take.toString());
             if (orderBy) params.append('orderBy', JSON.stringify(orderBy));
-        
+
             return params.toString();
           }
           return `/posts?${toQueryString({
@@ -69,7 +73,7 @@ export const apiSliceWithPosts = apiSlice
             : ['Post'];
         },
       }),
-      getPost: builder.query<PostData, string>({
+      getPost: builder.query<PostById, string>({
         query: (postId) => `/posts/${postId}`,
         providesTags: (result, error, arg) => [{ type: 'Post', id: arg }],
       }),

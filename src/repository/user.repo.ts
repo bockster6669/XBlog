@@ -8,6 +8,12 @@ export class UserRepo {
     return await db.user.findUnique(args);
   }
 
+  static async update<T extends Prisma.UserUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
+  ): Promise<Prisma.UserGetPayload<T>> {
+    return await db.user.update(args);
+  }
+
   static async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<Prisma.UserGetPayload<T>> {

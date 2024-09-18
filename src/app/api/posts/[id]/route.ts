@@ -9,7 +9,7 @@ export async function GET(
   const postId = params.id;
   if (!postId) {
     return NextResponse.json(
-      { error: 'Post ID is required' },
+      { error: 'Post Id is required' },
       { status: 400 } // 400 Bad Request
     );
   }
@@ -35,7 +35,7 @@ export async function GET(
     return NextResponse.json(post, { status: 200 }); // 200 OK
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Error fetching the post:', message); // Логиране на грешката за по-добро дебъгване
+    console.error('Error fetching the post:', message); 
     return NextResponse.json(
       { error: 'Internal server error: ' + message },
       { status: 500 } // 500 Internal Server Error

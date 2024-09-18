@@ -8,17 +8,16 @@ import { getServerSession } from 'next-auth';
 export const deleteUser = async () => {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user || !session.user.email) {
+  if (!session || !session.user || !session.user.sub) {
     return { error: 'User is not authenticated or session is invalid' };
   }
 
   try {
     await UserRepo.delete({
       where: {
-        email: session.user.email,
+        email: session.user.sub,
       },
     });
-   
   } catch (error) {
     const message = getErrorMessage(error);
     return { error: message };

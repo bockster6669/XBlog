@@ -30,7 +30,7 @@ export async function GET(
     return NextResponse.json(replies, { status: 200 });
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Error while getting replies:', message);  // Log error for debugging
+    console.error('Error while getting replies:', message); // Log error for debugging
     return NextResponse.json(
       { error: `Error while getting replies: ${message}` },
       { status: 500 }
@@ -52,11 +52,13 @@ export async function POST(
   }
 
   const body = await req.json();
-  
-  const validatedFields = CreateCommentSchema.safeParse(body)
+
+  const validatedFields = CreateCommentSchema.safeParse(body);
 
   if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors.map(error => error.message).join(", ");
+    const errorMessages = validatedFields.error.errors
+      .map((error) => error.message)
+      .join(', ');
     return NextResponse.json(
       { error: errorMessages },
       { status: 400 } // 400 Bad Request
@@ -75,7 +77,7 @@ export async function POST(
 
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user || !session.user.email) {
+    if (!session || !session.user || !session.user.sub) {
       return NextResponse.json(
         { error: 'User is not authenticated or session is invalid' },
         { status: 401 } // 401 Unauthorized
@@ -83,11 +85,11 @@ export async function POST(
     }
 
     const user = await UserRepo.findUnique({
-      where: { email: session.user.email },
+      where: { id: session.user.sub },
     });
 
     if (!user) {
-      console.warn('User profile not found for email:', session.user.email);  // Log warning for debugging
+      console.warn('User profile not found for email:', session.user.sub); // Log warning for debugging
       return NextResponse.json(
         { error: 'User profile not found.' },
         { status: 404 }
@@ -103,10 +105,10 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(newReply, { status: 201 });  // 201 Created
+    return NextResponse.json(newReply, { status: 201 }); // 201 Created
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Error while creating reply:', message);  // Log error for debugging
+    console.error('Error while creating reply:', message); // Log error for debugging
     return NextResponse.json(
       { error: `Error while creating reply: ${message}` },
       { status: 500 }

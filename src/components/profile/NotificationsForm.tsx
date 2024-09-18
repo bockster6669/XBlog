@@ -29,7 +29,6 @@ export default function NotificationsForm() {
     defaultValues: {
       notificationsEmail: '',
       notificationsPush: '',
-      notificationsSMS: '',
     },
   });
 
@@ -53,29 +52,13 @@ export default function NotificationsForm() {
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="notificationsEmail"
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between">
                   <FormLabel>Email Notifications</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="notificationsSMS"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between">
-                  <FormLabel>SMS Notifications</FormLabel>
                   <FormControl>
                     <Switch
                       checked={!!field.value}

@@ -55,7 +55,7 @@ export async function DELETE(
   const commentId = params.id;
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user || !session.user.email) {
+  if (!session || !session.user || !session.user.sub) {
     return NextResponse.json(
       { error: 'User is not authenticated or session is invalid' },
       { status: 401 } // 401 Unauthorized
@@ -72,7 +72,7 @@ export async function DELETE(
     const deletedComment = await CommentRepo.delete({
       where: {
         id: commentId,
-        author: { email: session.user.email },
+        author: { id: session.user.sub },
       },
     });
     return NextResponse.json(deletedComment, { status: 200 });
