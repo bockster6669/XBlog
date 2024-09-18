@@ -22,8 +22,13 @@ This project aims to be a collaborative and beginner-friendly environment for co
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
-- **Auth Solution**: [NextAuth.js](https://next-auth.js.org/getting-started/introduction))
+- **Auth Solution**: [NextAuth.js](https://next-auth.js.org/getting-started/introduction)
 - **Styling**: [ShadCN/UI](https://shadcn.dev/)
+
+## Tasks list
+- [ ] create subscription model, where a user can subscribe to author and get notified everytime when this author creates a new post
+- [ ] create push notifications
+- [ ] finish the "change language" feature
 
 ## How to contribute
 We welcome contributions of all kinds! First of all, join our discord server. There, you can see what tasks are left, or you can open a ticket and present your own idea features. Here's how you can get started:
@@ -46,9 +51,6 @@ git push origin feature/your-feature-name
 
 ### Issues and Feature Requests
 If you find a bug or have an idea for a new feature, please check the issues section first to see if it's already being discussed. If not, feel free to open a new issue.
-
-## Tasks list
-- [ ] create the profile page
 
 ## Getting Started
 To run the project locally, follow these steps:
