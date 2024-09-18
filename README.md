@@ -22,7 +22,7 @@ This project aims to be a collaborative and beginner-friendly environment for co
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
-- **Auth Solution**: [NextAuth.js](https://next-auth.js.org/getting-started/introduction))
+- **Auth Solution**: [NextAuth.js](https://next-auth.js.org/getting-started/introduction)
 - **Styling**: [ShadCN/UI](https://shadcn.dev/)
 
 ## Tasks list
