@@ -23,6 +23,7 @@ export default function SearchBar() {
         className="absolute left-2.5 top-2.5 text-muted-foreground"
         width={18}
         height={18}
+        data-testid="search-icon"
       />
       <Input
         type="search"
