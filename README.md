@@ -32,6 +32,7 @@ This project aims to be a collaborative and beginner-friendly environment for co
 - [ ] finish the "change language" feature
 - [ ] create test cases
 - [ ] infinity scroll on */posts* page
+- [ ] should implement text editor on */create-post* page for the content part
 
 ## How to contribute
 We welcome contributions of all kinds! First of all, join our discord server. There, you can see what tasks are left, or you can open a ticket and present your own idea features. Here's how you can get started:
