@@ -5,15 +5,16 @@
 This is an open-source blog application built with Next.js, Prisma, PostgreSQL, and Redux. The project is a learning experience for beginners and those looking to contribute to an open-source project. The app allows users to create, view, and manage blog posts, tags, and user profiles.
 
 This project aims to be a collaborative and beginner-friendly environment for contributors who want to gain experience working on real-world applications. We welcome all contributions, whether bug fixes, new features, or documentation improvements.
+**Live preview** [Here](https://blog-app-bay-one.vercel.app/) you can see the live version of the site
 
 ## Features
 
 - User authentication and profile management
 - Creating, editing, and deleting blog posts
+- comments on posts and comments as replyes on other posts
 - Category management for organizing posts
-- Pagination for blog posts
 - Responsive design using [ShadCN/UI](https://shadcn.dev/)
-- State management with Redux Toolkit
+- User edit profile features
 
 ## Tech Stack
 
@@ -30,6 +31,7 @@ This project aims to be a collaborative and beginner-friendly environment for co
 - [ ] create push notifications
 - [ ] finish the "change language" feature
 - [ ] create test cases
+- [ ] infinity scroll on */posts* page
 
 ## How to contribute
 We welcome contributions of all kinds! First of all, join our discord server. There, you can see what tasks are left, or you can open a ticket and present your own idea features. Here's how you can get started:
