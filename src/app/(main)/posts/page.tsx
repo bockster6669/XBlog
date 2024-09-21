@@ -1,5 +1,5 @@
-import PostsList from '@/components/posts/PostsList';
 import SearchBar from '@/components/posts/SearchBar';
+import PostsList from '@/lib/features/posts/PostsList';
 
 type PostsPageProps = {
   searchParams: {
