@@ -83,8 +83,6 @@ declare module 'next-auth' {
   }
 
   interface Session extends DefaultSession {
-    user: {
-      sub?: string;
-    };
+    user: User & { sub?: string };
   }
 }
