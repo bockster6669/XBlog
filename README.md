@@ -11,7 +11,7 @@ This project aims to be a collaborative and beginner-friendly environment for co
 
 - User authentication and profile management
 - Creating, editing, and deleting blog posts
-- comments on posts and comments as replyes on other posts
+- comments on posts and comments as replyes on other comments
 - Category management for organizing posts
 - Responsive design using [ShadCN/UI](https://shadcn.dev/)
 - User edit profile features
