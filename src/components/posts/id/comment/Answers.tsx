@@ -76,7 +76,6 @@ export function CommentAnswersTrigger({ children }: { children: ReactNode }) {
     </Button>
   );
 }
-
 export function CommentAnswersContent({ reply }: { reply: any }) {
   const { isOpen, postId } = useCommentAnswersContext();
 

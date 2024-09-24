@@ -23,6 +23,7 @@ const postById = Prisma.validator<Prisma.PostFindUniqueArgs>()({
     tags: true,
   },
 });
+
 type PostById = Prisma.PostGetPayload<typeof postById>;
 
 type GETPostsSearchParams = {
