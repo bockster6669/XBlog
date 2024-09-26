@@ -50,21 +50,10 @@ export const setCursorToEnd = (element: HTMLTextAreaElement) => {
   }
 };
 
-export const isAsyncThunkConditionError = (error: unknown) => {
-  if (
-    error &&
-    typeof error === 'object' &&
-    'name' in error &&
-    error.name === 'ConditionError'
-  ) {
-    return true;
-  }
-  return false;
-};
-
 export const parseDate = (dateString: string) => new Date(dateString);
 
 export const calcDateToNow = (createdAt: Date) =>
   formatDistance(createdAt, new Date(), {
     addSuffix: true,
   });
+
