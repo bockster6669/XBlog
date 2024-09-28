@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { useParams } from 'next/navigation';
 import { useGetPostByIdQuery } from '@/lib/features/posts/posts.slice';
 import CommentsSection from '@/components/posts/id/comment/CommentsSection';
-import Spinner from '@/components/shared/Spinner';
+import Spinner from '@/components/shared/spinner/Spinner';
 
 export default function Page() {
   const params: { id: string } = useParams();

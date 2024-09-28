@@ -12,7 +12,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
-import Spinner from '../shared/Spinner';
+import Spinner from '../shared/spinner/Spinner';
 import {
   FormField,
   FormItem,

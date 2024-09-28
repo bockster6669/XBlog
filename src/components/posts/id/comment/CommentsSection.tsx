@@ -8,7 +8,7 @@ import {
   useGetCommentsQuery,
 } from '@/lib/features/comments/comment.slice';
 import { useSession } from 'next-auth/react';
-import Spinner from '@/components/shared/Spinner';
+import Spinner from '@/components/shared/spinner/Spinner';
 import ErrorMessage from '@/components/auth/error-message';
 
 export default function CommentsSection({ postId }: { postId: string }) {

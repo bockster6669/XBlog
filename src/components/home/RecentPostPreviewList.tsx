@@ -13,7 +13,7 @@ import {
 } from '../ui/card';
 import { useGetPostsQuery } from '@/lib/features/posts/posts.slice';
 import Link from 'next/link';
-import Spinner from '../shared/Spinner';
+import Spinner from '../shared/spinner/Spinner';
 
 export default function RecentPostPreviewList() {
   const { data, isLoading } = useGetPostsQuery({

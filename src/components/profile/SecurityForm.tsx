@@ -18,7 +18,7 @@ import {
   FormMessage,
   Form,
 } from '../ui/form';
-import Spinner from '../shared/Spinner';
+import Spinner from '../shared/spinner/Spinner';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
 import {
