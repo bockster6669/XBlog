@@ -24,7 +24,7 @@ import {
   PersonalInfoSchema,
   PersonalInfoValues,
 } from '@/resolvers/forms/personal-info-form.resolver';
-import Spinner from '@/components/shared/Spinner';
+import Spinner from '@/components/shared/spinner/Spinner';
 import { useSession } from 'next-auth/react';
 import { Textarea } from '@/components/ui/textarea';
 import { LANGUAGES } from '@/constants';
@@ -256,7 +256,7 @@ export default function PersonalInfoForm() {
                 </FormItem>
               )}
             />
-            <div className='mt-auto h-full'>
+            <div className="mt-auto h-full">
               <Button
                 type="submit"
                 disabled={isUpdateUserDataLoading}
@@ -264,8 +264,8 @@ export default function PersonalInfoForm() {
               >
                 {isUpdateUserDataLoading ? 'Updating...' : 'Update'}
               </Button>
-              {success && <SuccessMessage message={success} className='mt-3'/>}
-              {error && <ErrorMessage message={error} className='mt-3'/>}
+              {success && <SuccessMessage message={success} className="mt-3" />}
+              {error && <ErrorMessage message={error} className="mt-3" />}
             </div>
           </form>
         </Form>

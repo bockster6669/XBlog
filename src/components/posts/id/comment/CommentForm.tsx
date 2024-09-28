@@ -6,7 +6,7 @@ import { Button } from '../../../ui/button';
 import useAutoResizeHeight from '@/hooks/useAutoResizeHeight';
 import { cn, getErrorMessage } from '@/lib/utils';
 import { useToastContext } from '@/contexts/toast.context';
-import Spinner from '@/components/shared/Spinner';
+import Spinner from '@/components/shared/spinner/Spinner';
 
 type CommentFormProps = {
   autoFocus?: boolean;
@@ -99,7 +99,7 @@ export default function CommentForm({
           >
             {loading ? (
               <div className="flex items-center gap-1">
-                <Spinner className='size-3'/>
+                <Spinner className="size-3" />
                 Posting...
               </div>
             ) : (
