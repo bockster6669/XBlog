@@ -152,7 +152,7 @@ importers:
         version: 8.3.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)
       '@storybook/nextjs':
         specifier: 8.3.4
-        version: 8.3.4(babel-plugin-macros@3.1.0)(esbuild@0.23.1)(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.4.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)(type-fest@2.19.0)(typescript@5.5.4)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))
+        version: 8.3.4(babel-plugin-macros@3.1.0)(esbuild@0.23.1)(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.4.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)(type-fest@4.26.1)(typescript@5.5.4)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))
       '@storybook/react':
         specifier: 8.3.4
         version: 8.3.4(@storybook/test@8.3.4(storybook@8.3.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)(typescript@5.5.4)
@@ -210,6 +210,12 @@ importers:
       jest-environment-jsdom:
         specifier: ^29.7.0
         version: 29.7.0
+      msw:
+        specifier: ^2.4.9
+        version: 2.4.9(typescript@5.5.4)
+      msw-storybook-addon:
+        specifier: ^2.0.3
+        version: 2.0.3(msw@2.4.9(typescript@5.5.4))
       postcss:
         specifier: ^8
         version: 8.4.41
@@ -882,6 +888,15 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
+  '@bundled-es-modules/cookie@2.0.0':
+    resolution: {integrity: sha512-Or6YHg/kamKHpxULAdSqhGqnWFneIXu1NKvvfBBzKGwpVsYuFIQ5aBPHDnnoR3ghW1nvSkALd+EF9iMtY7Vjxw==}
+
+  '@bundled-es-modules/statuses@1.0.1':
+    resolution: {integrity: sha512-yn7BklA5acgcBr+7w064fGV+SGIFySjCKpqjcWgBAIfrAkY+4GQTJJHQMeT3V/sgz23VTEVV8TtOmkvJAhFVfg==}
+
+  '@bundled-es-modules/tough-cookie@0.1.6':
+    resolution: {integrity: sha512-dvMHbL464C0zI+Yqxbz6kZ5TOEp7GLW+pry/RWndAR8MJQAXZ2rPmIs8tziTZjeIyhSNZgZbCePtfSbdWqStJw==}
+
   '@chromatic-com/storybook@1.9.0':
     resolution: {integrity: sha512-vYQ+TcfktEE3GHnLZXHCzXF/sN9dw+KivH8a5cmPyd9YtQs7fZtHrEgsIjWpYycXiweKMo1Lm1RZsjxk8DH3rA==}
     engines: {node: '>=16.0.0', yarn: '>=1.22.18'}
@@ -1253,6 +1268,26 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@inquirer/confirm@3.2.0':
+    resolution: {integrity: sha512-oOIwPs0Dvq5220Z8lGL/6LHRTEr9TgLHmiI99Rj1PJ1p1czTys+olrgBqZk4E2qC0YTzeHprxSQmoHioVdJ7Lw==}
+    engines: {node: '>=18'}
+
+  '@inquirer/core@9.2.1':
+    resolution: {integrity: sha512-F2VBt7W/mwqEU4bL0RnHNZmC/OxzNx9cOYxHqnXX3MP6ruYvZUZAW9imgN9+h/uBT/oP8Gh888J2OZSbjSeWcg==}
+    engines: {node: '>=18'}
+
+  '@inquirer/figures@1.0.6':
+    resolution: {integrity: sha512-yfZzps3Cso2UbM7WlxKwZQh2Hs6plrbjs1QnzQDZhK2DgyCo6D8AaHps9olkNcUFlcYERMqU3uJSp1gmy3s/qQ==}
+    engines: {node: '>=18'}
+
+  '@inquirer/type@1.5.5':
+    resolution: {integrity: sha512-MzICLu4yS7V8AA61sANROZ9vT1H3ooca5dSmI1FjZkzq7o/koMsRfQSzRtFo+F3Ao4Sf1C0bpLKejpKB/+j6MA==}
+    engines: {node: '>=18'}
+
+  '@inquirer/type@2.0.0':
+    resolution: {integrity: sha512-XvJRx+2KR3YXyYtPUUy+qd9i7p+GO9Ko6VIIpWlBrpWwXDv8WLFeHTxz35CfQFUiBMLXlGHhGzys7lqit9gWag==}
+    engines: {node: '>=18'}
+
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -1361,6 +1396,10 @@ packages:
       '@types/react': '>=16'
       react: '>=16'
 
+  '@mswjs/interceptors@0.35.9':
+    resolution: {integrity: sha512-SSnyl/4ni/2ViHKkiZb8eajA/eN1DNFaHjhGiLUdZvDz6PKF4COSf/17xqSz64nOo2Ia29SA6B2KNCsyCbVmaQ==}
+    engines: {node: '>=18'}
+
   '@next/env@14.2.5':
     resolution: {integrity: sha512-/zZGkrTOsraVfYjGP8uM0p6r0BDT6xWpkjdVbcz66PJVSpwXX3yNiRycxAuDfBKGWBrZBXRuK/YVlkNgxHGwmA==}
 
@@ -1432,6 +1471,15 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@open-draft/deferred-promise@2.2.0':
+    resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
+
+  '@open-draft/logger@0.3.0':
+    resolution: {integrity: sha512-X2g45fzhxH238HKO4xbSr7+wBS8Fvw6ixhTDuvLd5mqh6bJJCFAPwU9mPDxbcrRtfxv4u5IHCEH77BmxvXmmxQ==}
+
+  '@open-draft/until@2.1.0':
+    resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
 
   '@opentelemetry/api@1.4.1':
     resolution: {integrity: sha512-O2yRJce1GOc6PAy3QxFM4NzFiWzvScDC1/5ihYBL6BUEVdq0XMWN01sppE+H6bBXbaFYipjwFLEWLg5PaSOThA==}
@@ -2397,6 +2445,9 @@ packages:
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
+  '@types/cookie@0.6.0':
+    resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
+
   '@types/date-fns@2.6.0':
     resolution: {integrity: sha512-9DSw2ZRzV0Tmpa6PHHJbMcZn79HHus+BBBohcOaDzkK/G3zMjDUDYjJIWBFLbkh+1+/IOS0A59BpQfdr37hASg==}
     deprecated: This is a stub types definition for date-fns (https://github.com/date-fns/date-fns). date-fns provides its own type definitions, so you don't need @types/date-fns installed!
@@ -2464,6 +2515,9 @@ packages:
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
+  '@types/mute-stream@0.0.4':
+    resolution: {integrity: sha512-CPM9nzrCPPJHQNA9keH9CVkVI+WR5kMa+7XEs5jcGQ0VoAGnLv242w8lIVgwAEfmE4oufJRaTc9PNLQl0ioAow==}
+
   '@types/node@20.16.1':
     resolution: {integrity: sha512-zJDo7wEadFtSyNz5QITDfRcrhqDvQI1xQNQ0VoizPjM/dVAODqqIUWbJPkvsxmTI0MYRGRikcdjMPhOssnPejQ==}
 
@@ -2503,6 +2557,9 @@ packages:
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
 
+  '@types/statuses@2.0.5':
+    resolution: {integrity: sha512-jmIUGWrAiwu3dZpxntxieC+1n/5c3mjrImkmOSQ2NC5uP6cYO4aAZDdSmRcI5C1oiTmqlZGHC+/NmJrKogbP5A==}
+
   '@types/testing-library__jest-dom@6.0.0':
     resolution: {integrity: sha512-bnreXCgus6IIadyHNlN/oI5FfX4dWgvGhOPvpr7zzCYDGAPIfvyIoAozMBINmhmsVuqV0cncejF2y5KC7ScqOg==}
     deprecated: This is a stub types definition. @testing-library/jest-dom provides its own type definitions, so you do not need this installed.
@@ -2522,6 +2579,9 @@ packages:
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
+
+  '@types/wrap-ansi@3.0.0':
+    resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -3115,6 +3175,10 @@ packages:
   clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
     engines: {node: '>= 10.0'}
+
+  cli-width@4.1.0:
+    resolution: {integrity: sha512-ouuZd4/dm2Sw5Gmqy6bGyNNNe1qt9RpmxveLSO7KcgsTnU7RXfsw+/bukWGo1abgBiMAic068rclZsO4IWmmxQ==}
+    engines: {node: '>= 12'}
 
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
@@ -4000,6 +4064,10 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
+  graphql@16.9.0:
+    resolution: {integrity: sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==}
+    engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
+
   has-bigints@1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}
 
@@ -4053,6 +4121,9 @@ packages:
   he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
+
+  headers-polyfill@4.0.3:
+    resolution: {integrity: sha512-IScLbePpkvO846sIwOtOTDjutRMWdXdJmXdMvk6gCBHxFO8d+QKOQedyZSxFTTFYRSmlgSTDtXqqq4pcenBXLQ==}
 
   hmac-drbg@1.0.1:
     resolution: {integrity: sha512-Tti3gMqLdZfhOQY1Mzf/AanLiqh1WTiJgEj26ZuYQ9fbkLomzGchCws4FyrSd4VkpBfiNhaE1On+lOz894jvXg==}
@@ -4265,6 +4336,9 @@ packages:
   is-negative-zero@2.0.3:
     resolution: {integrity: sha512-5KoIu2Ngpyek75jXodFvnafB6DJgr3u8uuK0LEZJjrU19DrMD3EVERaR8sjz8CCGgpZvxPl9SuE1GMVPFHx1mw==}
     engines: {node: '>= 0.4'}
+
+  is-node-process@1.2.0:
+    resolution: {integrity: sha512-Vg4o6/fqPxIjtxgUH5QLJhwZ7gW5diGCVlXpuUfELC62CuxM1iHcRe51f2W1FDy04Ai4KJkagKjx3XaqyfRKXw==}
 
   is-number-object@1.0.7:
     resolution: {integrity: sha512-k1U0IRzLMo7ZlYIfzRu23Oh6MiIFasgpb9X76eqfFZAqwH44UI4KTBvBYIZ1dSL9ZzChTB9ShHfLkR4pdW5krQ==}
@@ -4831,6 +4905,25 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
+  msw-storybook-addon@2.0.3:
+    resolution: {integrity: sha512-CzHmGO32JeOPnyUnRWnB0PFTXCY1HKfHiEB/6fYoUYiFm2NYosLjzs9aBd3XJUryYEN0avJqMNh7nCRDxE5JjQ==}
+    peerDependencies:
+      msw: ^2.0.0
+
+  msw@2.4.9:
+    resolution: {integrity: sha512-1m8xccT6ipN4PTqLinPwmzhxQREuxaEJYdx4nIbggxP8aM7r1e71vE7RtOUSQoAm1LydjGfZKy7370XD/tsuYg==}
+    engines: {node: '>=18'}
+    hasBin: true
+    peerDependencies:
+      typescript: '>= 4.8.x'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
+  mute-stream@1.0.0:
+    resolution: {integrity: sha512-avsJQhyd+680gKXyG/sQc0nXaC6rBkPOfyHYcFb9+hdkqQkR9bdnkJ0AMZhke0oesPqIO+mFFJ+IdBc7mst4IA==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
+
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
@@ -5005,6 +5098,9 @@ packages:
   os-browserify@0.3.0:
     resolution: {integrity: sha512-gjcpUc3clBf9+210TRaDWbf+rZZZEshZ+DlXMRCeAjp0xhTrnQsKHypIy1J3d5hKdUzj69t708EHtU8P6bUn0A==}
 
+  outvariant@1.4.3:
+    resolution: {integrity: sha512-+Sl2UErvtsoajRDKCE5/dBz4DIvHXQQnAxtQTF04OJxY0+DyZXSo5P5Bb7XYWOh81syohlYL24hbDwxedPUJCA==}
+
   p-limit@2.3.0:
     resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}
     engines: {node: '>=6'}
@@ -5092,6 +5188,9 @@ packages:
 
   path-to-regexp@0.1.10:
     resolution: {integrity: sha512-7lf7qcQidTku0Gu3YDPc8DJ1q7OOucfa/BSsIwjuh56VU7katFvuM8hULfkwB3Fns/rsVF7PwPKVw1sl5KQS9w==}
+
+  path-to-regexp@6.3.0:
+    resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
 
   path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
@@ -5761,6 +5860,9 @@ packages:
     resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
     engines: {node: '>=10.0.0'}
 
+  strict-event-emitter@0.5.1:
+    resolution: {integrity: sha512-vMgjE/GGEPEFnhFub6pa4FmJBRBVOLpIII2hvCZ8Kzb7K0hlHo7mQv6xYrBvCL2LtAIBwFUK8wvuJgTVSQ5MFQ==}
+
   string-length@4.0.2:
     resolution: {integrity: sha512-+l6rNN5fYHNhZZy41RXsYptCjA2Igmq4EG7kZAYFQI1E1VTXarr6ZPXBg6eq7Y6eK4FEhY6AJlyuFIb/v/S0VQ==}
     engines: {node: '>=10'}
@@ -6069,6 +6171,10 @@ packages:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
 
+  type-fest@4.26.1:
+    resolution: {integrity: sha512-yOGpmOAL7CkKe/91I5O3gPICmJNLJ1G4zFYVAsRHg7M64biSnPtRj0WNQt++bRkjYOqjWXrhnUw1utzmVErAdg==}
+    engines: {node: '>=16'}
+
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
@@ -6308,6 +6414,10 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
 
+  wrap-ansi@6.2.0:
+    resolution: {integrity: sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==}
+    engines: {node: '>=8'}
+
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
     engines: {node: '>=10'}
@@ -6384,6 +6494,10 @@ packages:
   yocto-queue@1.1.1:
     resolution: {integrity: sha512-b4JR1PFR10y1mKjhHY9LaGo6tmrgjit7hxVIeAmyMw3jegXR4dhYqLaQF5zMXZxY7tLpMyJeLjr1C4rLmkVe8g==}
     engines: {node: '>=12.20'}
+
+  yoctocolors-cjs@2.1.2:
+    resolution: {integrity: sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA==}
+    engines: {node: '>=18'}
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
@@ -7254,6 +7368,19 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
+  '@bundled-es-modules/cookie@2.0.0':
+    dependencies:
+      cookie: 0.5.0
+
+  '@bundled-es-modules/statuses@1.0.1':
+    dependencies:
+      statuses: 2.0.1
+
+  '@bundled-es-modules/tough-cookie@0.1.6':
+    dependencies:
+      '@types/tough-cookie': 4.0.5
+      tough-cookie: 4.1.4
+
   '@chromatic-com/storybook@1.9.0(react@18.3.1)':
     dependencies:
       chromatic: 11.10.4
@@ -7577,6 +7704,36 @@ snapshots:
   '@img/sharp-win32-x64@0.33.5':
     optional: true
 
+  '@inquirer/confirm@3.2.0':
+    dependencies:
+      '@inquirer/core': 9.2.1
+      '@inquirer/type': 1.5.5
+
+  '@inquirer/core@9.2.1':
+    dependencies:
+      '@inquirer/figures': 1.0.6
+      '@inquirer/type': 2.0.0
+      '@types/mute-stream': 0.0.4
+      '@types/node': 22.7.4
+      '@types/wrap-ansi': 3.0.0
+      ansi-escapes: 4.3.2
+      cli-width: 4.1.0
+      mute-stream: 1.0.0
+      signal-exit: 4.1.0
+      strip-ansi: 6.0.1
+      wrap-ansi: 6.2.0
+      yoctocolors-cjs: 2.1.2
+
+  '@inquirer/figures@1.0.6': {}
+
+  '@inquirer/type@1.5.5':
+    dependencies:
+      mute-stream: 1.0.0
+
+  '@inquirer/type@2.0.0':
+    dependencies:
+      mute-stream: 1.0.0
+
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -7791,6 +7948,15 @@ snapshots:
       '@types/react': 18.3.3
       react: 18.3.1
 
+  '@mswjs/interceptors@0.35.9':
+    dependencies:
+      '@open-draft/deferred-promise': 2.2.0
+      '@open-draft/logger': 0.3.0
+      '@open-draft/until': 2.1.0
+      is-node-process: 1.2.0
+      outvariant: 1.4.3
+      strict-event-emitter: 0.5.1
+
   '@next/env@14.2.5': {}
 
   '@next/eslint-plugin-next@14.2.5':
@@ -7836,6 +8002,15 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
+  '@open-draft/deferred-promise@2.2.0': {}
+
+  '@open-draft/logger@0.3.0':
+    dependencies:
+      is-node-process: 1.2.0
+      outvariant: 1.4.3
+
+  '@open-draft/until@2.1.0': {}
+
   '@opentelemetry/api@1.4.1':
     optional: true
 
@@ -7844,7 +8019,7 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@pmmmwh/react-refresh-webpack-plugin@0.5.15(react-refresh@0.14.2)(type-fest@2.19.0)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))':
+  '@pmmmwh/react-refresh-webpack-plugin@0.5.15(react-refresh@0.14.2)(type-fest@4.26.1)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))':
     dependencies:
       ansi-html: 0.0.9
       core-js-pure: 3.38.1
@@ -7856,7 +8031,7 @@ snapshots:
       source-map: 0.7.4
       webpack: 5.95.0(esbuild@0.23.1)
     optionalDependencies:
-      type-fest: 2.19.0
+      type-fest: 4.26.1
       webpack-hot-middleware: 2.26.1
 
   '@prisma/client@5.18.0(prisma@5.18.0)':
@@ -8731,7 +8906,7 @@ snapshots:
     dependencies:
       storybook: 8.3.4
 
-  '@storybook/nextjs@8.3.4(babel-plugin-macros@3.1.0)(esbuild@0.23.1)(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.4.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)(type-fest@2.19.0)(typescript@5.5.4)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))':
+  '@storybook/nextjs@8.3.4(babel-plugin-macros@3.1.0)(esbuild@0.23.1)(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.4.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)(type-fest@4.26.1)(typescript@5.5.4)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-syntax-bigint': 7.8.3(@babel/core@7.25.2)
@@ -8746,7 +8921,7 @@ snapshots:
       '@babel/preset-react': 7.24.7(@babel/core@7.25.2)
       '@babel/preset-typescript': 7.24.7(@babel/core@7.25.2)
       '@babel/runtime': 7.25.0
-      '@pmmmwh/react-refresh-webpack-plugin': 0.5.15(react-refresh@0.14.2)(type-fest@2.19.0)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))
+      '@pmmmwh/react-refresh-webpack-plugin': 0.5.15(react-refresh@0.14.2)(type-fest@4.26.1)(webpack-hot-middleware@2.26.1)(webpack@5.95.0(esbuild@0.23.1))
       '@storybook/builder-webpack5': 8.3.4(esbuild@0.23.1)(storybook@8.3.4)(typescript@5.5.4)
       '@storybook/preset-react-webpack': 8.3.4(@storybook/test@8.3.4(storybook@8.3.4))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)(typescript@5.5.4)
       '@storybook/react': 8.3.4(@storybook/test@8.3.4(storybook@8.3.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.4)(typescript@5.5.4)
@@ -9004,6 +9179,8 @@ snapshots:
     dependencies:
       '@types/node': 20.16.1
 
+  '@types/cookie@0.6.0': {}
+
   '@types/date-fns@2.6.0':
     dependencies:
       date-fns: 3.6.0
@@ -9077,6 +9254,10 @@ snapshots:
 
   '@types/mime@1.3.5': {}
 
+  '@types/mute-stream@0.0.4':
+    dependencies:
+      '@types/node': 20.16.1
+
   '@types/node@20.16.1':
     dependencies:
       undici-types: 6.19.8
@@ -9119,6 +9300,8 @@ snapshots:
 
   '@types/stack-utils@2.0.3': {}
 
+  '@types/statuses@2.0.5': {}
+
   '@types/testing-library__jest-dom@6.0.0':
     dependencies:
       '@testing-library/jest-dom': 6.5.0
@@ -9136,6 +9319,8 @@ snapshots:
   '@types/use-sync-external-store@0.0.3': {}
 
   '@types/uuid@9.0.8': {}
+
+  '@types/wrap-ansi@3.0.0': {}
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -9884,6 +10069,8 @@ snapshots:
   clean-css@5.3.3:
     dependencies:
       source-map: 0.6.1
+
+  cli-width@4.1.0: {}
 
   client-only@0.0.1: {}
 
@@ -11019,6 +11206,8 @@ snapshots:
 
   graphemer@1.4.0: {}
 
+  graphql@16.9.0: {}
+
   has-bigints@1.0.2: {}
 
   has-flag@3.0.0: {}
@@ -11070,6 +11259,8 @@ snapshots:
       '@types/hast': 3.0.4
 
   he@1.2.0: {}
+
+  headers-polyfill@4.0.3: {}
 
   hmac-drbg@1.0.1:
     dependencies:
@@ -11276,6 +11467,8 @@ snapshots:
       define-properties: 1.2.1
 
   is-negative-zero@2.0.3: {}
+
+  is-node-process@1.2.0: {}
 
   is-number-object@1.0.7:
     dependencies:
@@ -12028,6 +12221,35 @@ snapshots:
 
   ms@2.1.3: {}
 
+  msw-storybook-addon@2.0.3(msw@2.4.9(typescript@5.5.4)):
+    dependencies:
+      is-node-process: 1.2.0
+      msw: 2.4.9(typescript@5.5.4)
+
+  msw@2.4.9(typescript@5.5.4):
+    dependencies:
+      '@bundled-es-modules/cookie': 2.0.0
+      '@bundled-es-modules/statuses': 1.0.1
+      '@bundled-es-modules/tough-cookie': 0.1.6
+      '@inquirer/confirm': 3.2.0
+      '@mswjs/interceptors': 0.35.9
+      '@open-draft/until': 2.1.0
+      '@types/cookie': 0.6.0
+      '@types/statuses': 2.0.5
+      chalk: 4.1.2
+      graphql: 16.9.0
+      headers-polyfill: 4.0.3
+      is-node-process: 1.2.0
+      outvariant: 1.4.3
+      path-to-regexp: 6.3.0
+      strict-event-emitter: 0.5.1
+      type-fest: 4.26.1
+      yargs: 17.7.2
+    optionalDependencies:
+      typescript: 5.5.4
+
+  mute-stream@1.0.0: {}
+
   mz@2.7.0:
     dependencies:
       any-promise: 1.3.0
@@ -12239,6 +12461,8 @@ snapshots:
 
   os-browserify@0.3.0: {}
 
+  outvariant@1.4.3: {}
+
   p-limit@2.3.0:
     dependencies:
       p-try: 2.2.0
@@ -12323,6 +12547,8 @@ snapshots:
       minipass: 7.1.2
 
   path-to-regexp@0.1.10: {}
+
+  path-to-regexp@6.3.0: {}
 
   path-type@4.0.0: {}
 
@@ -13051,6 +13277,8 @@ snapshots:
 
   streamsearch@1.1.0: {}
 
+  strict-event-emitter@0.5.1: {}
+
   string-length@4.0.2:
     dependencies:
       char-regex: 1.0.2
@@ -13370,6 +13598,8 @@ snapshots:
 
   type-fest@2.19.0: {}
 
+  type-fest@4.26.1: {}
+
   type-is@1.6.18:
     dependencies:
       media-typer: 0.3.0
@@ -13652,6 +13882,12 @@ snapshots:
 
   word-wrap@1.2.5: {}
 
+  wrap-ansi@6.2.0:
+    dependencies:
+      ansi-styles: 4.3.0
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+
   wrap-ansi@7.0.0:
     dependencies:
       ansi-styles: 4.3.0
@@ -13706,5 +13942,7 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.1.1: {}
+
+  yoctocolors-cjs@2.1.2: {}
 
   zod@3.23.8: {}
