@@ -18,7 +18,6 @@ export type CommentsListProps = {
 
 export type CommentItemProps = {
   comment: CommentWithRepiesAndAuthor;
-  postId: string;
   className?: string
 };
 

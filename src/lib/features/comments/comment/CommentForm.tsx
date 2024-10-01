@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '../../../ui/avatar';
-import { Button } from '../../../ui/button';
 import useAutoResizeHeight from '@/hooks/useAutoResizeHeight';
 import { cn, getErrorMessage } from '@/lib/utils';
 import { useToastContext } from '@/contexts/toast.context';
 import Spinner from '@/components/shared/spinner/Spinner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 type CommentFormProps = {
   autoFocus?: boolean;

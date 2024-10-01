@@ -19,7 +19,7 @@ export default function CommentsList({comments, postId }: CommentsListProps) {
     <>
       <div className="mt-5 space-y-6">
         {sortedComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} postId={postId} />
+          <CommentItem key={comment.id} comment={comment} />
         ))}
       </div>
     </>

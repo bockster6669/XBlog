@@ -2,12 +2,12 @@
 import { formatSearchQuery } from '@/lib/utils';
 
 import React from 'react';
-import PostPreview from './PostPreview';
+import PostPreview from './post-preview/PostPreview';
 import {
   GetPostsArgs,
   useGetPostsQuery,
 } from '@/lib/features/posts/posts.slice';
-import PostsListSkeleton from './PostPreviewSkeleton';
+import PostPreviewSkeleton from './post-preview/PostPreviewSkeleton';
 
 export default function PostsList({ search, orderBy }: GetPostsArgs) {
   const { isError, error, isLoading, data, isFetching } = useGetPostsQuery({
@@ -23,7 +23,11 @@ export default function PostsList({ search, orderBy }: GetPostsArgs) {
   }
 
   return isLoading || isFetching ? (
-    <PostsListSkeleton />
+    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((item, index) => (
+        <PostPreviewSkeleton key={index} />
+      ))}
+    </div>
   ) : (
     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {data &&

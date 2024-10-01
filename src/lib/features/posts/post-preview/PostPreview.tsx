@@ -32,8 +32,13 @@ export default function PostPreview({ post }: { post: PostData }) {
           <p className="text-muted-foreground line-clamp-4">{post.excerpt}</p>
           <div className="mt-4 flex items-center gap-1">
             {post.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag.name} className="bg-[#FABC3F]">
-                {tag.name}
+              <Badge
+                key={tag.name}
+                className="bg-[#FABC3F] whitespace-nowrap overflow-hidden text-ellipsis"
+              >
+                {tag.name.length > 10
+                  ? `${tag.name.slice(0, 10)}...`
+                  : tag.name}
               </Badge>
             ))}
             {post.tags.length >= 3 && (
@@ -62,10 +67,10 @@ export default function PostPreview({ post }: { post: PostData }) {
           </div>
         </div>
         <div className="flex justify-between px-3 py-1">
-          <span className='text-sm font-normal text-muted-foreground'>By {post.author?.username ?? 'unknown'}</span>
-          <p className="text-sm text-muted-foreground">
-            {creationDate}
-          </p>
+          <span className="text-sm font-normal text-muted-foreground">
+            By {post.author?.username ?? 'unknown'}
+          </span>
+          <p className="text-sm text-muted-foreground">{creationDate}</p>
         </div>
       </div>
     </Link>

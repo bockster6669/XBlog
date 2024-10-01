@@ -4,7 +4,6 @@ import React, {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
   useState,
 } from 'react';
 import {
@@ -12,8 +11,6 @@ import {
   CommentItemProps,
   CommentWithRepiesAndAuthor,
 } from './types';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '../../../ui/button';
 import {
   ThumbsUp,
   ThumbsDown,
@@ -48,6 +45,8 @@ import {
   useUpdateCommentMutation,
 } from '@/lib/features/comments/comment.slice';
 import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const commentContext = createContext<CommentContext | null>(null);
 
@@ -369,11 +368,10 @@ function ReplyForm({ parentId, postId }: { parentId: string; postId: string }) {
 
 export default function CommentItem({
   comment,
-  postId,
   className,
 }: CommentItemProps) {
   const { data: replies } = useGetRepliesQuery(comment.id);
-
+  const {postId} = comment;
   return (
     <Comment>
       <div className={cn(' box-border py-1 flex gap-4 items-start', className)}>

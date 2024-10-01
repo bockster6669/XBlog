@@ -8,7 +8,6 @@ import { http, HttpResponse, delay } from 'msw';
 
 const meta = {
   component: CreatePostForm,
-  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <Provider store={makeStore()}>
@@ -93,7 +92,7 @@ export const WithFormSuccess: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.post('http://localhost:6006/api/posts/', () => {
+        http.post('http://localhost:6006/api/posts', () => {
           return new HttpResponse(null, {
             status: 200,
           });

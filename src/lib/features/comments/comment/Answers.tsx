@@ -1,8 +1,8 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { CommentAnswersContext, CommentWithRepiesAndAuthor } from './types';
-import { Button } from '../../../ui/button';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import CommentItem from './CommentItem';
+import { Button } from '@/components/ui/button';
 
 const commentAnswersContext = createContext<CommentAnswersContext | null>(null);
 
@@ -84,7 +84,6 @@ export function CommentAnswersContent({ reply }: { reply: any }) {
       <div key={reply.id}>
         <CommentItem
           comment={reply}
-          postId={postId}
           className="border-l pl-5 border-slate-200"
         />
       </div>
