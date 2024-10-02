@@ -77,4 +77,4 @@ npm run dev
 
 
 ## Security
-The app is protected from SQL injections by using [Prisma](https://www.prisma.io/orm) as an ORM, which uses parameterized queries by default, reducing the risk of SQL injections and also validationg the input
+The app is protected from SQL injections by using [Prisma](https://www.prisma.io/orm) as an ORM, which uses parameterized queries by default, reducing the risk of SQL injections and also validating the input
