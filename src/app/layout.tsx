@@ -10,6 +10,7 @@ import Navbar from '@/components/shared/navbar/Navbar';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]/options';
 import NextTopLoader from 'nextjs-toploader';
+import AuthButtons from '@/components/shared/navbar/AuthButtons';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ export default async function RootLayout({
                 enableSystem={true}
               >
                 <div className=" h-full flex flex-col sm:w-[1100px]">
-                  <Navbar />
+                  <Navbar actions={<AuthButtons />} />
                   {children}
                   <Toaster />
                 </div>

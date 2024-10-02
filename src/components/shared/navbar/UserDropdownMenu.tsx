@@ -16,12 +16,7 @@ import { LogOut, User } from 'lucide-react';
 import { Session } from 'next-auth';
 import { profileLinks } from '../../../constants/navbar-links.constants';
 
-type UserProfileProps = {
-  session: Session | null;
-};
-
-export default function UserDropdownMenu({ session }: UserProfileProps) {
-  const { data, status } = useSession();
+export default function UserDropdownMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

@@ -1,8 +1,12 @@
-import AuthWrapper from './AuthWrapper';
+
+import { ReactNode } from 'react';
+import AuthButtons from './AuthButtons';
 import { ModeToggle } from './ModeToggle';
 import NavMenu from './NavMenu';
 
-export default function Navbar() {
+export default function Navbar({actions}:{
+  actions: ReactNode
+}) {
   return (
     <nav className="bg-background border-b w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +24,7 @@ export default function Navbar() {
           {/* Right side: User actions */}
           <div className="flex items-center justify-end flex-1 gap-2">
             {/* Profile avatar or Login/Logout button */}
-            <AuthWrapper />
+            {actions}
 
             {/* Theme switcher */}
             <ModeToggle />

@@ -2,13 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import React from 'react';
 import UserDropdownMenu from './UserDropdownMenu';
 import { useRouter } from 'next/navigation';
 
 
-export default function AuthWrapper() {
+export default function AuthButtons() {
   const { data, status } = useSession();
   const router = useRouter();
   return (
@@ -16,7 +16,7 @@ export default function AuthWrapper() {
       {status === 'loading' ? (
         <Skeleton className="w-16 h-10" />
       ) : data ? (
-        <UserDropdownMenu session={data} />
+        <UserDropdownMenu />
       ) : (
         <>
           <Button onClick={() => router.push('/signup')} variant="outline">
