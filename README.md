@@ -35,6 +35,8 @@ This project aims to be a collaborative and beginner-friendly environment for co
 - [ ] should implement text editor on */create-post* page for the content part
 - [ ] add reactions to the post
 - [ ] implement filtering and displaying authors and categories by their popularity on the home page
+- [ ] add playwright tests
+- [ ] add storybook tests
 
 ## How to contribute
 We welcome contributions of all kinds! First of all, join our discord server. There, you can see what tasks are left, or you can open a ticket and present your own idea features. Here's how you can get started:
