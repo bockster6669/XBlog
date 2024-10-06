@@ -1,21 +1,22 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { authOptions } from '../auth/[...nextauth]/options';
 import { z } from 'zod';
 import { db } from '@/prisma/db';
 import { getErrorMessage } from '@/lib/utils';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 const validationSchema = z.object({
   commentId: z.string(),
 });
 
 // използвай транзакции, защото ако comment.likes update фейлне, но
-// лайкването на коментара в таблицата CommentLikes е било успешно
+// лайкването на коментара в таблицата commentDisLikes е било успешно
 // то тогава ще се води че юсера е лайкнал коментара, но всъщност
 // лайковете на коментара няма да бъдат увеличени
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  console.log('body=', body);
+
+  //check if the req body is valid input
   const validatedFields = validationSchema.safeParse(body);
 
   if (!validatedFields.success) {
@@ -27,7 +28,9 @@ export async function POST(req: NextRequest) {
       { status: 400 } // 400 Bad Request
     );
   }
+  const { commentId } = validatedFields.data;
 
+  //check if the user is logged in
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.sub) {
@@ -36,9 +39,9 @@ export async function POST(req: NextRequest) {
       { status: 401 } // 401 Unauthorized
     );
   }
-  const { commentId } = validatedFields.data;
 
-  const isThisLikeExists = await db.commentLike.findUnique({
+  //check if the user has already disliked this comment and if so, then just return
+  const isThisDisLikeExists = await db.commentDisLike.findUnique({
     where: {
       authorId_commentId: {
         authorId: session.user.sub,
@@ -47,14 +50,45 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  if (isThisLikeExists) {
+  if (isThisDisLikeExists) {
     return NextResponse.json(
-      { error: 'Can not like a comment more than once' },
+      { error: 'Can not dislike a comment more than once' },
       { status: 500 } // 500 Internal Server Error
     );
   }
+
+  //check if the user has already liked this comment and if so, then delete this like
+  const isPrevLiked = await db.commentLike.findUnique({
+    where: {
+      authorId_commentId: {
+        authorId: session.user.sub,
+        commentId,
+      },
+    },
+  });
+
+  if (isPrevLiked) {
+    try {
+      await db.commentLike.delete({
+        where: {
+          authorId_commentId: {
+            authorId: session.user.sub,
+            commentId,
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      const message = getErrorMessage(error);
+      return NextResponse.json(
+        { error: 'Unable to delete like: ' + message },
+        { status: 500 } // 500 Internal Server Error
+      );
+    }
+  }
+
   try {
-    await db.commentLike.create({
+    await db.commentDisLike.create({
       data: {
         authorId: session.user.sub,
         commentId,
@@ -73,16 +107,12 @@ export async function POST(req: NextRequest) {
     await db.comment.update({
       where: { id: commentId },
       data: {
-        totalLikes: {
-          increment: 1,
-        },
-        totalDisLikes: {
-          decrement: 1,
-        },
+        totalDisLikes: { increment: 1 },
+        totalLikes: isPrevLiked ? { decrement: 1 } : undefined,
       },
     });
     return NextResponse.json(
-      { message: 'Comment liked successfully' },
+      { message: 'Comment liked successfully', id: commentId },
       { status: 200 } // 200 OK
     );
   } catch (error) {
@@ -118,10 +148,10 @@ export async function DELETE(req: NextRequest) {
       { status: 401 } // 401 Unauthorized
     );
   }
-  const {commentId} = validatedFields.data;
+  const { commentId } = validatedFields.data;
 
   try {
-    await db.commentLike.delete({
+    await db.commentDisLike.delete({
       where: {
         authorId_commentId: {
           authorId: session.user.sub,
@@ -130,14 +160,14 @@ export async function DELETE(req: NextRequest) {
       },
     });
     return NextResponse.json(
-      { message: 'Comment liked successfully' },
+      { message: 'Comment like delete successfully', id: commentId },
       { status: 200 } // 200 OK
     );
   } catch (error) {
     console.error(error);
     const message = getErrorMessage(error);
     return NextResponse.json(
-      { error: 'Unable to like comment: ' + message },
+      { error: 'Unable to dislike comment: ' + message },
       { status: 500 } // 500 Internal Server Error
     );
   }

@@ -1,6 +1,9 @@
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
 import { formatDistance } from 'date-fns';
+import { getServerSession } from 'next-auth';
+import { NextRequest } from 'next/server';
 import { twMerge } from 'tailwind-merge';
 
 export function formatSearchQuery(query: string | null | undefined) {
@@ -57,3 +60,24 @@ export const calcDateToNow = (createdAt: Date) =>
     addSuffix: true,
   });
 
+export const validateSession = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user || !session.user.sub) {
+    return {
+      error: true,
+      message: 'Authentication required: Please log in to post a comment',
+    };
+  }
+  return { error: false, session };
+};
+
+export const validateRequest = (validationSchema:any, body: any) => {
+  const validatedFields = validationSchema.safeParse(body);
+  if (!validatedFields.success) {
+    const errorMessages = validatedFields.error.errors
+      .map((error:any) => error.message)
+      .join(', ');
+    return { error: true, message: errorMessages };
+  }
+  return { error: false, data: validatedFields.data };
+}

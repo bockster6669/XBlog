@@ -15,7 +15,7 @@ export default function CommentsSection({ postId }: { postId: string }) {
   const session = useSession();
   const [addComment] = useAddCommentMutation();
   const { isLoading, data } = useGetCommentsQuery(postId);
-
+  console.log('data=',data)
   const renderCommentsForm = () => {
     if (session.status === 'loading') {
       return <div>Loading...</div>;

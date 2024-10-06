@@ -95,6 +95,7 @@ function CommentContent({ comment }: { comment: CommentWithRepliesAndAuthor }) {
   const textarea = useAutoResizeHeight(value);
   const [updateComment] = useUpdateCommentMutation();
   const toast = useToastContext();
+  console.log('CommentContent render with comment=',comment)
 
   function _handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -217,6 +218,8 @@ function CommentFeedbackButtons({
 }: {
   comment: CommentWithRepliesAndAuthor;
 }) {
+  console.log('CommentFeedbackButtons render with comment=',comment);
+
   const [userReaction, setUserReaction] = useState<'none' | 'like' | 'dislike'>(
     'none'
   );
@@ -236,6 +239,7 @@ function CommentFeedbackButtons({
     deleteCommentLikeLoading ||
     addCommentDisLikeLoading ||
     deleteCommentDisLikeLoading;
+  console.log('Ands likes/dislikes=',likes,disLikes);
 
   const handleLike = async () => {
     if (userReaction === 'like') return;
@@ -245,8 +249,8 @@ function CommentFeedbackButtons({
 
       try {
         await deleteCommentDisLike(comment.id).unwrap();
-        setUserReaction('like');
-        setLikes((prev) => prev + 1);
+        // setUserReaction('like');
+        // setLikes((prev) => prev + 1);
       } catch (error) {
         console.log(error);
         const message = getErrorMessage(error);
@@ -260,6 +264,8 @@ function CommentFeedbackButtons({
 
     try {
       await addCommentLike(comment.id).unwrap();
+      // setUserReaction('like');
+      // setLikes((prev) => prev + 1);
     } catch (error) {
       const message = getErrorMessage(error);
       toast({
@@ -274,7 +280,7 @@ function CommentFeedbackButtons({
     if (userReaction === 'dislike') return;
 
     if (userReaction === 'like') {
-      setLikes((prev) => prev - 1);
+      // setLikes((prev) => prev - 1);
       try {
         await deleteCommentLike(comment.id).unwrap();
         setDisLikes((prev) => prev + 1);
@@ -307,17 +313,18 @@ function CommentFeedbackButtons({
         <Button
           variant={comment.likes.length > 0 ? 'secondary' : 'ghost'}
           onClick={handleLike}
-          disabled={isLoading}
+          disabled={isLoading || comment.likes.length > 0}
         >
           <ThumbsUp className="size-4" />
-          <span className="ml-2 text-sm text-muted-foreground">{likes}</span>
+          <span className="ml-2 text-sm text-muted-foreground">{comment.totalLikes}</span>
         </Button>
         <Button
           variant={comment.disLikes.length > 0 ? 'secondary' : 'ghost'}
           onClick={handleDisLike}
+          disabled={isLoading || comment.disLikes.length > 0}
         >
           <ThumbsDown className="size-4" />
-          <span className="ml-2 text-sm text-muted-foreground">{disLikes}</span>
+          <span className="ml-2 text-sm text-muted-foreground">{comment.totalDisLikes}</span>
         </Button>
         <Button
           variant="ghost"
@@ -358,7 +365,7 @@ export default function CommentItem({
   className,
 }: CommentItemProps) {
   const { data: replies } = useGetRepliesQuery(comment.id);
-
+  console.log('CommentItem render with comment=',comment)
   return (
     <Comment>
       <div className={cn(' box-border py-1 flex gap-4 items-start', className)}>

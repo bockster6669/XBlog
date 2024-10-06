@@ -17,8 +17,9 @@ export const apiSliceWithComments = apiSlice
         string
       >({
         query: (postId) => `comments?postId=${postId}`,
-        providesTags: (result, error, arg) =>
-          result
+        providesTags: (result, error, arg) => {
+          console.log('result=',result);
+          return result
             ? [
                 ...result.comments.map(({ id }) => ({
                   type: 'Comment' as const,
@@ -26,14 +27,17 @@ export const apiSliceWithComments = apiSlice
                 })),
                 { type: 'Comment', id: arg },
               ]
-            : [{ type: 'Comment', id: arg }],
+            : [{ type: 'Comment', id: arg }];
+        },
       }),
       updateComment: builder.mutation<Comment, { id: string; content: string }>(
         {
           query: (obj) => ({
-            url: `/comments/${obj.id}`,
+            url: `/comments/${obj.id}/content`,
             method: 'PATCH',
-            body: obj,
+            body: {
+              content: obj.content,
+            },
           }),
           invalidatesTags: (result, error, arg) => [
             { type: 'Comment', id: result?.id },
@@ -43,20 +47,21 @@ export const apiSliceWithComments = apiSlice
       addCommentLike: builder.mutation<Comment, string>({
         query: (commentId) => {
           return {
-            url: `/comment-likes`,
+            url: `/comments/${commentId}/total-likes`,
             method: 'POST',
-            body: {commentId},
+            body: { commentId },
           };
         },
-        invalidatesTags: (result, error, arg) => [
-          { type: 'Comment', id: result?.id },
-        ],
+        invalidatesTags: (result, error, arg) => {
+          console.log('result.id=', result?.id);
+          return [{ type: 'Comment', id: result?.id }];
+        },
       }),
       deleteCommentLike: builder.mutation<Comment, string>({
         query: (commentId) => ({
-          url: `/comment-likes`,
+          url: `/comments/${commentId}/total-likes`,
           method: 'DELETE',
-          body: {commentId},
+          body: { commentId },
         }),
         invalidatesTags: (result, error, arg) => [
           { type: 'Comment', id: result?.id },
@@ -64,9 +69,9 @@ export const apiSliceWithComments = apiSlice
       }),
       addCommentDisLike: builder.mutation<Comment, string>({
         query: (commentId) => ({
-          url: `/comment-dislikes`,
+          url: `/comments/${commentId}/total-dislikes`,
           method: 'POST',
-          body: {commentId},
+          body: { commentId },
         }),
         invalidatesTags: (result, error, arg) => [
           { type: 'Comment', id: result?.id },
@@ -74,9 +79,9 @@ export const apiSliceWithComments = apiSlice
       }),
       deleteCommentDisLike: builder.mutation<Comment, string>({
         query: (commentId) => ({
-          url: `/comment-dislikes`,
+          url: `/comments/${commentId}/total-dislikes`,
           method: 'DELETE',
-          body: {commentId},
+          body: { commentId },
         }),
         invalidatesTags: (result, error, arg) => [
           { type: 'Comment', id: result?.id },

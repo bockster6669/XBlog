@@ -6,7 +6,9 @@ import { Comment } from '@prisma/client';
 import { CommentsListProps } from './types';
 
 export default function CommentsList({comments, postId }: CommentsListProps) {
+  console.log('CommentsList render with comments = ',comments)
   const mainComments = comments.filter((comment) => !comment.parentId);
+  console.log('CommentsList render with mainComments = ',mainComments)
 
   const sortedComments = mainComments.sort((a: Comment, b: Comment) => {
     const dateA = new Date(a.createdAt);
@@ -14,7 +16,6 @@ export default function CommentsList({comments, postId }: CommentsListProps) {
 
     return dateB.getTime() - dateA.getTime();
   });
-
   return (
     <>
       <div className="mt-5 space-y-6">

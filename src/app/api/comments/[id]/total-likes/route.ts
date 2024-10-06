@@ -1,21 +1,21 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { authOptions } from '../auth/[...nextauth]/options';
 import { z } from 'zod';
 import { db } from '@/prisma/db';
 import { getErrorMessage } from '@/lib/utils';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 const validationSchema = z.object({
   commentId: z.string(),
 });
 
 // използвай транзакции, защото ако comment.likes update фейлне, но
-// лайкването на коментара в таблицата commentDisLikes е било успешно
+// лайкването на коментара в таблицата CommentLikes е било успешно
 // то тогава ще се води че юсера е лайкнал коментара, но всъщност
 // лайковете на коментара няма да бъдат увеличени
 export async function POST(req: NextRequest) {
   const body = await req.json();
-
+  console.log('body=', body);
   const validatedFields = validationSchema.safeParse(body);
 
   if (!validatedFields.success) {
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   }
   const { commentId } = validatedFields.data;
 
-  const isThisDisLikeExists = await db.commentDisLike.findUnique({
+  const isThisLikeExists = await db.commentLike.findUnique({
     where: {
       authorId_commentId: {
         authorId: session.user.sub,
@@ -47,15 +47,44 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  if (isThisDisLikeExists) {
+  if (isThisLikeExists) {
     return NextResponse.json(
-      { error: 'Can not dislike a comment more than once' },
+      { error: 'Can not like a comment more than once' },
       { status: 500 } // 500 Internal Server Error
     );
   }
 
+  const isPrevDisLiked = await db.commentDisLike.findUnique({
+    where: {
+      authorId_commentId: {
+        authorId: session.user.sub,
+        commentId,
+      },
+    },
+  });
+
+  if (isPrevDisLiked) {
+    try {
+      await db.commentDisLike.delete({
+        where: {
+          authorId_commentId: {
+            authorId: session.user.sub,
+            commentId,
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      const message = getErrorMessage(error);
+      return NextResponse.json(
+        { error: 'Unable to delete dislike: ' + message },
+        { status: 500 } // 500 Internal Server Error
+      );
+    }
+  }
+
   try {
-    await db.commentDisLike.create({
+    await db.commentLike.create({
       data: {
         authorId: session.user.sub,
         commentId,
@@ -71,19 +100,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await db.comment.update({
+    const result = await db.comment.update({
       where: { id: commentId },
       data: {
-        totalDisLikes: {
-          increment: 1,
-        },
-        totalLikes: {
-          decrement: 1,
-        },
+        totalLikes: { increment: 1 },
+        totalDisLikes: isPrevDisLiked ? { decrement: 1 } : undefined,
       },
     });
     return NextResponse.json(
-      { message: 'Comment liked successfully' },
+      result,
       { status: 200 } // 200 OK
     );
   } catch (error) {
@@ -122,7 +147,7 @@ export async function DELETE(req: NextRequest) {
   const { commentId } = validatedFields.data;
 
   try {
-    await db.commentDisLike.delete({
+    await db.commentLike.delete({
       where: {
         authorId_commentId: {
           authorId: session.user.sub,
@@ -131,14 +156,14 @@ export async function DELETE(req: NextRequest) {
       },
     });
     return NextResponse.json(
-      { message: 'Comment liked successfully' },
+      { message: 'Comment dislike delete successfully', id: commentId },
       { status: 200 } // 200 OK
     );
   } catch (error) {
     console.error(error);
     const message = getErrorMessage(error);
     return NextResponse.json(
-      { error: 'Unable to dislike comment: ' + message },
+      { error: 'Unable to like comment: ' + message },
       { status: 500 } // 500 Internal Server Error
     );
   }
