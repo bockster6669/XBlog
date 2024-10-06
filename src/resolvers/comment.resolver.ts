@@ -31,6 +31,8 @@ const disLikesSchema = z.union([
       .optional()
       .refine((val) => val === 1, {
         message: 'Dislike increment value must be exactly 1',
+      }).superRefine((data, ctx)=>{
+
       }),
   }),
   z.object({
@@ -43,7 +45,7 @@ const disLikesSchema = z.union([
   }),
 ]);
 
-export const UpdateCommentSchema = z.union([
+export const UpdateCommentSchema = 
   z.object({
     data: z.object({
       content: z
@@ -51,15 +53,14 @@ export const UpdateCommentSchema = z.union([
         .trim()
         .min(1, 'Content cannot be empty or only spaces'),
     }),
-  }),
-  z.object({
-    data: z.object({
-      likes: likesSchema,
-    }),
-  }),
-  z.object({
-    data: z.object({
-      disLikes: disLikesSchema,
-    }),
-  }),
-]);
+  })
+  // z.object({
+  //   data: z.object({
+  //     likes: likesSchema,
+  //   }),
+  // }),
+  // z.object({
+  //   data: z.object({
+  //     disLikes: disLikesSchema,
+  //   }),
+  // }),

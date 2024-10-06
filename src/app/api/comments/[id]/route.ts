@@ -5,6 +5,7 @@ import { UpdateCommentSchema } from '@/resolvers/comment.resolver';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/options';
 
+//only updates comment content
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -19,7 +20,7 @@ export async function PATCH(
   }
 
   const body = await req.json();
-  const validatedFields = UpdateCommentSchema.safeParse(body);
+  const validatedFields = await UpdateCommentSchema.safeParseAsync(body);
 
   if (!validatedFields.success) {
     const errorMessages = validatedFields.error.errors
@@ -30,6 +31,7 @@ export async function PATCH(
       { status: 400 } // 400 Bad Request
     );
   }
+
   const { data } = validatedFields.data;
 
   try {

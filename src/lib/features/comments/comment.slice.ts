@@ -1,16 +1,6 @@
-import { Comment, Prisma, Tag } from '@prisma/client';
+import { Comment } from '@prisma/client';
 import { apiSlice } from '../api/apiSlice';
-
-const commentReplies = Prisma.validator<Prisma.CommentFindManyArgs>()({
-  include: {
-    author: true,
-    replies: true,
-  },
-});
-
-type CommentWithRepliesAndAuthor = Prisma.CommentGetPayload<
-  typeof commentReplies
->;
+import { CommentWithRepliesAndAuthor } from '@/components/posts/id/comment/types';
 
 type newReplie = {
   content: string;
@@ -38,14 +28,55 @@ export const apiSliceWithComments = apiSlice
               ]
             : [{ type: 'Comment', id: arg }],
       }),
-      updateComment: builder.mutation<
-        Comment,
-        { id: string; data: Prisma.CommentUpdateInput }
-      >({
-        query: (obj) => ({
-          url: `/comments/${obj.id}`,
-          method: 'PATCH',
-          body: obj,
+      updateComment: builder.mutation<Comment, { id: string; content: string }>(
+        {
+          query: (obj) => ({
+            url: `/comments/${obj.id}`,
+            method: 'PATCH',
+            body: obj,
+          }),
+          invalidatesTags: (result, error, arg) => [
+            { type: 'Comment', id: result?.id },
+          ],
+        }
+      ),
+      addCommentLike: builder.mutation<Comment, string>({
+        query: (commentId) => {
+          return {
+            url: `/comment-likes`,
+            method: 'POST',
+            body: {commentId},
+          };
+        },
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Comment', id: result?.id },
+        ],
+      }),
+      deleteCommentLike: builder.mutation<Comment, string>({
+        query: (commentId) => ({
+          url: `/comment-likes`,
+          method: 'DELETE',
+          body: {commentId},
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Comment', id: result?.id },
+        ],
+      }),
+      addCommentDisLike: builder.mutation<Comment, string>({
+        query: (commentId) => ({
+          url: `/comment-dislikes`,
+          method: 'POST',
+          body: {commentId},
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Comment', id: result?.id },
+        ],
+      }),
+      deleteCommentDisLike: builder.mutation<Comment, string>({
+        query: (commentId) => ({
+          url: `/comment-dislikes`,
+          method: 'DELETE',
+          body: {commentId},
         }),
         invalidatesTags: (result, error, arg) => [
           { type: 'Comment', id: result?.id },
@@ -102,4 +133,8 @@ export const {
   useAddCommentMutation,
   useGetRepliesQuery,
   useAddReplieMutation,
+  useAddCommentLikeMutation,
+  useDeleteCommentLikeMutation,
+  useAddCommentDisLikeMutation,
+  useDeleteCommentDisLikeMutation,
 } = apiSliceWithComments;

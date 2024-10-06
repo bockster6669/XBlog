@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { CommentAnswersContext, CommentWithRepiesAndAuthor } from './types';
+import { CommentAnswersContext, CommentWithRepliesAndAuthor } from './types';
 import { Button } from '../../../ui/button';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import CommentItem from './CommentItem';

@@ -1,25 +1,27 @@
 import { Prisma } from '@prisma/client';
 
-const commentWithRepiesAndAuthor =
+const CommentWithRepliesAndAuthor =
   Prisma.validator<Prisma.CommentDefaultArgs>()({
     include: {
-      replies: true,
       author: true,
+      replies: true,
+      likes: true,
+      disLikes: true,
     },
   });
-export type CommentWithRepiesAndAuthor = Prisma.CommentGetPayload<
-  typeof commentWithRepiesAndAuthor
+export type CommentWithRepliesAndAuthor = Prisma.CommentGetPayload<
+  typeof CommentWithRepliesAndAuthor
 >;
 
 export type CommentsListProps = {
-  comments: CommentWithRepiesAndAuthor[];
+  comments: CommentWithRepliesAndAuthor[];
   postId: string;
 };
 
 export type CommentItemProps = {
-  comment: CommentWithRepiesAndAuthor;
+  comment: CommentWithRepliesAndAuthor;
   postId: string;
-  className?: string
+  className?: string;
 };
 
 export type CommentContext = {

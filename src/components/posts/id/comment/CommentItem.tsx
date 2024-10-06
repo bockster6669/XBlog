@@ -10,7 +10,7 @@ import React, {
 import {
   CommentContext,
   CommentItemProps,
-  CommentWithRepiesAndAuthor,
+  CommentWithRepliesAndAuthor,
 } from './types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '../../../ui/button';
@@ -45,7 +45,11 @@ import {
   useAddReplieMutation,
   useDeleteCommentMutation,
   useGetRepliesQuery,
+  useAddCommentLikeMutation,
   useUpdateCommentMutation,
+  useDeleteCommentLikeMutation,
+  useAddCommentDisLikeMutation,
+  useDeleteCommentDisLikeMutation,
 } from '@/lib/features/comments/comment.slice';
 import { useSession } from 'next-auth/react';
 
@@ -82,7 +86,7 @@ function Comment({ children }: { children: ReactNode }) {
 }
 // Context ends
 
-function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
+function CommentContent({ comment }: { comment: CommentWithRepliesAndAuthor }) {
   const { editMode, setEditMode } = useCommentContext();
   const [value, setValue] = useState(comment.content);
   const creationDate = formatDistance(comment.createdAt, new Date(), {
@@ -97,9 +101,7 @@ function CommentContent({ comment }: { comment: CommentWithRepiesAndAuthor }) {
     try {
       updateComment({
         id: comment.id,
-        data: {
-          content: value,
-        },
+        content: value,
       }).unwrap();
     } catch (error) {
       const message = getErrorMessage(error);
@@ -213,15 +215,27 @@ function CommentOptions({
 function CommentFeedbackButtons({
   comment,
 }: {
-  comment: CommentWithRepiesAndAuthor;
+  comment: CommentWithRepliesAndAuthor;
 }) {
   const [userReaction, setUserReaction] = useState<'none' | 'like' | 'dislike'>(
     'none'
   );
-  const [updateComment, { isLoading }] = useUpdateCommentMutation();
-  const [likes, setLikes] = useState(comment.likes);
-  const [disLikes, setDisLikes] = useState(comment.disLikes);
+  const [addCommentLike, { isLoading: addCommentLikeLoading }] =
+    useAddCommentLikeMutation();
+  const [deleteCommentLike, { isLoading: deleteCommentLikeLoading }] =
+    useDeleteCommentLikeMutation();
+  const [addCommentDisLike, { isLoading: addCommentDisLikeLoading }] =
+    useAddCommentDisLikeMutation();
+  const [deleteCommentDisLike, { isLoading: deleteCommentDisLikeLoading }] =
+    useDeleteCommentDisLikeMutation();
+  const [likes, setLikes] = useState(comment.totalLikes);
+  const [disLikes, setDisLikes] = useState(comment.totalDisLikes);
   const { setReplyMode, editMode } = useCommentContext();
+  const isLoading =
+    addCommentLikeLoading ||
+    deleteCommentLikeLoading ||
+    addCommentDisLikeLoading ||
+    deleteCommentDisLikeLoading;
 
   const handleLike = async () => {
     if (userReaction === 'like') return;
@@ -230,15 +244,11 @@ function CommentFeedbackButtons({
       setDisLikes((prev) => prev - 1);
 
       try {
-        await updateComment({
-          id: comment.id,
-          data: {
-            disLikes: {
-              decrement: 1,
-            },
-          },
-        });
+        await deleteCommentDisLike(comment.id).unwrap();
+        setUserReaction('like');
+        setLikes((prev) => prev + 1);
       } catch (error) {
+        console.log(error);
         const message = getErrorMessage(error);
         toast({
           variant: 'destructive',
@@ -248,18 +258,8 @@ function CommentFeedbackButtons({
       }
     }
 
-    setLikes((prev) => prev + 1);
-    setUserReaction('like');
-
     try {
-      await updateComment({
-        id: comment.id,
-        data: {
-          likes: {
-            increment: 1,
-          },
-        },
-      }).unwrap();
+      await addCommentLike(comment.id).unwrap();
     } catch (error) {
       const message = getErrorMessage(error);
       toast({
@@ -269,21 +269,16 @@ function CommentFeedbackButtons({
       });
     }
   };
-  // ако си го натиснал веднъж, да се махне, ако си бил до са на лайк, да се махне лайка и да се обнови дислайка
+
   const handleDisLike = async () => {
     if (userReaction === 'dislike') return;
 
     if (userReaction === 'like') {
       setLikes((prev) => prev - 1);
       try {
-        await updateComment({
-          id: comment.id,
-          data: {
-            likes: {
-              decrement: 1,
-            },
-          },
-        });
+        await deleteCommentLike(comment.id).unwrap();
+        setDisLikes((prev) => prev + 1);
+        setUserReaction('dislike');
       } catch (error) {
         const message = getErrorMessage(error);
         toast({
@@ -294,18 +289,8 @@ function CommentFeedbackButtons({
       }
     }
 
-    setDisLikes((prev) => prev + 1);
-    setUserReaction('dislike');
-
     try {
-      await updateComment({
-        id: comment.id,
-        data: {
-          disLikes: {
-            increment: 1,
-          },
-        },
-      }).unwrap();
+      await addCommentDisLike(comment.id).unwrap();
     } catch (error) {
       const message = getErrorMessage(error);
       toast({
@@ -320,7 +305,7 @@ function CommentFeedbackButtons({
     !editMode && (
       <div className="flex items-center">
         <Button
-          variant={userReaction === 'like' ? 'secondary' : 'ghost'}
+          variant={comment.likes.length > 0 ? 'secondary' : 'ghost'}
           onClick={handleLike}
           disabled={isLoading}
         >
@@ -328,7 +313,7 @@ function CommentFeedbackButtons({
           <span className="ml-2 text-sm text-muted-foreground">{likes}</span>
         </Button>
         <Button
-          variant={userReaction === 'dislike' ? 'secondary' : 'ghost'}
+          variant={comment.disLikes.length > 0 ? 'secondary' : 'ghost'}
           onClick={handleDisLike}
         >
           <ThumbsDown className="size-4" />
@@ -349,7 +334,7 @@ function CommentFeedbackButtons({
 
 function ReplyForm({ parentId, postId }: { parentId: string; postId: string }) {
   const { replyMode, setReplyMode } = useCommentContext();
-  const [createReplie, { isLoading }] = useAddReplieMutation();
+  const [createReplie] = useAddReplieMutation();
   return (
     replyMode && (
       <div className="border-l box-border pl-4">

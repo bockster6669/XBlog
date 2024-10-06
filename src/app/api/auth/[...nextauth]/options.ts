@@ -56,7 +56,11 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger, account, profile, session }) {
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+
       token.rememberMe = user?.rememberMe || false;
 
       if (token.rememberMe) {

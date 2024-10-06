@@ -86,6 +86,15 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user || !session.user.sub) {
+    return NextResponse.json(
+      { error: 'Authentication required: Please log in to post a comment' },
+      { status: 401 } // 401 Unauthorized
+    );
+  }
+
   try {
     const comments = await CommentRepo.findMany({
       where: {
@@ -97,6 +106,16 @@ export async function GET(req: NextRequest) {
       include: {
         replies: true,
         author: true,
+        likes: {
+          where: {
+            authorId: session.user.sub,
+          },
+        },
+        disLikes: {
+          where: {
+            authorId: session.user.sub,
+          },
+        },
       },
     });
     const commentsCount = await CommentRepo.count(postId);

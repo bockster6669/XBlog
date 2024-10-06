@@ -19,12 +19,31 @@ export async function GET(
     );
   }
 
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user || !session.user.sub) {
+    return NextResponse.json(
+      { error: 'Authentication required: Please log in to post a comment' },
+      { status: 401 } // 401 Unauthorized
+    );
+  }
+
   try {
     const replies = await CommentRepo.findMany({
       where: { parentId: id },
       include: {
         author: true,
         replies: true,
+        likes: {
+          where: {
+            authorId: session.user.sub,
+          },
+        },
+        disLikes: {
+          where: {
+            authorId: session.user.sub,
+          },
+        },
       },
     });
     return NextResponse.json(replies, { status: 200 });
@@ -89,7 +108,7 @@ export async function POST(
     });
 
     if (!user) {
-      console.warn('User profile not found for email:', session.user.sub); // Log warning for debugging
+      console.warn('User profile not found for id:', session.user.sub); // Log warning for debugging
       return NextResponse.json(
         { error: 'User profile not found.' },
         { status: 404 }
