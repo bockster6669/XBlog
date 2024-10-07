@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, validateSchema } from '@/lib/utils';
 import { CommentRepo } from '@/repository/comment.repo';
 import { UpdateCommentSchema } from '@/resolvers/comment.resolver';
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,14 +18,11 @@ export async function PATCH(
 
   const body = await req.json();
 
-  const validatedFields = UpdateCommentSchema.safeParse(body);
-  
-  if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors
-      .map((error) => error.message)
-      .join(', ');
+  const validatedFields = validateSchema(UpdateCommentSchema, body);
+
+  if ('error' in validatedFields) {
     return NextResponse.json(
-      { error: errorMessages },
+      { error: validatedFields.error },
       { status: 400 } // 400 Bad Request
     );
   }

@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, validateSchema } from '@/lib/utils';
 import { UserRepo } from '@/repository/user.repo';
 import { SecuritySchema } from '@/resolvers/forms/security-form.resolver';
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,23 +18,18 @@ export async function PATCH(
   }
 
   const body = await req.json();
-  console.log(body)
+  console.log(body);
 
-  const validatedFields = SecuritySchema.safeParse(body);
+  const validatedFields = validateSchema(SecuritySchema, body);
 
-  console.log(validatedFields)
-
-  if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors
-      .map((error) => error.message)
-      .join(', ');
+  if ('error' in validatedFields) {
     return NextResponse.json(
-      { error: errorMessages },
+      { error: validatedFields.error },
       { status: 400 } // 400 Bad Request
     );
   }
   const { currentPassword } = validatedFields.data;
-  console.log({ currentPassword })
+  console.log({ currentPassword });
   try {
     const userPass = await UserRepo.findUnique({
       where: {

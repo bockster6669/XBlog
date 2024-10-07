@@ -47,6 +47,10 @@ const disLikesSchema = z.union([
 export const UpdateCommentSchema = z.object({
   content: z.string().trim().min(1, 'Content cannot be empty or only spaces'),
 });
+
+export const CommentIdSchema = z.object({
+  commentId: z.string().min(1, 'Comment ID cannot be empty'), // Добавена минимална дължина
+});
 // z.object({
 //   data: z.object({
 //     likes: likesSchema,

@@ -1,4 +1,4 @@
-import { getErrorMessage, wait } from '@/lib/utils';
+import { getErrorMessage, validateSchema, wait } from '@/lib/utils';
 import { CommentRepo } from '@/repository/comment.repo';
 import { UserRepo } from '@/repository/user.repo';
 import { getServerSession } from 'next-auth';
@@ -9,14 +9,11 @@ import { CreateCommentSchema } from '@/resolvers/comment.resolver';
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const validatedFields = CreateCommentSchema.safeParse(body);
+  const validatedFields = validateSchema(CreateCommentSchema, body);
 
-  if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors
-      .map((error) => error.message)
-      .join(', ');
+  if ('error' in validatedFields) {
     return NextResponse.json(
-      { error: errorMessages },
+      { error: validatedFields.error },
       { status: 400 } // 400 Bad Request
     );
   }

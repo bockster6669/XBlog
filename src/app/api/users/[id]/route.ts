@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, validateSchema } from '@/lib/utils';
 import { UserRepo } from '@/repository/user.repo';
 import { PersonalInfoSchema } from '@/resolvers/forms/personal-info-form.resolver';
 import { NextRequest, NextResponse } from 'next/server';
@@ -63,14 +63,14 @@ export async function PATCH(
   const PersonalInfoSchemaWithoutLanguage = PersonalInfoSchema.omit({
     language: true,
   });
-  const validatedFields = PersonalInfoSchemaWithoutLanguage.safeParse(body);
+  const validatedFields = validateSchema(
+    PersonalInfoSchemaWithoutLanguage,
+    body
+  );
 
-  if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors
-      .map((error) => error.message)
-      .join(', ');
+  if ('error' in validatedFields) {
     return NextResponse.json(
-      { error: errorMessages },
+      { error: validatedFields.error },
       { status: 400 } // 400 Bad Request
     );
   }

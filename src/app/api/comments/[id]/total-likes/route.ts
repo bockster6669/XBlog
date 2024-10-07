@@ -2,68 +2,54 @@ import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/prisma/db';
-import { getErrorMessage } from '@/lib/utils';
+import {
+  createErrorResponse,
+  getErrorMessage,
+  validateSchema,
+} from '@/lib/utils';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { checkIfCommentIsLiked, checkIfCommentIsDisLiked } from '../lib';
+import { checkSession } from '@/app/api/lib';
+import { CommentIdSchema } from '@/resolvers/comment.resolver';
 
-const validationSchema = z.object({
-  commentId: z.string(),
-});
-
-// използвай транзакции, защото ако comment.likes update фейлне, но
-// лайкването на коментара в таблицата CommentLikes е било успешно
-// то тогава ще се води че юсера е лайкнал коментара, но всъщност
-// лайковете на коментара няма да бъдат увеличени
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  console.log('body=', body);
-  const validatedFields = validationSchema.safeParse(body);
+  const validatiedFields = validateSchema(CommentIdSchema, body);
 
-  if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors
-      .map((error) => error.message)
-      .join(', ');
+  if ('error' in validatiedFields) {
     return NextResponse.json(
-      { error: errorMessages },
+      { error: validatiedFields.error },
       { status: 400 } // 400 Bad Request
     );
   }
+  const { commentId } = validatiedFields.data;
 
-  const session = await getServerSession(authOptions);
+  const { session, error: sessionError } = await checkSession();
 
-  if (!session || !session.user || !session.user.sub) {
-    return NextResponse.json(
-      { error: 'Authentication required: Please log in to post a comment' },
-      { status: 401 } // 401 Unauthorized
-    );
+  if (!session) {
+    return NextResponse.json(createErrorResponse(sessionError, 401));
   }
-  const { commentId } = validatedFields.data;
 
-  const isThisLikeExists = await db.commentLike.findUnique({
-    where: {
-      authorId_commentId: {
-        authorId: session.user.sub,
-        commentId,
-      },
-    },
-  });
-
-  if (isThisLikeExists) {
+  const { data: likeData, error: likeError } = await checkIfCommentIsLiked(
+    commentId,
+    session.user.sub
+  );
+  if (likeData) {
     return NextResponse.json(
       { error: 'Can not like a comment more than once' },
       { status: 500 } // 500 Internal Server Error
     );
   }
+  if (likeError) {
+    return NextResponse.json(
+      { error: likeError },
+      { status: 500 } // 500 Internal Server Error
+    );
+  }
 
-  const isPrevDisLiked = await db.commentDisLike.findUnique({
-    where: {
-      authorId_commentId: {
-        authorId: session.user.sub,
-        commentId,
-      },
-    },
-  });
-
-  if (isPrevDisLiked) {
+  const { data: disLikeData, error: disLikeError } =
+    await checkIfCommentIsDisLiked(commentId, session.user.sub);
+  if (disLikeData) {
     try {
       await db.commentDisLike.delete({
         where: {
@@ -82,40 +68,39 @@ export async function POST(req: NextRequest) {
       );
     }
   }
-
-  try {
-    await db.commentLike.create({
-      data: {
-        authorId: session.user.sub,
-        commentId,
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    const message = getErrorMessage(error);
+  if (disLikeError) {
     return NextResponse.json(
-      { error: 'Unable to like comment: ' + message },
+      { error: disLikeError },
       { status: 500 } // 500 Internal Server Error
     );
   }
 
   try {
-    const result = await db.comment.update({
-      where: { id: commentId },
-      data: {
-        totalLikes: { increment: 1 },
-        totalDisLikes: isPrevDisLiked ? { decrement: 1 } : undefined,
-      },
-    });
+    const [like, updatedComment] = await db.$transaction([
+      db.commentLike.create({
+        data: {
+          authorId: session.user.sub,
+          commentId,
+        },
+      }),
+      db.comment.update({
+        where: { id: commentId },
+        data: {
+          totalLikes: { increment: 1 },
+          totalDisLikes: disLikeData ? { decrement: 1 } : undefined,
+        },
+      }),
+    ]);
+
     return NextResponse.json(
-      result,
+      updatedComment,
       { status: 200 } // 200 OK
     );
   } catch (error) {
     console.error(error);
     const message = getErrorMessage(error);
     return NextResponse.json(
-      { error: 'Unable to update comment likes: ' + message },
+      { error: 'Unable to process like and update comment: ' + message },
       { status: 500 } // 500 Internal Server Error
     );
   }
@@ -124,17 +109,16 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const body = await req.json();
 
-  const validatedFields = validationSchema.safeParse(body);
+  const validatiedFields = validateSchema(CommentIdSchema, body);
 
-  if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors
-      .map((error) => error.message)
-      .join(', ');
+  if ('error' in validatiedFields) {
     return NextResponse.json(
-      { error: errorMessages },
+      { error: validatiedFields.error },
       { status: 400 } // 400 Bad Request
     );
   }
+
+  const { commentId } = validatiedFields.data;
 
   const session = await getServerSession(authOptions);
 
@@ -144,7 +128,6 @@ export async function DELETE(req: NextRequest) {
       { status: 401 } // 401 Unauthorized
     );
   }
-  const { commentId } = validatedFields.data;
 
   try {
     await db.commentLike.delete({

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PostRepo } from '@/repository/post.repo';
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, validateSchema } from '@/lib/utils';
 import { GETPostsSchema } from '@/resolvers/post.resolver';
 import { TagRepo } from '@/repository/tag.repo';
 import { CreatePostSchema } from '@/resolvers/forms/create-post-form.resolver';
@@ -23,17 +23,12 @@ export async function GET(req: NextRequest) {
     orderBy,
   };
 
-  console.log(query);
-  const validatedFields = GETPostsSchema.safeParse(query);
+  const validatedFields = validateSchema(GETPostsSchema, query);
 
-  if (!validatedFields.success) {
-    console.log(validatedFields.error);
+  if ('error' in validatedFields) {
     return NextResponse.json(
-      {
-        error:
-          'Invalid search parameters: Please check your input and try again',
-      },
-      { status: 400 }
+      { error: validatedFields.error },
+      { status: 400 } // 400 Bad Request
     );
   }
 

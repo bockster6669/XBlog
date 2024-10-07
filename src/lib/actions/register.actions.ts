@@ -7,16 +7,14 @@ import {
 } from '@/resolvers/forms/sign-up-form.resolver';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { validateSchema } from '../utils';
 
 export async function registerUser(body: SignUpValues) {
-  const validatedFields = SignUpSchema.safeParse(body);
+  const validatedFields = validateSchema(SignUpSchema, body);
 
-  if (!validatedFields.success) {
-    const errorMessages = validatedFields.error.errors
-      .map((error) => error.message)
-      .join(', ');
+  if ('error' in validatedFields) {
     return NextResponse.json(
-      { error: errorMessages },
+      { error: validatedFields.error },
       { status: 400 } // 400 Bad Request
     );
   }
