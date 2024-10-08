@@ -27,14 +27,16 @@ This project aims to be a collaborative and beginner-friendly environment for co
 - **Styling**: [ShadCN/UI](https://shadcn.dev/)
 
 ## Tasks list
-- [ ] create subscription model, where a user can subscribe to author and get notified everytime when this author creates a new post
-- [ ] create push notifications
+- [ ] add subscription model, where a user can subscribe to author and get notified everytime when this author creates a new post
+- [ ] add push notifications
 - [ ] finish the "change language" feature
-- [ ] create test cases
-- [ ] infinity scroll on */posts* page
-- [ ] should implement text editor on */create-post* page for the content part
+      - The "Change language" feature is located on the user's profile page, where they can choose their preferred language from a dropdown menu.
+- [ ] add test cases
+- [ ] add infinity scroll on */posts* page
+- [ ] add rich text editor on */create-post* page for the content part
 - [ ] add reactions to the post
-- [ ] implement filtering and displaying authors and categories by their popularity on the home page
+- [ ] add filtering and displaying authors and categories by their popularity on the home page
+- [ ] add optimistic updates 
 
 ## How to contribute
 We welcome contributions of all kinds! First of all, join our discord server. There, you can see what tasks are left, or you can open a ticket and present your own idea features. Here's how you can get started:
