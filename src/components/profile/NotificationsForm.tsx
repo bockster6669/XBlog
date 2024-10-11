@@ -35,7 +35,7 @@ export default function NotificationsForm() {
   const user = data?.user;
 
   if (status === 'loading') {
-    return <Spinner />;
+    return <Spinner/>;
   }
 
   if (!data || !user) {
