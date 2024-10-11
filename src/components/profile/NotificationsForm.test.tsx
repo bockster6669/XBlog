@@ -1,10 +1,9 @@
-import '@testing-library/jest-dom';
 import { expect, test, describe, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { render } from './test/utils';
 import NotificationsForm from './NotificationsForm';
 import { Session } from 'next-auth';
-import { useSession } from 'next-auth/react';
+import { afterEach } from 'node:test';
 
 const session = {
   user: {
@@ -22,7 +21,10 @@ const session = {
 } satisfies Session;
 
 describe('NotificationsForm', () => {
-  
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
   test("shows 'Can not find your session' if session is not found", async () => {
     render(<NotificationsForm />);
 
@@ -43,8 +45,20 @@ describe('NotificationsForm', () => {
     render(<NotificationsForm />);
 
     expect(screen.getByRole('status')).toBeInTheDocument();
+  });
 
-    // Връщаме оригиналната имплементация след теста
-    mockUseSession.mockRestore();
+  test('shows form when user is logged in', () => {
+    render(<NotificationsForm />);
+    const mockUseSession = vi.spyOn(require('next-auth/react'), 'useSession');
+    mockUseSession.mockReturnValue({
+      data: session,
+      status: 'authenticated',
+      update: () => {},
+    });
+
+    render(<NotificationsForm />);
+
+    const title = screen.getByRole('heading', { name: /notifications/i });
+    expect(title).toBeInTheDocument();
   });
 });
