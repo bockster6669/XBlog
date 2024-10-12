@@ -1,4 +1,4 @@
-# Blog App - Open Source Project
+# XBlog - Open Source Project
 
 ## Overview
 
