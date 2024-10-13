@@ -1,9 +1,9 @@
 import { expect, test, describe, vi } from 'vitest';
 import { screen } from '@testing-library/react';
-import { render } from './test/utils';
 import NotificationsForm from './NotificationsForm';
 import { Session } from 'next-auth';
 import { afterEach } from 'node:test';
+import { render } from '@/components/profile/test/utils';
 
 const session = {
   user: {
@@ -34,12 +34,12 @@ describe('NotificationsForm', () => {
   });
 
   test('shows loading spinner while searching for session', () => {
-    // Мокваме само за този тест
     const mockUseSession = vi.spyOn(require('next-auth/react'), 'useSession');
     mockUseSession.mockReturnValue({
       data: null,
       status: 'loading',
-      update: async (data?: any) => data,
+      update: () => {},
+
     });
 
     render(<NotificationsForm />);

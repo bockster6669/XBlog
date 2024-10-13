@@ -42,30 +42,22 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from '../ui/command';
+} from '../../ui/command';
 import {
   useGetUserDataQuery,
   useUpdateUserDataMutation,
 } from '@/lib/features/users/users.slice';
 import { zodResolver } from '@hookform/resolvers/zod';
-import SuccessMessage from '../auth/success-message';
-import ErrorMessage from '../auth/error-message';
-
-/*
-
-session -> 
-* firstname
-* lastname
-* 
-
-*/
+import SuccessMessage from '../../auth/success-message';
+import ErrorMessage from '../../auth/error-message';
 
 export default function PersonalInfoForm() {
   const { data, status } = useSession();
   const [updateUserData, { isLoading: isUpdateUserDataLoading }] =
     useUpdateUserDataMutation();
-  const { data: userData, isLoading } = useGetUserDataQuery(data!.user.sub!, {
-    skip: !data?.user.sub,
+  const userId = data?.user?.sub; 
+  const { data: userData, isLoading } = useGetUserDataQuery(userId!, {
+    skip: !userId, 
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -92,17 +84,18 @@ export default function PersonalInfoForm() {
     });
   }, [userData, form]);
 
+  console.log({updateUserData, isLoading})
   if (status === 'loading' || isLoading) {
     return <Spinner />;
   }
 
-  if (!userData) return <div>No user found</div>;
-
-  const user = data?.user;
-
-  if (!data?.user.sub || !user) {
+  if (!data) {
     return <div>Can not find your session</div>;
   }
+
+  if (!userData) return <div>No user found</div>;
+
+  const user = data.user;
 
   const onSubmit: SubmitHandler<PersonalInfoValues> = async (formValue) => {
     setSuccess(null);
@@ -129,7 +122,7 @@ export default function PersonalInfoForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-x-4 sm:space-y-0">
+        <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-x-4 sm:space-y-0">
           <Avatar className="w-24 h-24">
             <AvatarImage
               src={user.image || undefined}
@@ -141,7 +134,7 @@ export default function PersonalInfoForm() {
             </AvatarFallback>
           </Avatar>
           <Button variant="outline">Change avatar</Button>
-        </div> */}
+        </div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -256,7 +249,7 @@ export default function PersonalInfoForm() {
                 </FormItem>
               )}
             />
-            <div className='mt-auto h-full'>
+            <div className="mt-auto h-full">
               <Button
                 type="submit"
                 disabled={isUpdateUserDataLoading}
@@ -264,8 +257,8 @@ export default function PersonalInfoForm() {
               >
                 {isUpdateUserDataLoading ? 'Updating...' : 'Update'}
               </Button>
-              {success && <SuccessMessage message={success} className='mt-3'/>}
-              {error && <ErrorMessage message={error} className='mt-3'/>}
+              {success && <SuccessMessage message={success} className="mt-3" />}
+              {error && <ErrorMessage message={error} className="mt-3" />}
             </div>
           </form>
         </Form>
