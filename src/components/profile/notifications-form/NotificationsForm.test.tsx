@@ -26,6 +26,13 @@ describe('NotificationsForm', () => {
   });
 
   test("shows 'Can not find your session' if session is not found", async () => {
+    const mockUseSession = vi.spyOn(require('next-auth/react'), 'useSession');
+    mockUseSession.mockReturnValue({
+      data: null,
+      status: 'unauthenticated',
+      update: () => {},
+
+    });
     render(<NotificationsForm />);
 
     const notificationForm = screen.getByText(/Can not find your session/i);
@@ -39,7 +46,6 @@ describe('NotificationsForm', () => {
       data: null,
       status: 'loading',
       update: () => {},
-
     });
 
     render(<NotificationsForm />);

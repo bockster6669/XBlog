@@ -2,26 +2,34 @@
 
 import { HelpCircle, Trash2, LogOut } from 'lucide-react';
 import React from 'react';
-import { Button } from '../ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Button } from '../../ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '../../ui/card';
 import { deleteUser } from '@/lib/actions/user.actions';
-import { useToastContext } from '@/contexts/toast.context';
+import { Toast, useToastContext } from '@/contexts/toast.context';
 import { signOut } from 'next-auth/react';
 
-export default function ProfileAdditionalOptions() {
+type ProfileAdditionalOptionsProps = {
+  onDelete?: (toast: Toast) => Promise<Toast>;
+};
+
+export default function ProfileAdditionalOptions({
+  onDelete,
+}: ProfileAdditionalOptionsProps) {
   const toast = useToastContext();
 
-  const handleDelete = async () => {
+  const defaultHandleDelete = async () => {
     const result = await deleteUser();
     if (result?.error) {
       return toast({
         variant: 'destructive',
-        title: 'Can not delete profile',
+        title: 'Cannot delete profile',
         description: result.error,
       });
     }
     await signOut();
   };
+
+  const handleDelete = onDelete || defaultHandleDelete;
 
   return (
     <Card>
@@ -33,13 +41,15 @@ export default function ProfileAdditionalOptions() {
           <HelpCircle className="mr-2 h-4 w-4" />
           <div className=" flex gap-2">
             <span>Help Center</span>
-            <span className=' text-muted-foreground font-light'>Not implemented feature</span>
+            <span className=" text-muted-foreground font-light">
+              Not implemented feature
+            </span>
           </div>
         </Button>
         <Button
           variant="outline"
           className="w-full justify-start"
-          onClick={handleDelete}
+          onClick={() => handleDelete(toast)}
         >
           <Trash2 className="mr-2 h-4 w-4" />
           Delete Account

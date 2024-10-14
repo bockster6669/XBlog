@@ -3,7 +3,9 @@
 import { useToast } from '@/components/ui/use-toast';
 import { createContext, useContext } from 'react';
 
-export const ToastContext = createContext<any|null>(null);
+export type Toast = ReturnType<typeof useToast>['toast'];
+
+export const ToastContext = createContext<Toast|null>(null);
 
 export function ToastContextProvider({
   children,

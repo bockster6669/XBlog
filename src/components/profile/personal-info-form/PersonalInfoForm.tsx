@@ -56,6 +56,7 @@ export default function PersonalInfoForm() {
   const [updateUserData, { isLoading: isUpdateUserDataLoading }] =
     useUpdateUserDataMutation();
   const userId = data?.user?.sub; 
+
   const { data: userData, isLoading } = useGetUserDataQuery(userId!, {
     skip: !userId, 
   });
@@ -84,7 +85,6 @@ export default function PersonalInfoForm() {
     });
   }, [userData, form]);
 
-  console.log({updateUserData, isLoading})
   if (status === 'loading' || isLoading) {
     return <Spinner />;
   }
