@@ -1,7 +1,7 @@
 'use client';
 
 import { calcDateToNow } from '@/lib/utils';
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '../ui/button';
 import {
   Card,
@@ -20,25 +20,27 @@ export default function RecentPostPreviewList() {
     orderBy: { createdAt: 'desc' },
     take: 5,
   });
+
   return isLoading ? (
     <Spinner />
+  ) : data && data.length > 0 ? ( 
+    data.map((post) => (
+      <Card key={post.id}>
+        <CardHeader>
+          <CardTitle>{post.title}</CardTitle>
+          <CardDescription>{calcDateToNow(post.createdAt)}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>{post.excerpt}</p>
+        </CardContent>
+        <CardFooter>
+          <Button variant="outline" asChild>
+            <Link href={`/posts/${post.id}`}>Read More</Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    ))
   ) : (
-    data &&
-      data.map((post) => (
-        <Card key={post.id}>
-          <CardHeader>
-            <CardTitle>{post.title}</CardTitle>
-            <CardDescription>{calcDateToNow(post.createdAt)}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>{post.excerpt}</p>
-          </CardContent>
-          <CardFooter>
-            <Button variant="outline" asChild>
-              <Link href={`/posts/${post.id}`}>Read More</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      ))
+    <div>There are no posts</div>
   );
 }

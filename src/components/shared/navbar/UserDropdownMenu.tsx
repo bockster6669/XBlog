@@ -8,20 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import React from 'react';
 import Link from 'next/link';
 import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
 import { LogOut, User } from 'lucide-react';
-import { Session } from 'next-auth';
 import { profileLinks } from '../../../constants/navbar-links.constants';
 
-type UserProfileProps = {
-  session: Session | null;
-};
-
-export default function UserDropdownMenu({ session }: UserProfileProps) {
-  const { data, status } = useSession();
+export default function UserDropdownMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
