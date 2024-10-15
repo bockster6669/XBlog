@@ -3,14 +3,14 @@
 import useDebounce from '@/hooks/useDebounce';
 import { SearchIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Input } from '../ui/input';
 import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
 
 export default function SearchBar() {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const router = useRouter();
-  
+
   useEffect(() => {
     if (debouncedSearchTerm === undefined) return;
 
@@ -30,6 +30,7 @@ export default function SearchBar() {
         placeholder="Search blog posts..."
         className="pl-8"
         onChange={(e) => setSearchTerm(e.currentTarget.value)}
+        aria-label="Search blog posts"
       />
     </div>
   );

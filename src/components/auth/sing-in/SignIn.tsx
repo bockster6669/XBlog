@@ -16,12 +16,7 @@ import {
 import { Github } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios, { isAxiosError } from 'axios';
 import { signIn } from 'next-auth/react';
-import {
-  SignUpValues,
-  SignUpSchema,
-} from '../../resolvers/forms/sign-up-form.resolver';
 import {
   Form,
   FormControl,
@@ -29,80 +24,93 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
-import ErrorMessage from './error-message';
-import SuccessMessage from './success-message';
+} from '../../ui/form';
+import ErrorMessage from '../ErrorMessage';
+import SuccessMessage from '../SuccessMessage';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { registerUser } from '@/lib/actions/register.actions';
-import { getErrorMessage } from '@/lib/utils';
+import {
+  SignInFormSchemaValues,
+  SignInFormSchema,
+} from '@/resolvers/forms/sign-in-form.resolver';
 
-export default function SignUpForm() {
+type SignInFormProps = {
+  onSubmit?: SubmitHandler<SignInFormSchemaValues>;
+};
+
+export default function SignInForm({ onSubmit }: SignInFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
-  const form = useForm<SignUpValues>({
-    mode: 'onTouched',
+  const router = useRouter();
+
+  const form = useForm<SignInFormSchemaValues>({
     defaultValues: {
       email: '',
       password: '',
-      username: '',
     },
-    resolver: zodResolver(SignUpSchema),
+    mode: 'onTouched',
+    resolver: zodResolver(SignInFormSchema),
   });
-  const { isSubmitting } = form.formState;
-  const router = useRouter();
 
-  const handleSubmit: SubmitHandler<SignUpValues> = async (formData) => {
+  const { isSubmitting } = form.formState;
+
+  const defaultHandleSubmit: SubmitHandler<SignInFormSchemaValues> = async (
+    formData
+  ) => {
     setError(null);
     setSuccess(null);
-    const { email, password, username } = formData;
+
     try {
-      const user = await registerUser({
-        email,
-        password,
-        username,
-      });
-
-      if (user && 'error' in user) {
-        return setError(user.error);
-      }
-
       const result = await signIn('credentials', {
-        email,
-        password,
+        email: formData.email,
+        password: formData.password,
         rememberMe,
         redirect: false,
       });
 
-      if (result?.error) {
-        throw new Error(result?.error);
+      if (!result) {
+        setError('Unexpected error occurred. Please try again later.');
+        return;
       }
 
-      setSuccess('Success created user');
+      if (result.error) {
+        console.log(result.error);
+        setError(result.error);
+        return;
+      }
+
+      if (result.status !== 200) {
+        setError('Error while signing in');
+        return;
+      }
+
+      setSuccess('Successfully signed in');
       router.push('/');
-    } catch (err) {
-      console.log(err);
-      const message = getErrorMessage(error);
-      setError(message);
+    } catch (error) {
+      console.error(error);
+      setError('Error occurred while signing in');
     }
   };
+  const handleSubmit = onSubmit || defaultHandleSubmit;
 
   return (
     <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">
-          Sign up
+          Sign in
         </CardTitle>
         <CardDescription className="text-center">
-          Choose your preferred sign up method
+          Choose your preferred sign in method
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
           <form
             className="space-y-4"
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={form.handleSubmit(handleSubmit, (err) => {
+              console.log('err=', err);
+            })}
           >
             <FormField
               control={form.control}
@@ -117,26 +125,6 @@ export default function SignUpForm() {
                       type="email"
                       id="email"
                       placeholder="email..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel htmlFor="username" className="text-sm font-medium">
-                    Username
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      id="username"
-                      placeholder="username..."
                       {...field}
                     />
                   </FormControl>
@@ -177,11 +165,11 @@ export default function SignUpForm() {
             <SuccessMessage message={success} />
             <ErrorMessage message={error} />
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              Sign up
+              Sign in
             </Button>
           </form>
         </Form>
-        <div className="flex gap-2">
+        <div className="flex">
           <Button
             variant="outline"
             onClick={() => signIn('github')}
@@ -193,9 +181,9 @@ export default function SignUpForm() {
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          Already have an account?
-          <Link href="/signin" className="text-primary hover:underline">
-            Sign in
+          Dont have an account?
+          <Link href="/signup" className="text-primary hover:underline">
+            Sign up
           </Link>
         </p>
       </CardFooter>

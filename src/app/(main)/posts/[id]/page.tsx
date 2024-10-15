@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Post from '@/components/posts/id/Post';
+import Post from '@/components/posts/id/post/Post';
 import { Separator } from '@/components/ui/separator';
 import { useParams } from 'next/navigation';
 import { useGetPostByIdQuery } from '@/lib/features/posts/posts.slice';

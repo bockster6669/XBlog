@@ -4,7 +4,7 @@ import { UserRepo } from '@/repository/user.repo';
 import {
   SignUpSchema,
   SignUpValues,
-} from '@/resolvers/forms/sign-up-form.resolver';
+} from '@/resolvers/forms/SignUp-form.resolver';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { validateSchema } from '../utils';

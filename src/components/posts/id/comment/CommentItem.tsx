@@ -365,7 +365,7 @@ export default function CommentItem({
   className,
 }: CommentItemProps) {
   const { data: replies } = useGetRepliesQuery(comment.id);
-  console.log('CommentItem render with comment=',comment)
+ 
   return (
     <Comment>
       <div className={cn(' box-border py-1 flex gap-4 items-start', className)}>
