@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Github } from 'lucide-react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import {
@@ -34,8 +34,14 @@ import {
   SignInFormSchema,
 } from '@/resolvers/forms/sign-in-form.resolver';
 
+type CustomSubmitHandler<T extends FieldValues> = (
+  formData: T,
+  setError: Dispatch<SetStateAction<string | null>>,
+  setSuccess: Dispatch<SetStateAction<string | null>>
+) => Promise<void>;
+
 type SignInFormProps = {
-  onSubmit?: SubmitHandler<SignInFormSchemaValues>;
+  onSubmit?: CustomSubmitHandler<SignInFormSchemaValues>;
 };
 
 export default function SignInForm({ onSubmit }: SignInFormProps) {
@@ -55,9 +61,9 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
 
   const { isSubmitting } = form.formState;
 
-  const defaultHandleSubmit: SubmitHandler<SignInFormSchemaValues> = async (
-    formData
-  ) => {
+  const defaultHandleSubmit: CustomSubmitHandler<
+    SignInFormSchemaValues
+  > = async (formData, setError, setSuccess) => {
     setError(null);
     setSuccess(null);
 
@@ -80,7 +86,7 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
         return;
       }
 
-      if (result.status !== 200) {
+      if (!result.ok) {
         setError('Error while signing in');
         return;
       }
@@ -92,7 +98,12 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
       setError('Error occurred while signing in');
     }
   };
-  const handleSubmit = onSubmit || defaultHandleSubmit;
+
+  const handleSubmit: SubmitHandler<SignInFormSchemaValues> = async (data) => {
+    await (onSubmit
+      ? onSubmit(data, setError, setSuccess)
+      : defaultHandleSubmit(data, setError, setSuccess));
+  };
 
   return (
     <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg">
