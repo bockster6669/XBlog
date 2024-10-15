@@ -9,13 +9,13 @@ import {
 } from '@/lib/features/comments/comment.slice';
 import { useSession } from 'next-auth/react';
 import Spinner from '@/components/shared/Spinner';
-import ErrorMessage from '@/components/auth/error-message';
+import ErrorMessage from '@/components/auth/ErrorMessage';
 
 export default function CommentsSection({ postId }: { postId: string }) {
   const session = useSession();
   const [addComment] = useAddCommentMutation();
   const { isLoading, data } = useGetCommentsQuery(postId);
-  console.log('data=',data)
+  console.log('data=', data);
   const renderCommentsForm = () => {
     if (session.status === 'loading') {
       return <div>Loading...</div>;

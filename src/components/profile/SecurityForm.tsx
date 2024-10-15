@@ -26,8 +26,8 @@ import {
   SecurityValues,
 } from '@/resolvers/forms/security-form.resolver';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ErrorMessage from '../auth/error-message';
-import SuccessMessage from '../auth/success-message';
+import ErrorMessage from '../auth/ErrorMessage';
+import SuccessMessage from '../auth/SuccessMessage';
 import { getErrorMessage } from '@/lib/utils';
 import { useUpdateUserPassMutation } from '@/lib/features/users/users.slice';
 import { Eye, EyeOff } from 'lucide-react';

@@ -48,17 +48,17 @@ import {
   useUpdateUserDataMutation,
 } from '@/lib/features/users/users.slice';
 import { zodResolver } from '@hookform/resolvers/zod';
-import SuccessMessage from '../../auth/success-message';
-import ErrorMessage from '../../auth/error-message';
+import SuccessMessage from '../../auth/SuccessMessage';
+import ErrorMessage from '../../auth/ErrorMessage';
 
 export default function PersonalInfoForm() {
   const { data, status } = useSession();
   const [updateUserData, { isLoading: isUpdateUserDataLoading }] =
     useUpdateUserDataMutation();
-  const userId = data?.user?.sub; 
+  const userId = data?.user?.sub;
 
   const { data: userData, isLoading } = useGetUserDataQuery(userId!, {
-    skip: !userId, 
+    skip: !userId,
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

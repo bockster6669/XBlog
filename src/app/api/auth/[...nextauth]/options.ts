@@ -2,7 +2,7 @@ import { DefaultSession, NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GitHubProvider from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
-import { SignInFormSchema } from '../../../../resolvers/forms/sign-in-form.resolver';
+import { SignInFormSchema } from '../../../../resolvers/forms/SignIn-form.resolver';
 import { UserRepo } from '@/repository/user.repo';
 import { boolean } from 'zod';
 import { Prisma, User as PrismaUser } from '@prisma/client';

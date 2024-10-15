@@ -24,69 +24,66 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
-import {
-  SignInFormSchemaValues,
-  SignInFormSchema,
-} from '../../resolvers/forms/sign-in-form.resolver';
-import ErrorMessage from './error-message';
-import SuccessMessage from './success-message';
+} from '../../ui/form';
+import ErrorMessage from '../ErrorMessage';
+import SuccessMessage from '../SuccessMessage';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { registerUser } from '@/lib/actions/register.actions';
+import { getErrorMessage } from '@/lib/utils';
+import {
+  SignUpValues,
+  SignUpSchema,
+} from '@/resolvers/forms/sign-up-form.resolver';
 
-export default function SignInForm() {
+export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
-  const router = useRouter();
-
-  const form = useForm<SignInFormSchemaValues>({
+  const form = useForm<SignUpValues>({
+    mode: 'onTouched',
     defaultValues: {
       email: '',
       password: '',
+      username: '',
     },
-    mode: 'onTouched',
-    resolver: zodResolver(SignInFormSchema),
+    resolver: zodResolver(SignUpSchema),
   });
-
   const { isSubmitting } = form.formState;
+  const router = useRouter();
 
-  const handleSubmit: SubmitHandler<SignInFormSchemaValues> = async (
-    formData
-  ) => {
-    console.log('handleSubmit');
+  const handleSubmit: SubmitHandler<SignUpValues> = async (formData) => {
     setError(null);
     setSuccess(null);
-
+    const { email, password, username } = formData;
     try {
+      const user = await registerUser({
+        email,
+        password,
+        username,
+      });
+
+      if (user && 'error' in user) {
+        return setError(user.error);
+      }
+
       const result = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
+        email,
+        password,
         rememberMe,
         redirect: false,
       });
 
-      if (!result) {
-        setError('Unexpected error occurred. Please try again later.');
-        return;
+      if (result?.error) {
+        throw new Error(result?.error);
       }
 
-      if (result.error) {
-        console.log(result.error);
-        setError(result.error);
-        return;
-      }
-
-      if (result.status !== 200) {
-        setError('Error while signing in');
-        return;
-      }
-
-      setSuccess('Successfully signed in');
+      setSuccess('Success created user');
       router.push('/');
-    } catch (error) {
-      console.error(error);
-      setError('Error occurred while signing in');
+    } catch (err) {
+      console.log(err);
+      const message = getErrorMessage(error);
+      setError(message);
     }
   };
 
@@ -94,19 +91,17 @@ export default function SignInForm() {
     <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">
-          Sign in
+          Sign up
         </CardTitle>
         <CardDescription className="text-center">
-          Choose your preferred sign in method
+          Choose your preferred sign up method
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
           <form
             className="space-y-4"
-            onSubmit={form.handleSubmit(handleSubmit, (err) => {
-              console.log('err=', err);
-            })}
+            onSubmit={form.handleSubmit(handleSubmit)}
           >
             <FormField
               control={form.control}
@@ -121,6 +116,26 @@ export default function SignInForm() {
                       type="email"
                       id="email"
                       placeholder="email..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel htmlFor="username" className="text-sm font-medium">
+                    Username
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      id="username"
+                      placeholder="username..."
                       {...field}
                     />
                   </FormControl>
@@ -161,11 +176,11 @@ export default function SignInForm() {
             <SuccessMessage message={success} />
             <ErrorMessage message={error} />
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              Sign in
+              Sign up
             </Button>
           </form>
         </Form>
-        <div className="flex">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             onClick={() => signIn('github')}
@@ -177,9 +192,9 @@ export default function SignInForm() {
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          Dont have an account?
-          <Link href="/signup" className="text-primary hover:underline">
-            Sign up
+          Already have an account?
+          <Link href="/signin" className="text-primary hover:underline">
+            Sign in
           </Link>
         </p>
       </CardFooter>
