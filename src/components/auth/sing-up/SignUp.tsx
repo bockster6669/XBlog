@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Github } from 'lucide-react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import {
@@ -36,7 +36,17 @@ import {
   SignUpSchema,
 } from '@/resolvers/forms/sign-up-form.resolver';
 
-export default function SignUpForm() {
+type CustomSubmitHandler<T extends FieldValues> = (
+  formData: T,
+  setError: Dispatch<SetStateAction<string | null>>,
+  setSuccess: Dispatch<SetStateAction<string | null>>
+) => Promise<void>;
+
+type SignUpFormProps = {
+  onSubmit?: CustomSubmitHandler<SignUpValues>;
+};
+
+export default function SignUpForm({ onSubmit }: SignUpFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
@@ -52,7 +62,9 @@ export default function SignUpForm() {
   const { isSubmitting } = form.formState;
   const router = useRouter();
 
-  const handleSubmit: SubmitHandler<SignUpValues> = async (formData) => {
+  const defaultHandleSubmit: CustomSubmitHandler<SignUpValues> = async (
+    formData
+  ) => {
     setError(null);
     setSuccess(null);
     const { email, password, username } = formData;
@@ -63,7 +75,7 @@ export default function SignUpForm() {
         username,
       });
 
-      if (user && 'error' in user) {
+      if (user && 'error' in user && user.error) {
         return setError(user.error);
       }
 
@@ -85,6 +97,12 @@ export default function SignUpForm() {
       const message = getErrorMessage(error);
       setError(message);
     }
+  };
+
+  const handleSubmit: SubmitHandler<SignUpValues> = async (data) => {
+    await (onSubmit
+      ? onSubmit(data, setError, setSuccess)
+      : defaultHandleSubmit(data, setError, setSuccess));
   };
 
   return (

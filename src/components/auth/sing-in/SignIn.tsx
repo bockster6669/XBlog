@@ -4,7 +4,6 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Card,
   CardContent,
@@ -38,7 +37,7 @@ type CustomSubmitHandler<T extends FieldValues> = (
   formData: T,
   setError: Dispatch<SetStateAction<string | null>>,
   setSuccess: Dispatch<SetStateAction<string | null>>
-) => Promise<void>;
+) => Promise<void> | void;
 
 type SignInFormProps = {
   onSubmit?: CustomSubmitHandler<SignInFormSchemaValues>;
@@ -47,13 +46,13 @@ type SignInFormProps = {
 export default function SignInForm({ onSubmit }: SignInFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
   const form = useForm<SignInFormSchemaValues>({
     defaultValues: {
       email: '',
       password: '',
+      rememberMe: false,
     },
     mode: 'onTouched',
     resolver: zodResolver(SignInFormSchema),
@@ -71,7 +70,7 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-        rememberMe,
+        rememberMe: formData.rememberMe,
         redirect: false,
       });
 
@@ -163,16 +162,21 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
                 </FormItem>
               )}
             />
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              />
-              <Label htmlFor="remember" className="text-sm">
-                Remember me
-              </Label>
-            </div>
+            <FormField
+              control={form.control}
+              name="rememberMe"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel>Remember me</FormLabel>
+                </FormItem>
+              )}
+            />
             <SuccessMessage message={success} />
             <ErrorMessage message={error} />
             <Button type="submit" className="w-full" disabled={isSubmitting}>
