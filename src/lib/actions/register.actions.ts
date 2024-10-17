@@ -1,13 +1,13 @@
 'use server';
 
 import { UserRepo } from '@/repository/user.repo';
-import {
-  SignUpSchema,
-  SignUpValues,
-} from '@/resolvers/forms/SignUp-form.resolver';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { validateSchema } from '../utils';
+import {
+  SignUpValues,
+  SignUpSchema,
+} from '@/resolvers/forms/sign-up-form.resolver';
 
 export async function registerUser(body: SignUpValues) {
   const validatedFields = validateSchema(SignUpSchema, body);
@@ -40,6 +40,7 @@ export async function registerUser(body: SignUpValues) {
         username,
       },
     });
+    return { success: 'Successfully created user' };
   } catch (error) {
     console.log(error);
     return { error: 'Error accured while creating user' };

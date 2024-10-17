@@ -22,17 +22,47 @@ describe('SignIn', () => {
     await userEvent.type(emailInput, 'test@gmail.com');
     await userEvent.click(rememberInput);
     await userEvent.click(signInButton);
-    screen.debug();
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
+  it('calls handleSubmit with correct arguments', async () => {
+    const mockHandleSubmit = vi.fn();
+    render(<SignInForm onSubmit={mockHandleSubmit} />);
+
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const rememberInput = screen.getByLabelText('Remember me');
+    const signInButton = screen.getByRole('button', {
+      name: 'Sign in',
+    });
+
+    await userEvent.type(emailInput, 'test@gmail.com');
+    await userEvent.type(passwordInput, 'testPass');
+    await userEvent.click(rememberInput);
+
+    await userEvent.click(signInButton);
+
+    expect(mockHandleSubmit).toHaveBeenCalledOnce();
+
+    expect(mockHandleSubmit).toHaveBeenCalledWith(
+      {
+        email: 'test@gmail.com',
+        password: 'testPass',
+        rememberMe: true
+      },
+      expect.any(Function), // Its for `setError`
+      expect.any(Function) // Its for `setSuccess`
+    );
+  });
+
   it('shows success message on valid submit', async () => {
-    const mockSignIn = vi
+     vi
       .spyOn(require('next-auth/react'), 'signIn')
       .mockImplementationOnce(() => ({
         ok: true,
       }));
+      
     render(<SignInForm />);
 
     const emailInput = screen.getByLabelText('Email');
@@ -46,7 +76,6 @@ describe('SignIn', () => {
     await userEvent.type(passwordInput, 'testPass');
     await userEvent.click(rememberInput);
     await userEvent.click(signInButton);
-    screen.debug();
 
     await waitFor(() => {
       const successMessage = screen.getByText(/successfully signed in/i);
@@ -71,7 +100,6 @@ describe('SignIn', () => {
     await userEvent.type(passwordInput, 'testPass');
     await userEvent.click(rememberInput);
     await userEvent.click(signInButton);
-    screen.debug();
 
     await waitFor(() => {
       const successMessage = screen.getByText(
