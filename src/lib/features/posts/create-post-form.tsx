@@ -20,8 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { useToastContext } from '../../../contexts/toast.context';
-import ErrorMessage from '@/components/auth/error-message';
-import SuccessMessage from '@/components/auth/success-message';
+import ErrorMessage from '@/components/auth/ErrorMessage';
 import {
   Card,
   CardHeader,
@@ -35,6 +34,7 @@ import { Badge } from '@/components/ui/badge';
 import { useGetTagsQuery } from '../tags/tags.slice';
 import { useAddPostMutation } from './posts.slice';
 import { Textarea } from '@/components/ui/textarea';
+import SuccessMessage from '@/components/auth/SuccessMessage';
 
 export default function CreatePostForm() {
   const toast = useToastContext();
@@ -120,16 +120,16 @@ export default function CreatePostForm() {
       });
     }
   }, [isError, queryError, toast]);
-  console.log(tagsList)
+  console.log(tagsList);
   return (
-    <Card className='w-full'>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Create New Post</CardTitle>
         <CardDescription>
           Fill out the form to create a new blog post.
         </CardDescription>
       </CardHeader>
-      <CardContent >
+      <CardContent>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSuccessSubmit, handleErrorSubmit)}

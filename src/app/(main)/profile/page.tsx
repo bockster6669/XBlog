@@ -1,9 +1,9 @@
-import ProfileAdditionalOptions from '@/components/profile/ProfileAdditionalOptions';
+import ProfileAdditionalOptions from '@/components/profile/profile-additional-options/ProfileAdditionalOptions';
 import ProfileTabs from '@/components/profile/ProfileTabs';
 
 export default function ProfileManager() {
   return (
-    <main className='mt-8'>
+    <main className="mt-8">
       <ProfileTabs />
 
       <div className="mt-8 space-y-4">

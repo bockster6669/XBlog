@@ -1,19 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { type Post, Prisma } from '@prisma/client';
 import { formatDistance } from 'date-fns';
-
-type PostWithAuthorAndTags = Prisma.PostGetPayload<{
-  include: {
-    author: {
-      select: {
-        username: true,
-        email: true
-      }
-    };
-    tags: true;
-  };
-}>;
+import { PostWithAuthorAndTags } from './types';
 
 export default function Post({ post }: { post: PostWithAuthorAndTags }) {
   const creationDate = formatDistance(post.createdAt, new Date(), {
@@ -48,7 +36,7 @@ export default function Post({ post }: { post: PostWithAuthorAndTags }) {
               </div>
             </div>
           ) : (
-            <span className=' text-muted-foreground'>Author not found</span>
+            <span className=" text-muted-foreground">Author not found</span>
           )}
 
           <p className="text-sm text-muted-foreground">{creationDate}</p>

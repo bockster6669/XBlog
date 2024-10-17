@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Card,
   CardContent,
@@ -14,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Github } from 'lucide-react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import {
@@ -24,26 +23,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
+} from '../../ui/form';
+import ErrorMessage from '../ErrorMessage';
+import SuccessMessage from '../SuccessMessage';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   SignInFormSchemaValues,
   SignInFormSchema,
-} from '../../resolvers/forms/sign-in-form.resolver';
-import ErrorMessage from './error-message';
-import SuccessMessage from './success-message';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+} from '@/resolvers/forms/sign-in-form.resolver';
 
-export default function SignInForm() {
+type CustomSubmitHandler<T extends FieldValues> = (
+  formData: T,
+  setError: Dispatch<SetStateAction<string | null>>,
+  setSuccess: Dispatch<SetStateAction<string | null>>
+) => Promise<void> | void;
+
+type SignInFormProps = {
+  onSubmit?: CustomSubmitHandler<SignInFormSchemaValues>;
+};
+
+export default function SignInForm({ onSubmit }: SignInFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
   const form = useForm<SignInFormSchemaValues>({
     defaultValues: {
       email: '',
       password: '',
+      rememberMe: false,
     },
     mode: 'onTouched',
     resolver: zodResolver(SignInFormSchema),
@@ -51,10 +60,9 @@ export default function SignInForm() {
 
   const { isSubmitting } = form.formState;
 
-  const handleSubmit: SubmitHandler<SignInFormSchemaValues> = async (
-    formData
-  ) => {
-    console.log('handleSubmit');
+  const defaultHandleSubmit: CustomSubmitHandler<
+    SignInFormSchemaValues
+  > = async (formData, setError, setSuccess) => {
     setError(null);
     setSuccess(null);
 
@@ -62,7 +70,7 @@ export default function SignInForm() {
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-        rememberMe,
+        rememberMe: formData.rememberMe,
         redirect: false,
       });
 
@@ -77,7 +85,7 @@ export default function SignInForm() {
         return;
       }
 
-      if (result.status !== 200) {
+      if (!result.ok) {
         setError('Error while signing in');
         return;
       }
@@ -88,6 +96,12 @@ export default function SignInForm() {
       console.error(error);
       setError('Error occurred while signing in');
     }
+  };
+
+  const handleSubmit: SubmitHandler<SignInFormSchemaValues> = async (data) => {
+    await (onSubmit
+      ? onSubmit(data, setError, setSuccess)
+      : defaultHandleSubmit(data, setError, setSuccess));
   };
 
   return (
@@ -148,16 +162,21 @@ export default function SignInForm() {
                 </FormItem>
               )}
             />
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              />
-              <Label htmlFor="remember" className="text-sm">
-                Remember me
-              </Label>
-            </div>
+            <FormField
+              control={form.control}
+              name="rememberMe"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel>Remember me</FormLabel>
+                </FormItem>
+              )}
+            />
             <SuccessMessage message={success} />
             <ErrorMessage message={error} />
             <Button type="submit" className="w-full" disabled={isSubmitting}>

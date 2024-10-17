@@ -1,18 +1,18 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from '../ui/card';
+} from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
-import Spinner from '../shared/Spinner';
+import Spinner from '@/components/shared/Spinner';
 import {
   FormField,
   FormItem,
@@ -20,7 +20,7 @@ import {
   FormControl,
   FormMessage,
   Form,
-} from '../ui/form';
+} from '@/components/ui/form';
 import { NotificationsValues } from '@/resolvers/forms/notifications-form.resolver';
 
 export default function NotificationsForm() {
@@ -32,13 +32,11 @@ export default function NotificationsForm() {
     },
   });
 
-  const user = data?.user;
-
   if (status === 'loading') {
-    return <Spinner />;
+    return <Spinner/>;
   }
 
-  if (!data || !user) {
+  if (!data) {
     return <div>Can not find your session</div>;
   }
 
