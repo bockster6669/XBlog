@@ -7,7 +7,6 @@ import React from 'react';
 import UserDropdownMenu from './UserDropdownMenu';
 import { useRouter } from 'next/navigation';
 
-
 export default function AuthWrapper() {
   const { data, status } = useSession();
   const router = useRouter();
@@ -16,7 +15,7 @@ export default function AuthWrapper() {
       {status === 'loading' ? (
         <Skeleton className="w-16 h-10" />
       ) : data ? (
-        <UserDropdownMenu session={data} />
+        <UserDropdownMenu />
       ) : (
         <>
           <Button onClick={() => router.push('/signup')} variant="outline">
