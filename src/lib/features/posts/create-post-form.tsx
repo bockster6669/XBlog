@@ -21,7 +21,6 @@ import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { useToastContext } from '../../../contexts/toast.context';
 import ErrorMessage from '@/components/auth/ErrorMessage';
-import SuccessMessage from '@/components/auth/success-message';
 import {
   Card,
   CardHeader,
@@ -35,6 +34,7 @@ import { Badge } from '@/components/ui/badge';
 import { useGetTagsQuery } from '../tags/tags.slice';
 import { useAddPostMutation } from './posts.slice';
 import { Textarea } from '@/components/ui/textarea';
+import SuccessMessage from '@/components/auth/SuccessMessage';
 
 export default function CreatePostForm() {
   const toast = useToastContext();
