@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import RecentPostPreviewList from '@/components/home/RecentPostPreviewList';
+import Image from 'next/image';
+
 export default function BlogHomepage() {
   const categories = ['Technology', 'Travel', 'Food', 'Lifestyle', 'Health'];
   const authors = [
@@ -39,7 +41,7 @@ export default function BlogHomepage() {
             <section>
               <h3 className="text-2xl font-bold mb-4">Recent Posts</h3>
               <div className="space-y-6">
-               <RecentPostPreviewList/>
+                <RecentPostPreviewList />
               </div>
             </section>
 
@@ -47,18 +49,21 @@ export default function BlogHomepage() {
               <h3 className="text-2xl font-bold mb-4">Featured Posts</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[1, 2].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <img
-                        src={``}
-                        alt={`Featured post ${i}`}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                      />
-                      <CardTitle className="mt-4">
+                  <Card key={i} className='overflow-hidden'>
+                    <CardHeader className='p-0'>
+                      <div className="relative w-full min-h-60 overflow-hidden bg-purple-300">
+                        <Image
+                          src="/medium-thumbnail.png"
+                          alt={`Featured post ${i}`}
+                          layout="fill"
+                          className="object-cover w-full h-full transition-opacity group-hover:opacity-80"
+                        />
+                      </div>
+                      <CardTitle className="mt-4 p-2">
                         Featured Post Title {i}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className='p-2'>
                       <CardDescription>
                         An intriguing description of this featured post to
                         capture readers attention...
